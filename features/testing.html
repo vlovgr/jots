@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Testing</title>
+  
+  <meta name="author" content="Viktor Rudebeck"/>
+  
+  
+  <meta name="description" content="docs"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://javadoc.invalid/doc/se.vlovgr/jots-docs_3/0.1-ae1a22b-SNAPSHOT/"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M75,47.5c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm-50,-0c13.246,-0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,-0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm2.705,16.735l7.239,0l0.622,-4.904l-21.833,0l-0,4.904l7.589,0l0,22.067l6.383,0l-0,-22.067Zm58.076,7.265c-0,-8.757 -3.698,-14.166 -10.781,-14.166c-7.083,-0 -10.781,5.604 -10.781,14.166c0,8.757 3.698,14.166 10.781,14.166c7.083,0 10.781,-5.604 10.781,-14.166Zm-6.539,0c0,6.538 -1.128,9.496 -4.242,9.496c-2.997,0 -4.242,-2.88 -4.242,-9.496c-0,-6.616 1.206,-9.496 4.242,-9.496c3.036,-0 4.242,2.88 4.242,9.496Zm-29.242,-67c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm0.512,9.834c-7.122,-0 -12.609,5.098 -12.609,14.127c-0,9.263 5.215,14.205 12.532,14.205c4.164,0 7.083,-1.634 9.068,-3.658l-2.88,-3.697c-1.518,1.206 -3.153,2.413 -5.838,2.413c-3.697,-0 -6.266,-2.763 -6.266,-9.263c-0,-6.616 2.724,-9.379 6.149,-9.379c2.102,-0 3.892,0.778 5.371,1.984l3.113,-3.775c-2.257,-1.868 -4.748,-2.957 -8.64,-2.957Z"/>
+  </g>
+</svg></span></a>
+    
+    <a class="icon-link svg-link" href="https://github.com/vlovgr/jots"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://javadoc.invalid/doc/se.vlovgr/jots-docs_3/0.1-ae1a22b-SNAPSHOT/"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M75,47.5c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm-50,-0c13.246,-0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,-0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm2.705,16.735l7.239,0l0.622,-4.904l-21.833,0l-0,4.904l7.589,0l0,22.067l6.383,0l-0,-22.067Zm58.076,7.265c-0,-8.757 -3.698,-14.166 -10.781,-14.166c-7.083,-0 -10.781,5.604 -10.781,14.166c0,8.757 3.698,14.166 10.781,14.166c7.083,0 10.781,-5.604 10.781,-14.166Zm-6.539,0c0,6.538 -1.128,9.496 -4.242,9.496c-2.997,0 -4.242,-2.88 -4.242,-9.496c-0,-6.616 1.206,-9.496 4.242,-9.496c3.036,-0 4.242,2.88 4.242,9.496Zm-29.242,-67c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm0.512,9.834c-7.122,-0 -12.609,5.098 -12.609,14.127c-0,9.263 5.215,14.205 12.532,14.205c4.164,0 7.083,-1.634 9.068,-3.658l-2.88,-3.697c-1.518,1.206 -3.153,2.413 -5.838,2.413c-3.697,-0 -6.266,-2.763 -6.266,-9.263c-0,-6.616 2.724,-9.379 6.149,-9.379c2.102,-0 3.892,0.778 5.371,1.984l3.113,-3.775c-2.257,-1.868 -4.748,-2.957 -8.64,-2.957Z"/>
+  </g>
+</svg></span></a>
+    
+    <a class="icon-link svg-link" href="https://github.com/vlovgr/jots"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../">Homepage</a></li>
+    <li class="level1 nav-leaf"><a href="../introduction.html">Introduction</a></li>
+    <li class="level1 nav-header">features</li>
+    <li class="level2 nav-leaf"><a href="signing.html">Token Signing</a></li>
+    <li class="level2 nav-leaf"><a href="verification.html">Verifying Tokens</a></li>
+    <li class="level2 nav-leaf"><a href="cryptography.html">Cryptography</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Testing</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Testing</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#getting-started">Getting Started</a></li>
+    <li class="level1 nav-node"><a href="#supported-features">Supported Features</a></li>
+    <li class="level2 nav-leaf"><a href="#scalacheck-support">ScalaCheck Support</a></li>
+    <li class="level2 nav-leaf"><a href="#string-interpolators">String Interpolators</a></li>
+    <li class="level2 nav-leaf"><a href="#unsafe-verification">Unsafe Verification</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/vlovgr/jots/tree/main/docs/features/testing.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Source for this page</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="testing" class="title">Testing</h1>
+        <p>The <code>jots-testing</code> module depends on the core module and provides <a href="https://scalacheck.org">ScalaCheck</a> generators and instances, and String interpolators for secrets. Importantly, the testing module also allows us to create a <code>VerifiedJwt</code> from any <code>SignedJwt</code> for testing purposes. This means the module should generally only be used for testing purposes.</p>
+        
+        <h2 id="getting-started" class="section"><a class="anchor-link left" href="#getting-started"><i class="icofont-laika link">&#xef71;</i></a>Getting Started</h2>
+        <p>To get started with <a href="https://scala-sbt.org">sbt</a>, add the following line to your <code>build.sbt</code> file.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">libraryDependencies</span><span> += </span><span class="string-literal">&quot;se.vlovgr&quot;</span><span> %% </span><span class="string-literal">&quot;jots-testing&quot;</span><span> % </span><span class="string-literal">&quot;0.1-ae1a22b-SNAPSHOT&quot;</span><span> % </span><span class="type-name">Test</span></code></pre>
+        <p>If you are using Scala.js or Scala Native, replace the <code>%%</code> with <code>%%%</code> above.</p>
+        
+        <h2 id="supported-features" class="section"><a class="anchor-link left" href="#supported-features"><i class="icofont-laika link">&#xef71;</i></a>Supported Features</h2>
+        <p>The ScalaCheck generators and instances can be made available with <code>import jots.testing.*</code>, while the String interpolators and syntax for unsafe verification requires <code>import jots.testing.syntax.*</code>. If you&#39;re looking for usage examples, the testing module is heavily used by the library <a href="https://github.com/vlovgr/jots/tree/main/tests/shared/src/test/scala/jots">tests</a>.</p>
+        
+        <h3 id="scalacheck-support" class="section"><a class="anchor-link left" href="#scalacheck-support"><i class="icofont-laika link">&#xef71;</i></a>ScalaCheck Support</h3>
+        <p>The testing module provides ScalaCheck <code>Gen</code> generators and <code>Arbitrary</code> instances. Following are some samples from a few generators. Note private and public keys (<code>PrivateKey</code> and <code>PublicKey</code>) are <em>not</em> generated on the fly, but instead choose from a pre-defined list of keys. This is due to the generation being computationally expensive.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtBuilder</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">SignedJwt</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">VerifiedJwt</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">testing</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">scalacheck</span><span>.</span><span class="type-name">Arbitrary</span><span>.</span><span class="identifier">arbitrary</span><span>
+
+</span><span class="comment">// Generate an arbitrary token prior to signing
+</span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">JwtBuilder</span><span>].</span><span class="identifier">sample</span><span>
+</span><span class="comment">// res0: Option[JwtBuilder] = Some(JwtBuilder(JwtHeader(alg -&gt; &quot;RS512&quot;,cty -&gt; &quot;ᠮщꞄ蹡㞄옂្촿덶铔녱銝錦飦㠙ౖﶅ﯋훤佸簏ꛬ唿䣑ळޯ먃噎ⱃꤍ䠭粣懠즆釩蕜஫藉巶ꊲ醳栰弋מּ硌轏ꘙ褘︘벜⬨繺Ꙁ抱䯝㈊劜쪡껦䦧ힻÛ鼚蠴ऀ矎ꁻꊞۻ切룱᯹舅⍃፱꽿徆繑뭊鵏얄殜蛰퀢ฑ㫦ܢ&quot;,kid -&gt; &quot;➬ဲ봏ﰆ鸃⾞὾밙ᛱഺﻵ➻쯂䜹ᣝ䀫⽚쁿珔헻臈洉핺뭠ꟗᱦ숲㊧킁灒劧췽㧃혅㒀ᦄ᫥輓᫪땖㕑卶䃡煭釫꓿틔댔ꭞꋌ給쌯ꄇႰ䩲媙糒谍爐ᬱ昮柾聈椉&quot;,typ -&gt; &quot;JWT&quot;),JwtClaims(iss -&gt; &quot;赅䰁ࢋ쇞䏲ᾑ㛑癤憵࿿镹ᎁ羑薧&quot;,sub -&gt; &quot;颋퇋ጲꤡꭹ躍䅌쳆銗꤉﻽랐⇓朐覵澲쎖皦䬺細䨿때⏫췹喸咢吖춶㬯㵾얕뚝⬳⒦篇䙛䤝쮢搐寣윏叭਱䁶献嬝䋤䰥砶頄펶賍之₢虦窕뱷赘⣵䗄﫵ݢᕴᷙ⃵ﺖ③⦴蹂唯䌡䶶ᦻ㠒ⲕ⮪譹ඹ죾欋ی홄逴&quot;,aud -&gt; &quot;墎䎇㢍ﶳｾ跤䥿馛됧ࡏ짠⑇֊︌ㄿ嚂贻ޯ匃퉺驪䣃좗瑀⠹Ỉ즕ﬖྯ팶怺ᥛᇲ葈፥ﶝ㇂蕼ﶷ䇉㖥绽霚翩栖荌䫼꧰㫼哗赍돚⇌넆菑ꓠ澐쵌靻徱얌臮꺔ջ焉つ㰾ɪ䛍뙺↚㪉隮盼⼾涩췋懀&quot;,exp -&gt; 5983200584446662889,nbf -&gt; 9223372036854775807,iat -&gt; 1,jti -&gt; &quot;햶⿱闐逕鼷겮杢⋙ퟣ㧭峳ᓜ遰䝅凔េ⾵ஹ뮞鼀犣੪덽᫂㴼䗊ࡎ᫬誆‸齃䶕痦㲒쾑颈몯鏕﬑폛&quot;)))
+</span><span>
+</span><span class="comment">// Generate an arbitary token with valid signature
+</span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">SignedJwt</span><span>].</span><span class="identifier">sample</span><span>
+</span><span class="comment">// res1: Option[SignedJwt] = Some(SignedJwt(SignedJwtHeader(alg -&gt; &quot;HS256&quot;,cty -&gt; &quot;缆磈❩픟犭瓩&quot;,kid -&gt; &quot;퀚駌켻㎠秛䏆蛑캡ដ䱮䟉ꜳ쬹粋B겭ⵙ㰅茆픙环쯪쮐ဒᗅ㚮폠켆턺篕โ즔鮤僱욶郋&quot;,typ -&gt; &quot;JWT&quot;),SignedJwtClaims(iss -&gt; &quot;ꉊ掽悷⑁㔙免꿝ሿ竸Ꮾ뾇㥃䩙ᗿ째羚꾀嶳✿펬睮㐏䐓筭ᯓ䲊ॿ恂啖鵻甇액ᐪ賕Ɽ䐭曜嬇↳ﴂꗱ⇚؃魎漪ᕂ℻ᢢ钵ꫢ䐦豮䳃鄧◑皸྄리ಀ&quot;,sub -&gt; &quot;࢞䓪偵︓㯥拡桋觧뾀獵ﲅ᧿蟦㟽찑ﷹ羟ယ砶祱䄼㙱蠛鬣锺ꀂ⿜薩⇹㎱췆姕&quot;,aud -&gt; &quot;齳씻勂˹⑓䑔ᦹ锽錎⇱ݜﯺ褚妊ຄ꿬ﵦ⫘④蛻䈬ᆞ꣕閅⶛&quot;,exp -&gt; 1187049584068328768,nbf -&gt; -1262825963963789648,iat -&gt; -9223372036854775808,jti -&gt; &quot;晒㑦ⲫퟦ맮芁⊬삭鐠&quot;)))
+</span><span>
+</span><span class="comment">// Generate an arbitrary token with a verified signature
+</span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">VerifiedJwt</span><span>].</span><span class="identifier">sample</span><span>
+</span><span class="comment">// res2: Option[VerifiedJwt] = Some(VerifiedJwt(SignedJwtHeader(alg -&gt; &quot;ES256&quot;,cty -&gt; &quot;粗큚觗꧖艿ꍒក릻✃첃ࡦ⡬ꅺᆩ⦈省褾佖霟퇼뇜荼澆숻⡕ܢ硖ừꆨ뉉즰律ꄘ⁶㼜䘌윓唿읩䅭ꛌ᜙ꡑ娇夓鉑㼊揑켈᭲ꢼポ谿댹쟍∶탞㊤톛᭤会踪邰뷽聺ਦ㨋넫雝싅┺ᐠ漸੩櫎奠쓵ᒆ쐿辵迵䗤道鑕⪫&quot;,kid -&gt; &quot;ꙕ剷ㆬꋢ⿯૱︽阜컑廻呹䋻㟩펱ꐤ⒮ꀕ૊쟅ඳ穿떨ㅦ⡻魻泣&quot;,typ -&gt; &quot;JWT&quot;),SignedJwtClaims(iss -&gt; &quot;즹矬⏶髧敋鰃짟假飨䓞㜘┡ッꩆ윝酪Ꞌꐀﳇ裥֞餭塯㻰Ӧ춢챳彎얀苉릸苷絿&quot;,sub -&gt; &quot;꿀쾏叇䝆⫆砖艼ă∁㗶ᕃ◪螚飪೧ⱟ酬朼챕鋙踚핔඀Ԋ溫벪㭻ᯂ놋ƻ꿃锳殮쟣㶂쐏歧&quot;,exp -&gt; -1,nbf -&gt; -1,iat -&gt; -4960106358095100488,jti -&gt; &quot;奷鎪믢좶銗䓯ᚡ乹쟥ᴴ꼈頕䓫꾐蘯Ⲋ銛勋䳪썄ﻻ⎼靽瞗ᢊ넼쮸&quot;)))
+</span><span>
+</span><span class="comment">// Generate an arbitary signing instance using ECDSA
+</span><span class="identifier">ecdsaJwtSigningGen</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">sample</span><span>
+</span><span class="comment">// res3: Option[JwtSigning[[A &gt;: Nothing &lt;: Any] =&gt; IO[A]]] = Some(jots.JwtSigning$$anon$4@21748415)
+</span><span>
+</span><span class="comment">// Generate a matching RSA private and public key
+</span><span class="identifier">rsaKeyPairGen</span><span>.</span><span class="identifier">sample</span><span>
+</span><span class="comment">// res4: Option[Tuple2[PrivateKey, PublicKey]] = Some((PrivateKey(**),PublicKey(-----BEGIN PUBLIC KEY-----
+// MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAmTZoSk2SCHDBu5S1DjE9
+// RDGw6YZwXZFJjG70gHfqjkuQF2DEqo48NWF4Syjgcl78y3pvgLiswqw6CgpoOyEs
+// anRnvOSimxZxCNm8x/aRzOSIxq/iRpca9bLbGyv2TXeyBNLJOs6q8zPSwO9wYe3+
+// +z+i0aemuenWN4iIBoLzB2lZXGwyn56T+s+HHsHRfCrXNrW0yYmKmhaefXfWrLtj
+// kcXfUmMa5xYbysQXaFIUxiebBxmbDiaNw4DgYa2dutgZ1N7+FLpVcPAnCxGVabyJ
+// bljpJoATC22Wq3h7fdd2q5AScBjMzxGnpqSqxwAx+4qqTQ32AjgTIMCvyzf+uc+j
+// jG4qvZj5UqhRfc/Bedmh70l5kt69MZgzbtqjwOjJQmuqYb0m1Xj60xETxOZvSdG+
+// fIeQrEPcwiWsRm8wxSVer31lLnenbYWZRj3FifAJ/wrz0eBLdto6cPVeXkDcKBu0
+// eZQwiMoaaGsOMXu4Hdft+RzJC2HQe+vWLwzEPAbauPOcH1TRj/RbTuuaRJW7ZgxS
+// 5xFzaNb4GDZdqyr0VGpePf00f258bPSk5FfZihqs1/D1dIEvfodmJO1UniA/XPpc
+// vYZAnwKk/gEuHuYrDbtH88YnMSRFWWxQNNavrMrlqrCcUEU+jnqJip/9FwUIjjR/
+// eEzqpgzqyimf1UJ9u/ldackCAwEAAQ==
+// -----END PUBLIC KEY-----)))</span></code></pre>
+        
+        <h3 id="string-interpolators" class="section"><a class="anchor-link left" href="#string-interpolators"><i class="icofont-laika link">&#xef71;</i></a>String Interpolators</h3>
+        <p>The <code>jots-crypto</code> module provides syntax for compile-time parsing of public keys (<code>PublicKey</code>). The testing module provides additional syntax for private keys (<code>PrivateKey</code>), secret keys (<code>SecretKey</code>), and tokens (<code>SignedJwt</code>). These are generally sensitive and should <em>not</em> be in source code, except when they are non-secret for testing purposes.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">SignedJwt</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">PrivateKey</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">SecretKey</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">testing</span><span>.</span><span class="identifier">syntax</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">privateKey</span><span>: </span><span class="type-name">PrivateKey</span><span> =
+  </span><span class="string-literal">privateKey&quot;&quot;&quot;
+    -----BEGIN PRIVATE KEY-----
+    MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgevZzL1gdAFr88hb2
+    OF/2NxApJCzGCEDdfSp6VQO30hyhRANCAAQRWz+jn65BtOMvdyHKcvjBeBSDZH2r
+    1RTwjmYSi9R/zpBnuQ4EiMnCqfMPWiZqB4QdbAd0E7oH50VpuZ1P087G
+    -----END PRIVATE KEY-----
+  &quot;&quot;&quot;</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">secretKey</span><span>: </span><span class="type-name">SecretKey</span><span> =
+  </span><span class="string-literal">secretKey&quot;5BpYD67PafjVoefV11a06MVMGCmr1zoLrFGL019EEuoMtZszHqqpAd6frHFFgGXZ&quot;</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">signedJwt</span><span>: </span><span class="type-name">SignedJwt</span><span> =
+  </span><span class="string-literal">signedJwt&quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.8i3xidY8bcAjoBYSKktcyihSdICGXBSBnjp13JYmO_DE5v4_oxY4bSBtZxdoic7OWFKZCcE63I1fFlukzgxVZA&quot;</span></code></pre>
+        
+        <h3 id="unsafe-verification" class="section"><a class="anchor-link left" href="#unsafe-verification"><i class="icofont-laika link">&#xef71;</i></a>Unsafe Verification</h3>
+        <p>It is possible to extend the default verifications for <a href="verification.html#custom-verification">custom verifications</a>. The core modules enforces that all instances of <code>VerifiedJwt</code> must have gone through signature verification. For testing purposes, the testing module allows us to create a <code>VerifiedJwt</code> from any <code>SignedJwt</code> without verification.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">testing</span><span>.</span><span class="identifier">syntax</span><span>.*
+
+</span><span class="identifier">signedJwt</span><span>.</span><span class="identifier">toVerifiedUnsafe</span><span>
+</span><span class="comment">// res5: VerifiedJwt = VerifiedJwt(SignedJwtHeader(typ -&gt; &quot;JWT&quot;,alg -&gt; &quot;ES256&quot;),SignedJwtClaims(userId -&gt; &quot;8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1&quot;,exp -&gt; 3345062400,iat -&gt; 1767225600))
+</span><span>
+</span><span class="type-name">VerifiedJwt</span><span>.</span><span class="identifier">fromSignedUnsafe</span><span>(</span><span class="identifier">signedJwt</span><span>)
+</span><span class="comment">// res6: VerifiedJwt = VerifiedJwt(SignedJwtHeader(typ -&gt; &quot;JWT&quot;,alg -&gt; &quot;ES256&quot;),SignedJwtClaims(userId -&gt; &quot;8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1&quot;,exp -&gt; 3345062400,iat -&gt; 1767225600))</span></code></pre>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Licensed under <a href="https://github.com/vlovgr/jots/blob/main/license.txt">Apache License, Version 2.0</a>.<br>Copyright © 2026 Viktor Rudebeck.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

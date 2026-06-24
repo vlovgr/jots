@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Verifying Tokens</title>
+  
+  <meta name="author" content="Viktor Rudebeck"/>
+  
+  
+  <meta name="description" content="docs"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+    <script type="module">
+
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({ 
+  startOnLoad: true,
+  theme: "base",
+  themeVariables: {
+    'darkMode': dark,
+    'primaryColor': dark ? '#125d75' : '#eef5f6', 
+    'primaryTextColor': dark ? '#a7d4de' : '#007c99',
+    'primaryBorderColor': dark ? '#a7d4de' : '#a7d4de',
+    'lineColor': dark ? '#a7d4de' : '#007c99',
+    'background': dark ? '#064458' : '#ffffff',
+  }
+});
+
+</script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://javadoc.invalid/doc/se.vlovgr/jots-docs_3/0.1-ae1a22b-SNAPSHOT/"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M75,47.5c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm-50,-0c13.246,-0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,-0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm2.705,16.735l7.239,0l0.622,-4.904l-21.833,0l-0,4.904l7.589,0l0,22.067l6.383,0l-0,-22.067Zm58.076,7.265c-0,-8.757 -3.698,-14.166 -10.781,-14.166c-7.083,-0 -10.781,5.604 -10.781,14.166c0,8.757 3.698,14.166 10.781,14.166c7.083,0 10.781,-5.604 10.781,-14.166Zm-6.539,0c0,6.538 -1.128,9.496 -4.242,9.496c-2.997,0 -4.242,-2.88 -4.242,-9.496c-0,-6.616 1.206,-9.496 4.242,-9.496c3.036,-0 4.242,2.88 4.242,9.496Zm-29.242,-67c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm0.512,9.834c-7.122,-0 -12.609,5.098 -12.609,14.127c-0,9.263 5.215,14.205 12.532,14.205c4.164,0 7.083,-1.634 9.068,-3.658l-2.88,-3.697c-1.518,1.206 -3.153,2.413 -5.838,2.413c-3.697,-0 -6.266,-2.763 -6.266,-9.263c-0,-6.616 2.724,-9.379 6.149,-9.379c2.102,-0 3.892,0.778 5.371,1.984l3.113,-3.775c-2.257,-1.868 -4.748,-2.957 -8.64,-2.957Z"/>
+  </g>
+</svg></span></a>
+    
+    <a class="icon-link svg-link" href="https://github.com/vlovgr/jots"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://javadoc.invalid/doc/se.vlovgr/jots-docs_3/0.1-ae1a22b-SNAPSHOT/"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M75,47.5c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm-50,-0c13.246,-0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,-0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm2.705,16.735l7.239,0l0.622,-4.904l-21.833,0l-0,4.904l7.589,0l0,22.067l6.383,0l-0,-22.067Zm58.076,7.265c-0,-8.757 -3.698,-14.166 -10.781,-14.166c-7.083,-0 -10.781,5.604 -10.781,14.166c0,8.757 3.698,14.166 10.781,14.166c7.083,0 10.781,-5.604 10.781,-14.166Zm-6.539,0c0,6.538 -1.128,9.496 -4.242,9.496c-2.997,0 -4.242,-2.88 -4.242,-9.496c-0,-6.616 1.206,-9.496 4.242,-9.496c3.036,-0 4.242,2.88 4.242,9.496Zm-29.242,-67c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm0.512,9.834c-7.122,-0 -12.609,5.098 -12.609,14.127c-0,9.263 5.215,14.205 12.532,14.205c4.164,0 7.083,-1.634 9.068,-3.658l-2.88,-3.697c-1.518,1.206 -3.153,2.413 -5.838,2.413c-3.697,-0 -6.266,-2.763 -6.266,-9.263c-0,-6.616 2.724,-9.379 6.149,-9.379c2.102,-0 3.892,0.778 5.371,1.984l3.113,-3.775c-2.257,-1.868 -4.748,-2.957 -8.64,-2.957Z"/>
+  </g>
+</svg></span></a>
+    
+    <a class="icon-link svg-link" href="https://github.com/vlovgr/jots"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../">Homepage</a></li>
+    <li class="level1 nav-leaf"><a href="../introduction.html">Introduction</a></li>
+    <li class="level1 nav-header">features</li>
+    <li class="level2 nav-leaf"><a href="signing.html">Token Signing</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Verifying Tokens</a></li>
+    <li class="level2 nav-leaf"><a href="cryptography.html">Cryptography</a></li>
+    <li class="level2 nav-leaf"><a href="testing.html">Testing</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Verifying Tokens</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#decoding-tokens">Decoding Tokens</a></li>
+    <li class="level1 nav-node"><a href="#token-verification">Token Verification</a></li>
+    <li class="level2 nav-leaf"><a href="#key-requirements">Key Requirements</a></li>
+    <li class="level2 nav-leaf"><a href="#signature-verification">Signature Verification</a></li>
+    <li class="level2 nav-leaf"><a href="#default-verifications">Default Verifications</a></li>
+    <li class="level2 nav-leaf"><a href="#json-web-key-set">JSON Web Key Set</a></li>
+    <li class="level1 nav-node"><a href="#custom-verification">Custom Verification</a></li>
+    <li class="level2 nav-leaf"><a href="#custom-example">Custom Example</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/vlovgr/jots/tree/main/docs/features/verification.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Source for this page</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="verifying-tokens" class="title">Verifying Tokens</h1>
+        <p>Token verification involves four library types: <code>SignedJwt</code>, <code>JwtVerification</code>, <code>VerifiedJwt</code> and <code>JwtDecoder</code>.</p>
+        <pre class="mermaid">%%{init: {&quot;fontFamily&quot;: &quot;monospace&quot;}}%%
+graph LR
+String --&gt; |&quot;SignedJwt.parse&quot;| SignedJwt[&quot;IO[SignedJwt]&quot;]
+SignedJwt --&gt; |&quot;JwtVerification[IO]&quot;| VerifiedJwt[&quot;IO[VerifiedJwt]&quot;]
+VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
+        <ul>
+          <li>The <code>SignedJwt.parse</code> function parses a signed token (JWT) into its different parts.</li>
+          <li>The <code>SignedJwt</code> represents a signed token (JWT) which has <em>not</em> yet been verified.</li>
+          <li>The <code>JwtVerification[IO]</code> describes token verification (at least the signature).</li>
+          <li>The <code>VerfiedJwt</code> type describes verified tokens (at minimum signature verified).</li>
+          <li>The <code>JwtDecoder[A]</code> describes how to decode <code>VerifiedJwt</code> to an <code>A</code> instance.</li>
+          <li>The type <code>A</code> is our custom type representing the token (usually the claims).</li>
+        </ul>
+        <p>Having <code>JwtDecoder[A]</code> and <code>JwtVerification[IO]</code> in place, verification code look as follows.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">verification</span><span>.</span><span class="identifier">decodeAs</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">jwt</span><span>) </span><span class="comment">// IO[A]</span></code></pre>
+        <p>For a brief introduction to token verification, see the <a href="../introduction.html#verifying-tokens">introduction</a>.</p>
+        
+        <h2 id="decoding-tokens" class="section"><a class="anchor-link left" href="#decoding-tokens"><i class="icofont-laika link">&#xef71;</i></a>Decoding Tokens</h2>
+        <p>While it&#39;s possible to manually decode a <code>VerifiedJwt</code>, it is often easier to use <code>JwtDecoder</code>. Following is the <code>UserJwt</code> type and <code>JwtDecoder</code> as seen in the <a href="../introduction.html#verifying-tokens">introduction</a>. The <code>JwtDecoder</code> uses the <code>Decoder</code> to decode the <code>UserJwt</code> from the claims of a <code>VerifiedJwt</code>, which is likely the most common case.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="type-name">Decoder</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtDecoder</span><span>
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">UserJwt</span><span>(</span><span class="identifier">userId</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">expiresAt</span><span>: </span><span class="type-name">Long</span><span>, </span><span class="identifier">issuedAt</span><span>: </span><span class="type-name">Long</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">UserJwt</span><span> {
+  </span><span class="keyword">given</span><span> </span><span class="type-name">Decoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+    </span><span class="type-name">Decoder</span><span>.</span><span class="identifier">forProduct3</span><span>(</span><span class="string-literal">&quot;userId&quot;</span><span>, </span><span class="string-literal">&quot;exp&quot;</span><span>, </span><span class="string-literal">&quot;iat&quot;</span><span>)(</span><span class="type-name">UserJwt</span><span>.</span><span class="identifier">apply</span><span>)
+
+  </span><span class="keyword">given</span><span> </span><span class="type-name">JwtDecoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+    </span><span class="type-name">JwtDecoder</span><span>.</span><span class="identifier">decodeClaims</span><span>
+}</span></code></pre>
+        <p>The <code>JwtDecoder</code> is similar to <code>Decoder</code>, except it decodes from <code>VerifiedJwt</code> instead of <code>Json</code>. This includes the parsed header, claims and signature. In some cases, it&#39;s useful to extract header details in addition to the claims. We can make use of <code>JwtDecoder.decodeWith</code> to create custom <code>JwtDecoder</code> instances.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">UserJwtNonce</span><span>(</span><span class="identifier">nonce</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">userJwt</span><span>: </span><span class="type-name">UserJwt</span><span>)
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">JwtDecoder</span><span>[</span><span class="type-name">UserJwtNonce</span><span>] =
+  </span><span class="type-name">JwtDecoder</span><span>.</span><span class="identifier">decodeWith</span><span> { </span><span class="identifier">verifiedJwt</span><span> =&gt;
+    </span><span class="keyword">for</span><span> {
+      </span><span class="identifier">nonce</span><span> &lt;- </span><span class="identifier">verifiedJwt</span><span>.</span><span class="identifier">header</span><span>.</span><span class="identifier">toJson</span><span>.</span><span class="identifier">hcursor</span><span>.</span><span class="identifier">get</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;nonce&quot;</span><span>)
+      </span><span class="identifier">userJwt</span><span> &lt;- </span><span class="identifier">verifiedJwt</span><span>.</span><span class="identifier">claims</span><span>.</span><span class="identifier">toJson</span><span>.</span><span class="identifier">as</span><span>[</span><span class="type-name">UserJwt</span><span>]
+    } </span><span class="keyword">yield</span><span> </span><span class="type-name">UserJwtNonce</span><span>(</span><span class="identifier">nonce</span><span>, </span><span class="identifier">userJwt</span><span>)
+  }</span></code></pre>
+        
+        <h2 id="token-verification" class="section"><a class="anchor-link left" href="#token-verification"><i class="icofont-laika link">&#xef71;</i></a>Token Verification</h2>
+        <p>Once we have a custom <code>UserJwt</code> type and <code>JwtDecoder[UserJwt]</code>, we also need a <code>JwtVerification</code> instance. We create instances by choosing the effect type (e.g. <code>IO</code>), selecting the algorithm, and by providing a public or secret key. Following is an example on how to create a <code>JwtSigning</code> for <code>ES256</code> (ECDSA with P-256 and SHA-256).</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">SyncIO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtEcdsaAlgorithm</span><span>.</span><span class="type-name">ES256</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerification</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">PublicKey</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">jwtVerification</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">SyncIO</span><span>]] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">publicKey</span><span> &lt;- </span><span class="type-name">PublicKey</span><span>(
+      </span><span class="string-literal">&quot;&quot;&quot;
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEEVs/o5+uQbTjL3chynL4wXgUg2R9
+        q9UU8I5mEovUf86QZ7kOBIjJwqnzD1omageEHWwHdBO6B+dFabmdT9POxg==
+        -----END PUBLIC KEY-----
+      &quot;&quot;&quot;</span><span>
+    ).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
+    </span><span class="identifier">verification</span><span> &lt;- </span><span class="type-name">JwtVerification</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">ecdsa</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">publicKey</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">verification</span></code></pre>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Note we use <code>SyncIO</code>, and later <code>unsafeRunSync()</code>, to show the final result. In practice, you would most likely use <code>IO</code> without <code>unsafeRunSync()</code>.</p>
+        </div>
+        <p>If we know the <code>PublicKey</code> in advance, there is also a <code>publicKey</code> String interpolator available.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="identifier">syntax</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">publicKey</span><span>: </span><span class="type-name">PublicKey</span><span> =
+  </span><span class="string-literal">publicKey&quot;&quot;&quot;
+    -----BEGIN PUBLIC KEY-----
+    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEEVs/o5+uQbTjL3chynL4wXgUg2R9
+    q9UU8I5mEovUf86QZ7kOBIjJwqnzD1omageEHWwHdBO6B+dFabmdT9POxg==
+    -----END PUBLIC KEY-----
+  &quot;&quot;&quot;</span></code></pre>
+        
+        <h3 id="key-requirements" class="section"><a class="anchor-link left" href="#key-requirements"><i class="icofont-laika link">&#xef71;</i></a>Key Requirements</h3>
+        <p>In the example above, we note creating <code>JwtVerification</code> instances returns an effect and not <code>JwtVerification</code> directly. The effect is checking whether the public or secret key is sufficiently strong or not according to the JWT specification. When the <a href="signing.html#key-requirements">key requirements</a> are not met, an exception will be raised.</p>
+        <p>While it is <em>not</em> recommended, the key requirements check can be disabled using <code>JwtVerificationBuilder</code> by using the <code>withCheckKeyRequirements</code> function. It is also possible to use separate effects for creating <code>JwtVerification</code> and for verifying tokens. The following example shows how both can be done.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerificationBuilder</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">Try</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">jwtVerificationTry</span><span>: </span><span class="type-name">Try</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">IO</span><span>]] =
+  </span><span class="type-name">JwtVerificationBuilder</span><span>
+    .</span><span class="identifier">default</span><span>[</span><span class="type-name">Try</span><span>]
+    .</span><span class="identifier">verifyWith</span><span>[</span><span class="type-name">IO</span><span>]
+    .</span><span class="identifier">ecdsa</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">publicKey</span><span>)
+    .</span><span class="identifier">withCheckKeyRequirements</span><span>(</span><span class="boolean-literal">false</span><span>) </span><span class="comment">// Not recommended
+</span><span>    .</span><span class="identifier">build</span></code></pre>
+        
+        <h3 id="signature-verification" class="section"><a class="anchor-link left" href="#signature-verification"><i class="icofont-laika link">&#xef71;</i></a>Signature Verification</h3>
+        <p>The <code>JwtVerification</code> instance is normally reused. In the following case, we only use it once for example purposes. To decode a <code>UserJwt</code> from a token <code>String</code>, going through the default verification, we can use the <code>decodeAs</code> function on <code>JwtVerification</code> once the instance is available.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">jwt</span><span> = </span><span class="string-literal">&quot;eyJ0eXAiOiJKV1QiLCJraWQiOiI2MzRjODBhMy0zN2Y5LTQyYmMtYTY1Ny0wYmY0Zjc1OWIxZTMiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.RRqlOw-CuSgt7-24kzsbVs5Te4WHhuOCzEVWsMZEtQTsHr2_Hkjk4qjE3PaEgFcYCOnsbs20QNQZZ5KSWm5bUQ&quot;</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">userJwt</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">verification</span><span> &lt;- </span><span class="identifier">jwtVerification</span><span>
+    </span><span class="identifier">userJwt</span><span> &lt;- </span><span class="identifier">verification</span><span>.</span><span class="identifier">decodeAs</span><span>[</span><span class="type-name">UserJwt</span><span>](</span><span class="identifier">jwt</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">userJwt</span></code></pre>
+        <p>Finally, let&#39;s run the effect to show the token could be verified and decoded successfully.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">userJwt</span><span>.</span><span class="identifier">unsafeRunSync</span><span>()
+</span><span class="comment">// res0: UserJwt = UserJwt(
+//   userId = &quot;8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1&quot;,
+//   expiresAt = 3345062400L,
+//   issuedAt = 1767225600L
+// )</span></code></pre>
+        <p>There&#39;s also <code>JwtVerification#decode</code> for returning a <code>VerifiedJwt</code> (without <code>JwtDecoder</code> requirement). Similarly, there is <code>verify</code> for returning a <code>VerifiedJwt</code> from a <code>SignedJwt</code>, and <code>verifyAs</code> for also decoding with <code>JwtDecoder</code>. These are useful when we want to handle parsing or decoding separately from <code>JwtVerification</code>. Note these can be overridden for <a href="#custom-verification">custom verifications</a>.</p>
+        
+        <h3 id="default-verifications" class="section"><a class="anchor-link left" href="#default-verifications"><i class="icofont-laika link">&#xef71;</i></a>Default Verifications</h3>
+        <p>The default <code>JwtVerification</code> instances perform the following verifications.</p>
+        <ul>
+          <li>The provided public or secret key must meet the <a href="#key-requirements">key requirements</a>.</li>
+          <li>The signature is verified using the algorithm and public or secret key.</li>
+          <li>The expiration claim (<code>exp</code>), when present, is verified to be in the future.</li>
+          <li>The not-before claim (<code>nbf</code>), when present, is verified to not be in the future.</li>
+          <li>Tokens containing a set of critical headers (<code>crit</code>) will be rejected by default.</li>
+        </ul>
+        <p>Except for the signature verification, these checks can be adjusted using various <code>JwtVerificationBuilder</code> methods. There is also additional checks which can be enabled, like requiring certain claims to be present, and further tweaks, like accounting for clock skew. If the provided verifications are not enough, resort to <a href="#custom-verification">custom verifications</a>.</p>
+        
+        <h3 id="json-web-key-set" class="section"><a class="anchor-link left" href="#json-web-key-set"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key Set</h3>
+        <p>There is a <code>Jwk</code> type representing a JSON Web Key (JWK) and a <code>JwkSet</code> type for JWK Set. A <code>JwkSet</code> can be used for verification as long as it contains at least one key that meet all of the following criteria. Keys which do not match the criteria will be filtered out, and if there are no keys available after filtering, an exception is raised.</p>
+        <ol class="arabic">
+          <li>The <code>kid</code> (Key ID) parameter must be specified for the key.</li>
+          <li>If <code>key_ops</code> is specified, it must contain the <code>verify</code> operation.</li>
+          <li>If <code>use</code> is specified for the key, it must be set to <code>sig</code> (signature).</li>
+        </ol>
+        <p>Additionally, the public or secret key must be supported by the library. This means having the <code>kty</code> parameter set with other key-type appropriate parameters. Depending on if <code>alg</code> (algorithm) is set or not on the key, the algorithm has to be supported and allowed, or there must be at least one allowed algorithm for the key type.</p>
+        
+        <h4 id="jwk-set-example" class="section"><a class="anchor-link left" href="#jwk-set-example"><i class="icofont-laika link">&#xef71;</i></a>JWK Set Example</h4>
+        <p>Following is an example of decoding using a JWK Set. The keys are normally retrieved from an HTTP endpoint, but this is beyond the scope of the library. Instead, we provide the <code>Jwk</code> directly and create a <code>JwkSet</code> using the key. We create a <code>JwtVerification</code> instance, allowing all supported ECDSA algorithms, and finally decode the <a href="#signature-verification">token</a> from before.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="identifier">syntax</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">Jwk</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwkSet</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtEcdsaAlgorithm</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">userJwtJwk</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">jwk</span><span> &lt;- </span><span class="type-name">Jwk</span><span>(
+      </span><span class="string-literal">&quot;kty&quot;</span><span> -&gt; </span><span class="string-literal">&quot;EC&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;use&quot;</span><span> -&gt; </span><span class="string-literal">&quot;sig&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;key_ops&quot;</span><span> -&gt; </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;verify&quot;</span><span>).</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;alg&quot;</span><span> -&gt; </span><span class="string-literal">&quot;ES256&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;kid&quot;</span><span> -&gt; </span><span class="string-literal">&quot;634c80a3-37f9-42bc-a657-0bf4f759b1e3&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;crv&quot;</span><span> -&gt; </span><span class="string-literal">&quot;P-256&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;x&quot;</span><span> -&gt; </span><span class="string-literal">&quot;EVs_o5-uQbTjL3chynL4wXgUg2R9q9UU8I5mEovUf84&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;y&quot;</span><span> -&gt; </span><span class="string-literal">&quot;kGe5DgSIycKp8w9aJmoHhB1sB3QTugfnRWm5nU_TzsY&quot;</span><span>.</span><span class="identifier">asJson</span><span>
+    ).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
+    </span><span class="identifier">jwkSet</span><span> = </span><span class="type-name">JwkSet</span><span>(</span><span class="identifier">jwk</span><span>)
+    </span><span class="identifier">verification</span><span> &lt;- </span><span class="type-name">JwtVerification</span><span>
+      .</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>]
+      .</span><span class="identifier">jwkSet</span><span>(</span><span class="type-name">JwtEcdsaAlgorithm</span><span>.</span><span class="type-name">All</span><span>, </span><span class="identifier">jwkSet</span><span>)
+    </span><span class="identifier">userJwt</span><span> &lt;- </span><span class="identifier">verification</span><span>.</span><span class="identifier">decodeAs</span><span>[</span><span class="type-name">UserJwt</span><span>](</span><span class="identifier">jwt</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">userJwt</span></code></pre>
+        <p>Note verification works because the token header has a matching <code>kid</code> (Key ID).</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">userJwtJwk</span><span>.</span><span class="identifier">unsafeRunSync</span><span>()
+</span><span class="comment">// res1: UserJwt = UserJwt(
+//   userId = &quot;8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1&quot;,
+//   expiresAt = 3345062400L,
+//   issuedAt = 1767225600L
+// )</span></code></pre>
+        
+        <h2 id="custom-verification" class="section"><a class="anchor-link left" href="#custom-verification"><i class="icofont-laika link">&#xef71;</i></a>Custom Verification</h2>
+        <p>The <code>VerifiedJwt</code> type can only be instantiated by the default <code>JwtVerification</code> instances. So while it is possible to create custom <code>JwtVerification</code> instances, these will have to make use of the default instances. This holds true as long as your code keeps to the following rules.</p>
+        <ol class="arabic">
+          <li>Does <em>not</em> make use of functions internal to the library (functions internal to the <code>jots</code> package).</li>
+          <li>Does <em>not</em> use the <a href="testing.html#unsafe-verification">testing module</a> to create a <code>VerifiedJwt</code> for a <code>SignedJwt</code> without verification.</li>
+        </ol>
+        <p>It is not possible to disable signature verification for the default <code>JwtVerification</code> instances, meaning <code>VerifiedJwt</code> guarantees the token has a valid signature as long as these rules are upheld.</p>
+        
+        <h3 id="custom-example" class="section"><a class="anchor-link left" href="#custom-example"><i class="icofont-laika link">&#xef71;</i></a>Custom Example</h3>
+        <p>Following is an example of a custom verification that requires the <code>nonce</code> header key to be present.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">jwtNonceVerification</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">SyncIO</span><span>]] =
+  </span><span class="identifier">jwtVerification</span><span>.</span><span class="identifier">map</span><span> { </span><span class="identifier">verification</span><span> =&gt;
+    </span><span class="type-name">JwtVerification</span><span>.</span><span class="identifier">verifyWith</span><span> { </span><span class="identifier">jwt</span><span> =&gt;
+      </span><span class="keyword">for</span><span> {
+        </span><span class="identifier">verifiedJwt</span><span> &lt;- </span><span class="identifier">verification</span><span>.</span><span class="identifier">verify</span><span>(</span><span class="identifier">jwt</span><span>)
+        </span><span class="identifier">nonce</span><span> = </span><span class="identifier">verifiedJwt</span><span>.</span><span class="identifier">header</span><span>.</span><span class="identifier">toJsonObject</span><span>(</span><span class="string-literal">&quot;nonce&quot;</span><span>)
+        </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> (</span><span class="identifier">nonce</span><span>.</span><span class="identifier">nonEmpty</span><span>) </span><span class="type-name">SyncIO</span><span>.</span><span class="identifier">unit</span><span> </span><span class="keyword">else</span><span> </span><span class="type-name">SyncIO</span><span>.</span><span class="identifier">raiseError</span><span>(
+          </span><span class="keyword">new</span><span> </span><span class="type-name">IllegalArgumentException</span><span>(</span><span class="string-literal">&quot;token is missing nonce&quot;</span><span>)
+        )
+      } </span><span class="keyword">yield</span><span> </span><span class="identifier">verifiedJwt</span><span>
+    }
+  }</span></code></pre>
+        <p>Let us try to verify the <a href="#signature-verification">token</a> from before, which does <em>not</em> have a nonce:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">userJwtNonce</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">verification</span><span> &lt;- </span><span class="identifier">jwtNonceVerification</span><span>
+    </span><span class="identifier">userJwt</span><span> &lt;- </span><span class="identifier">verification</span><span>.</span><span class="identifier">decodeAs</span><span>[</span><span class="type-name">UserJwt</span><span>](</span><span class="identifier">jwt</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">userJwt</span></code></pre>
+        <p>and then finally run the effect to show the verification is failing as expected.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">userJwtNonce</span><span>.</span><span class="identifier">attempt</span><span>.</span><span class="identifier">unsafeRunSync</span><span>()
+</span><span class="comment">// res2: Either[Throwable, UserJwt] = Left(
+//   java.lang.IllegalArgumentException: token is missing nonce
+// )</span></code></pre>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Licensed under <a href="https://github.com/vlovgr/jots/blob/main/license.txt">Apache License, Version 2.0</a>.<br>Copyright © 2026 Viktor Rudebeck.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

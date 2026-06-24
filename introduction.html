@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Introduction</title>
+  
+  <meta name="author" content="Viktor Rudebeck"/>
+  
+  
+  <meta name="description" content="docs"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="helium/site/laika-helium.css" />
+  <script src="helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="index.html"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://javadoc.invalid/doc/se.vlovgr/jots-docs_3/0.1-ae1a22b-SNAPSHOT/"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M75,47.5c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm-50,-0c13.246,-0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,-0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm2.705,16.735l7.239,0l0.622,-4.904l-21.833,0l-0,4.904l7.589,0l0,22.067l6.383,0l-0,-22.067Zm58.076,7.265c-0,-8.757 -3.698,-14.166 -10.781,-14.166c-7.083,-0 -10.781,5.604 -10.781,14.166c0,8.757 3.698,14.166 10.781,14.166c7.083,0 10.781,-5.604 10.781,-14.166Zm-6.539,0c0,6.538 -1.128,9.496 -4.242,9.496c-2.997,0 -4.242,-2.88 -4.242,-9.496c-0,-6.616 1.206,-9.496 4.242,-9.496c3.036,-0 4.242,2.88 4.242,9.496Zm-29.242,-67c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm0.512,9.834c-7.122,-0 -12.609,5.098 -12.609,14.127c-0,9.263 5.215,14.205 12.532,14.205c4.164,0 7.083,-1.634 9.068,-3.658l-2.88,-3.697c-1.518,1.206 -3.153,2.413 -5.838,2.413c-3.697,-0 -6.266,-2.763 -6.266,-9.263c-0,-6.616 2.724,-9.379 6.149,-9.379c2.102,-0 3.892,0.778 5.371,1.984l3.113,-3.775c-2.257,-1.868 -4.748,-2.957 -8.64,-2.957Z"/>
+  </g>
+</svg></span></a>
+    
+    <a class="icon-link svg-link" href="https://github.com/vlovgr/jots"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://javadoc.invalid/doc/se.vlovgr/jots-docs_3/0.1-ae1a22b-SNAPSHOT/"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M75,47.5c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm-50,-0c13.246,-0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,-0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm2.705,16.735l7.239,0l0.622,-4.904l-21.833,0l-0,4.904l7.589,0l0,22.067l6.383,0l-0,-22.067Zm58.076,7.265c-0,-8.757 -3.698,-14.166 -10.781,-14.166c-7.083,-0 -10.781,5.604 -10.781,14.166c0,8.757 3.698,14.166 10.781,14.166c7.083,0 10.781,-5.604 10.781,-14.166Zm-6.539,0c0,6.538 -1.128,9.496 -4.242,9.496c-2.997,0 -4.242,-2.88 -4.242,-9.496c-0,-6.616 1.206,-9.496 4.242,-9.496c3.036,-0 4.242,2.88 4.242,9.496Zm-29.242,-67c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm0.512,9.834c-7.122,-0 -12.609,5.098 -12.609,14.127c-0,9.263 5.215,14.205 12.532,14.205c4.164,0 7.083,-1.634 9.068,-3.658l-2.88,-3.697c-1.518,1.206 -3.153,2.413 -5.838,2.413c-3.697,-0 -6.266,-2.763 -6.266,-9.263c-0,-6.616 2.724,-9.379 6.149,-9.379c2.102,-0 3.892,0.778 5.371,1.984l3.113,-3.775c-2.257,-1.868 -4.748,-2.957 -8.64,-2.957Z"/>
+  </g>
+</svg></span></a>
+    
+    <a class="icon-link svg-link" href="https://github.com/vlovgr/jots"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="index.html">Homepage</a></li>
+    <li class="level1 active nav-leaf"><a href="#">Introduction</a></li>
+    <li class="level1 nav-header">features</li>
+    <li class="level2 nav-leaf"><a href="features/signing.html">Token Signing</a></li>
+    <li class="level2 nav-leaf"><a href="features/verification.html">Verifying Tokens</a></li>
+    <li class="level2 nav-leaf"><a href="features/cryptography.html">Cryptography</a></li>
+    <li class="level2 nav-leaf"><a href="features/testing.html">Testing</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Introduction</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#token-signing">Token Signing</a></li>
+    <li class="level1 nav-leaf"><a href="#verifying-tokens">Verifying Tokens</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/vlovgr/jots/tree/main/docs/introduction.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Source for this page</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="introduction" class="title">Introduction</h1>
+        <p>In the introduction we briefly cover how to sign and verify <a href="https://en.wikipedia.org/wiki/JSON_Web_Token">JSON Web Tokens (JWTs)</a>.</p>
+        <ol class="arabic">
+          <li>We start by declaring a custom <code>UserJwt</code> type for representing the claims of user tokens.</li>
+          <li>Then we define <code>JwtEncoder[UserJwt]</code> and sign an example token with <code>JwtSigning[IO]</code>.</li>
+          <li>Finally, we specify <code>JwtDecoder[UserJwt]</code> and verify the token using <code>JwtVerification[IO]</code>.</li>
+        </ol>
+        
+        <h2 id="token-signing" class="section"><a class="anchor-link left" href="#token-signing"><i class="icofont-laika link">&#xef71;</i></a>Token Signing</h2>
+        <p>We begin by defining a custom type <code>UserJwt</code> to represent the token.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">UserJwt</span><span>(</span><span class="identifier">userId</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">expiresAt</span><span>: </span><span class="type-name">Long</span><span>, </span><span class="identifier">issuedAt</span><span>: </span><span class="type-name">Long</span><span>)</span></code></pre>
+        <p>Then we define an <code>Encoder.AsObject</code> which encodes <code>UserJwt</code> as <code>JsonObject</code>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="type-name">Encoder</span><span>
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">Encoder</span><span>.</span><span class="type-name">AsObject</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+  </span><span class="type-name">Encoder</span><span>.</span><span class="identifier">forProduct3</span><span>(</span><span class="string-literal">&quot;userId&quot;</span><span>, </span><span class="string-literal">&quot;exp&quot;</span><span>, </span><span class="string-literal">&quot;iat&quot;</span><span>)(</span><span class="identifier">claims</span><span> =&gt;
+    (</span><span class="identifier">claims</span><span>.</span><span class="identifier">userId</span><span>, </span><span class="identifier">claims</span><span>.</span><span class="identifier">expiresAt</span><span>, </span><span class="identifier">claims</span><span>.</span><span class="identifier">issuedAt</span><span>)
+  )</span></code></pre>
+        <p>Similarly, we define a <code>JwtEncoder</code> which encodes <code>UserJwt</code> as <code>JwtBuilder</code>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtEncoder</span><span>
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">JwtEncoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+  </span><span class="type-name">JwtEncoder</span><span>.</span><span class="identifier">encodeClaims</span></code></pre>
+        <p>Here, <code>JwtEncoder.encodeClaims</code> uses the <code>Encoder.AsObject</code> defined earlier to encode <code>UserJwt</code> as the claims of a <code>JwtBuilder</code>. The <code>JwtBuilder</code> type describes tokens prior to signing. Following, we create a <code>UserJwt</code> instance and use the <code>JwtEncoder</code> to generate a <code>JwtBuilder</code> instance.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">syntax</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">userJwt</span><span> = </span><span class="type-name">UserJwt</span><span>(
+  </span><span class="identifier">userId</span><span> = </span><span class="string-literal">&quot;8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1&quot;</span><span>,
+  </span><span class="identifier">expiresAt</span><span> = </span><span class="number-literal">3345062400L</span><span>,
+  </span><span class="identifier">issuedAt</span><span> = </span><span class="number-literal">1767225600L</span><span>
+)
+</span><span class="comment">// userJwt: UserJwt = UserJwt(8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1,3345062400,1767225600)
+</span><span>
+</span><span class="identifier">userJwt</span><span>.</span><span class="identifier">asJwt</span><span>
+</span><span class="comment">// res0: JwtBuilder = JwtBuilder(JwtHeader(typ -&gt; &quot;JWT&quot;),JwtClaims(userId -&gt; &quot;8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1&quot;,exp -&gt; 3345062400,iat -&gt; 1767225600))</span></code></pre>
+        <p>Finally, we need to sign the <code>JwtBuilder</code> to create a <code>SignedJwt</code>. For this we need a <code>JwtSigning</code> instance. In this case we chose to use <code>HS256</code> (HMAC with SHA-256) which requires a secret key. The <code>JwtSigning</code> instance is only created and used once here, but it is normally reused multiple times.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">SyncIO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtHmacAlgorithm</span><span>.</span><span class="type-name">HS256</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtSigning</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">SecretKey</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">signedJwt</span><span> =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">secretKey</span><span> &lt;- </span><span class="type-name">SecretKey</span><span>(</span><span class="string-literal">&quot;he2DDxdpmVMUG8UiVobZhfqnz1FNJZgP2Twpq&quot;</span><span>).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
+    </span><span class="identifier">signing</span><span> &lt;- </span><span class="type-name">JwtSigning</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">hmac</span><span>(</span><span class="type-name">HS256</span><span>, </span><span class="identifier">secretKey</span><span>)
+    </span><span class="identifier">signedJwt</span><span> &lt;- </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">asJwt</span><span>.</span><span class="identifier">signWith</span><span>(</span><span class="identifier">signing</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">signedJwt</span><span>
+</span><span class="comment">// signedJwt: SyncIO[SignedJwt] = SyncIO(...)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">signedJwtString</span><span> =
+  </span><span class="identifier">signedJwt</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">show</span><span>).</span><span class="identifier">unsafeRunSync</span><span>()
+</span><span class="comment">// signedJwtString: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.Lm53jxYMsKBH7qXG_8uh7wxgVrywkHKg8he8T9pwmQo</span></code></pre>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Note we use <code>SyncIO</code> and <code>unsafeRunSync()</code> here to show the final result. In practice, you would most likely use <code>IO</code> without <code>unsafeRunSync()</code>. We should take care to <em>not</em> put secrets, like <code>SecretKey</code>, in source code.</p>
+        </div>
+        <p>Note that, since we&#39;ve signed this token, we are confident the token can be verified. In general though, <code>SignedJwt</code> represents unverified signed tokens, and should <em>not</em> be trusted before verification, which is what the next section covers. For more details on token signing, see the page on <a href="features/signing.html">signing</a>.</p>
+        
+        <h2 id="verifying-tokens" class="section"><a class="anchor-link left" href="#verifying-tokens"><i class="icofont-laika link">&#xef71;</i></a>Verifying Tokens</h2>
+        <p>We begin by defining a <code>Decoder</code> which decodes <code>UserJwt</code> from <code>Json</code>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="type-name">Decoder</span><span>
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">Decoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+  </span><span class="type-name">Decoder</span><span>.</span><span class="identifier">forProduct3</span><span>(</span><span class="string-literal">&quot;userId&quot;</span><span>, </span><span class="string-literal">&quot;exp&quot;</span><span>, </span><span class="string-literal">&quot;iat&quot;</span><span>)(</span><span class="type-name">UserJwt</span><span>.</span><span class="identifier">apply</span><span>)</span></code></pre>
+        <p>Similarly, we define a <code>JwtDecoder</code> which decodes <code>UserJwt</code> from <code>VerifiedJwt</code>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtDecoder</span><span>
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">JwtDecoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+  </span><span class="type-name">JwtDecoder</span><span>.</span><span class="identifier">decodeClaims</span></code></pre>
+        <p>Here, <code>JwtDecoder.decodeClaims</code> uses the <code>Decoder</code> above to decode <code>UserJwt</code> from the claims of a <code>VerifiedJwt</code>. The <code>VerifiedJwt</code> is a <code>SignedJwt</code> for which the signature has been verified. Verification typically includes verifying header and claims in addition to the signature.</p>
+        <p>Following, we use the default <code>JwtVerification</code> and <code>decodeAs</code> to parse, verify and decode a signed token. The default verifications include extra checks in addition to verifying the signature. See the page on <a href="features/verification.html">verification</a> for more details on the <a href="features/verification.html#default-verifications">default checks</a>, how they can be changed, and how to enable more checks.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerification</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">userJwtDecoded</span><span> =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">secretKey</span><span> &lt;- </span><span class="type-name">SecretKey</span><span>(</span><span class="string-literal">&quot;he2DDxdpmVMUG8UiVobZhfqnz1FNJZgP2Twpq&quot;</span><span>).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
+    </span><span class="identifier">verification</span><span> &lt;- </span><span class="type-name">JwtVerification</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">hmac</span><span>(</span><span class="type-name">HS256</span><span>, </span><span class="identifier">secretKey</span><span>)
+    </span><span class="identifier">userJwt</span><span> &lt;- </span><span class="identifier">verification</span><span>.</span><span class="identifier">decodeAs</span><span>[</span><span class="type-name">UserJwt</span><span>](</span><span class="identifier">signedJwtString</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">userJwt</span><span>
+</span><span class="comment">// userJwtDecoded: SyncIO[UserJwt] = SyncIO(...)
+</span><span>
+</span><span class="identifier">userJwtDecoded</span><span>.</span><span class="identifier">unsafeRunSync</span><span>() == </span><span class="identifier">userJwt</span><span>
+</span><span class="comment">// res1: Boolean = true</span></code></pre>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Note we use <code>SyncIO</code> and <code>unsafeRunSync()</code> here to show the final result. In practice, you would most likely use <code>IO</code> without <code>unsafeRunSync()</code>. We should take care to <em>not</em> put secrets, like <code>SecretKey</code>, in source code.</p>
+        </div>
+        <p>For more details on token verification, see the page on <a href="features/verification.html">verification</a>.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Licensed under <a href="https://github.com/vlovgr/jots/blob/main/license.txt">Apache License, Version 2.0</a>.<br>Copyright © 2026 Viktor Rudebeck.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>
