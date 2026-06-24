@@ -134,6 +134,7 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     name := "jots-tests",
     publish / skip := true,
+    mimaPreviousArtifacts := Set(),
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-kernel-laws" % catsVersion % Test,
       "org.typelevel" %%% "cats-laws" % catsVersion % Test,
