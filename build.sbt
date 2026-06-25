@@ -151,7 +151,8 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .nativeEnablePlugins(ScalaNativeBrewedConfigPlugin)
   .nativeSettings(
     Test / nativeBrewFormulas += "openssl",
-    Test / test := {} // https://github.com/scala-native/scala-native/issues/4951
+    // https://github.com/scala-native/scala-native/issues/4951
+    (if (sys.env.get("CI").contains("true")) Seq(Test / test := {}) else Seq.empty)
   )
 
 lazy val unidocs = project
