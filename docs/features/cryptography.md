@@ -14,7 +14,7 @@ If you are using Scala.js or Scala Native, replace the `%%` with `%%%` above.
 
 ## Supported Features
 
-The module provides a `Crypto[F[_]]` capability for all effect types with a `Sync[F[_]]` (e.g. `IO`). The capability includes support for HMAC, plus signing and verification using private and public keys, respectively. Support for additional cryptographic functions might be included in the future.
+The module provides a `Crypto[F[_]]` capability for all effect types with a `Sync[F]` (e.g. `IO`). The capability includes support for HMAC, plus signing and verification using private and public keys, respectively. Support for additional cryptographic functions might be included in the future.
 
 ### HMAC with Secret Key
 
