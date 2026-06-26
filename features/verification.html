@@ -142,7 +142,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
           <li>The <code>SignedJwt.parse</code> function parses a signed token (JWT) into its different parts.</li>
           <li>The <code>SignedJwt</code> represents a signed token (JWT) which has <em>not</em> yet been verified.</li>
           <li>The <code>JwtVerification[IO]</code> describes token verification (at least the signature).</li>
-          <li>The <code>VerfiedJwt</code> type describes verified tokens (at minimum signature verified).</li>
+          <li>The <code>VerifiedJwt</code> type describes verified tokens (at minimum signature verified).</li>
           <li>The <code>JwtDecoder[A]</code> describes how to decode <code>VerifiedJwt</code> to an <code>A</code> instance.</li>
           <li>The type <code>A</code> is our custom type representing the token (usually the claims).</li>
         </ul>
@@ -176,7 +176,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
   }</span></code></pre>
         
         <h2 id="token-verification" class="section"><a class="anchor-link left" href="#token-verification"><i class="icofont-laika link">&#xef71;</i></a>Token Verification</h2>
-        <p>Once we have a custom <code>UserJwt</code> type and <code>JwtDecoder[UserJwt]</code>, we also need a <code>JwtVerification</code> instance. We create instances by choosing the effect type (e.g. <code>IO</code>), selecting the algorithm, and by providing a public or secret key. Following is an example on how to create a <code>JwtSigning</code> for <code>ES256</code> (ECDSA with P-256 and SHA-256).</p>
+        <p>Once we have a custom <code>UserJwt</code> type and <code>JwtDecoder[UserJwt]</code>, we also need a <code>JwtVerification</code> instance. We create instances by choosing the effect type (e.g. <code>IO</code>), selecting the algorithm, and by providing a public or secret key. Following is an example on how to create a <code>JwtVerification</code> for <code>ES256</code> (ECDSA with P-256 and SHA-256).</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">SyncIO</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtEcdsaAlgorithm</span><span>.</span><span class="type-name">ES256</span><span>
