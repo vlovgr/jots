@@ -88,7 +88,6 @@ lazy val docs = project
         .withConfigValue(LaikaKeys.titleDocuments.inputName, "index"),
       mdocVariables := mdocVariables.value
         .updated("CATS_EFFECT_VERSION", catsEffectVersion)
-        .updated("CATS_VERSION", catsVersion)
         .updated("CIRCE_VERSION", circeVersion)
         .updated("LITERALLY_VERSION", literallyVersion)
         .updated("MAJOR_VERSION", majorVersion(version.value))

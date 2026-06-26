@@ -13,7 +13,7 @@ VerifiedJwt --> |"JwtDecoder[A]"| A["IO[A]"]
 - The `SignedJwt.parse` function parses a signed token (JWT) into its different parts.
 - The `SignedJwt` represents a signed token (JWT) which has _not_ yet been verified.
 - The `JwtVerification[IO]` describes token verification (at least the signature).
-- The `VerfiedJwt` type describes verified tokens (at minimum signature verified).
+- The `VerifiedJwt` type describes verified tokens (at minimum signature verified).
 - The `JwtDecoder[A]` describes how to decode `VerifiedJwt` to an `A` instance.
 - The type `A` is our custom type representing the token (usually the claims).
 
@@ -60,7 +60,7 @@ given JwtDecoder[UserJwtNonce] =
 
 ## Token Verification
 
-Once we have a custom `UserJwt` type and `JwtDecoder[UserJwt]`, we also need a `JwtVerification` instance. We create instances by choosing the effect type (e.g. `IO`), selecting the algorithm, and by providing a public or secret key. Following is an example on how to create a `JwtSigning` for `ES256` (ECDSA with P-256 and SHA-256).
+Once we have a custom `UserJwt` type and `JwtDecoder[UserJwt]`, we also need a `JwtVerification` instance. We create instances by choosing the effect type (e.g. `IO`), selecting the algorithm, and by providing a public or secret key. Following is an example on how to create a `JwtVerification` for `ES256` (ECDSA with P-256 and SHA-256).
 
 ```scala mdoc:silent
 import cats.effect.SyncIO

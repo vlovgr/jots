@@ -18,7 +18,7 @@ The module provides a `Crypto[F[_]]` capability for all effect types with a `Syn
 
 ### HMAC with Secret Key
 
-The `Crypto#hmac` function implements [Hash-based Message Authentication Code (HMAC)](https://en.wikipedia.org/wiki/HMAC). This requires choosing a `HashAlgorithm` and `SecretKey`, and provide the message as a `ByteVector`. Following is an example which matches the `HS256` algorithm for tokens (HMAC using SHA-256).
+The `Crypto#hmac` function implements [Hash-based Message Authentication Code (HMAC)](https://en.wikipedia.org/wiki/HMAC). This requires choosing a `HashAlgorithm` and `SecretKey`, and providing the message as a `ByteVector`. Following is an example which matches the `HS256` algorithm for tokens (HMAC using SHA-256).
 
 ```scala mdoc:silent
 import cats.effect.SyncIO
@@ -52,7 +52,7 @@ mac.unsafeRunSync()
 
 ### Signing with Private Key
 
-The `Crypto#sign` function implements asymmetric signing using a private key. This means an `AsymmetricAlgorithm` and matching `PrivateKey` has to be provided, in addition to the `ByteVector` message. Note the private key needs to match the algorithm, or an exception will be raised at runtime. Following is an example which matches the `ES256` algorithm for tokens (ECDSA using P-256 and SHA-256).
+The `Crypto#sign` function implements asymmetric signing using a private key. This means an `AsymmetricAlgorithm` and matching `PrivateKey` have to be provided, in addition to the `ByteVector` message. Note the private key needs to match the algorithm, or an exception will be raised at runtime. Following is an example which matches the `ES256` algorithm for tokens (ECDSA using P-256 and SHA-256).
 
 ```scala mdoc:silent
 import jots.crypto.EcdsaAlgorithm
