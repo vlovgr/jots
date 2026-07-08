@@ -15,6 +15,7 @@ inThisBuild(
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
     githubWorkflowTargetBranches := Seq("**"),
     githubWorkflowBuildPreamble ++= nativeBrewInstallWorkflowSteps.value,
+    githubWorkflowOSes := Seq("ubuntu-latest"),
     nativeBrewInstallCond := Some("matrix.project == 'rootNative'"),
     licenses := Seq(License.Apache2),
     organization := "se.vlovgr",
@@ -148,11 +149,7 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
   .nativeEnablePlugins(ScalaNativeBrewedConfigPlugin)
-  .nativeSettings(
-    Test / nativeBrewFormulas += "openssl",
-    // https://github.com/scala-native/scala-native/issues/4951
-    (if (sys.env.get("CI").contains("true")) Seq(Test / test := {}) else Seq.empty)
-  )
+  .nativeSettings(Test / nativeBrewFormulas += "openssl")
 
 lazy val unidocs = project
   .enablePlugins(TypelevelUnidocPlugin)
