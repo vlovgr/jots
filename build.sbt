@@ -14,6 +14,13 @@ inThisBuild(
     developers := List(tlGitHubDev("vlovgr", "Viktor Rudebeck")),
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
     githubWorkflowTargetBranches := Seq("**"),
+    githubWorkflowBuildPreamble := Seq(
+      WorkflowStep.Run(
+        commands = List("/home/linuxbrew/.linuxbrew/bin/brew update"),
+        name = Some("Update brew"),
+        cond = Some("(matrix.project == 'rootNative') && startsWith(matrix.os, 'ubuntu')")
+      )
+    ) ++ githubWorkflowBuildPreamble.value,
     githubWorkflowBuildPreamble ++= nativeBrewInstallWorkflowSteps.value,
     githubWorkflowOSes := Seq("ubuntu-latest"),
     nativeBrewInstallCond := Some("matrix.project == 'rootNative'"),
