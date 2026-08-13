@@ -174,7 +174,7 @@
         </div>
         <p>The generated signature is represented with <code>Signature</code> and is usually represented in hexadecimal encoding, which is the default for <code>Signature</code>. When the output is used as a signature for tokens, it&#39;s represented using <code>Base64UrlNoPad</code> encoding using <code>JwtSignature.fromSignature</code> in the core module.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signature</span><span>.</span><span class="identifier">unsafeRunSync</span><span>()
-</span><span class="comment">// res1: Signature = Signature(97637de35f18b88e5a4afa9ecdd75d1f0f2f863cf7446a91ccaa1365f961b0e34ffb4b142d869018cab1460076dd7c866362bc1579b4b44f3ce1b2b1d5ab7318)</span></code></pre>
+</span><span class="comment">// res1: Signature = Signature(45f481774eda2f935c67b7b5777d6f4da2e397e1d2aaa27681ec1db702390297769d18e7b9c81d65ddb515351474ca390fdf24efffd05fb17e4ec2bdc022f897)</span></code></pre>
         
         <h3 id="verification-with-public-key" class="section"><a class="anchor-link left" href="#verification-with-public-key"><i class="icofont-laika link">&#xef71;</i></a>Verification with Public Key</h3>
         <p>The <code>Crypto#verify</code> function implements asymmetric verification using a public key. This means we have to provide an <code>AsymmetricAlgorithm</code> and matching <code>PublicKey</code> in addition to a <code>ByteVector</code> message and signature. Note the public key needs to match the algorithm, or an exception will be raised at runtime. Following is an example which matches the <code>ES256</code> algorithm for tokens (ECDSA using P-256 and SHA-256).</p>
