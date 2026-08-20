@@ -18,11 +18,15 @@ package jots
 
 import cats.Hash
 import cats.Show
+import cats.syntax.all.*
 import io.circe.Decoder
 import io.circe.Encoder
+import io.circe.Error
 import io.circe.Json
 import io.circe.JsonObject
+import io.circe.jawn.JawnParser
 import io.circe.syntax.*
+import jots.JwtException.InvalidJwkSet
 
 /**
   * Represents a set of keys known as a JSON Web Key Set (JWK Set).
@@ -101,6 +105,14 @@ object JwkSet {
   def fromList(keys: List[Jwk]): JwkSet =
     if (keys.isEmpty) empty else JwkSetImpl(keys)
 
+  /**
+    * Returns a new [[JwkSet]] from the specified `String`
+    * representation of a JSON Web Key Set (JWK Set), or
+    * a [[JwtException]] if the key set is invalid.
+    */
+  def fromString(jwkSet: String): Either[JwtException, JwkSet] =
+    decode(jwkSet).leftMap(e => new InvalidJwkSet("failed to decode", Some(e)))
+
   implicit val jwkSetDecoder: Decoder[JwkSet] =
     Decoder[List[Jwk]].at("keys").map(fromList)
 
@@ -112,4 +124,10 @@ object JwkSet {
 
   implicit val jwkSetShow: Show[JwkSet] =
     Show.show(_.show)
+
+  private val parser: JawnParser =
+    JawnParser(allowDuplicateKeys = false)
+
+  private def decode(s: String): Either[Error, JwkSet] =
+    parser.decodeCharSequence[JwkSet](s)
 }

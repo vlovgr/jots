@@ -16,8 +16,15 @@
 
 package jots
 
+import jots.literals.*
+
 object syntax {
   implicit final class JotsSyntax[A](private val a: A) extends AnyVal {
     def asJwt(implicit encoder: JwtEncoder[A]): JwtBuilder = encoder.encode(a)
+  }
+
+  implicit final class JotsStringContextSyntax(private val ctx: StringContext) extends AnyVal {
+    def jwk(args: Any*): Jwk = macro JwkLiteral.make
+    def jwkSet(args: Any*): JwkSet = macro JwkSetLiteral.make
   }
 }
