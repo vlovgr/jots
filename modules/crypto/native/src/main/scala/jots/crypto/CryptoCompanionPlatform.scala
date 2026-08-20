@@ -176,7 +176,7 @@ private[crypto] trait CryptoCompanionPlatform {
         val pkey = loadPrivateKey(privateKey)
         try {
           val id = EVP_PKEY_get_base_id(pkey)
-          if (id != EVP_PKEY_RSA) throw new WrongKeyType(id, EVP_PKEY_RSA, algorithm)
+          checkRsaKeyType(id, algorithm, pss.isDefined)
 
           val ctx = EVP_MD_CTX_new()
           if (ctx == null) throw opensslError("EVP_MD_CTX_new")
@@ -187,7 +187,7 @@ private[crypto] trait CryptoCompanionPlatform {
             if (EVP_DigestSignInit(ctx, pctxPtr, evpMd, null, pkey) != 1)
               throw opensslError("EVP_DigestSignInit")
 
-            pss.foreach(saltLength => rsaSetPss(!pctxPtr, evpMd, saltLength))
+            pss.foreach(saltLength => rsaSetPss(!pctxPtr, evpMd, saltLength, id))
 
             val data = message.toArrayUnsafe
             val dataPtr = if (data.isEmpty) null else data.atUnsafe(0)
@@ -334,7 +334,7 @@ private[crypto] trait CryptoCompanionPlatform {
         val pkey = loadPublicKey(publicKey)
         try {
           val id = EVP_PKEY_get_base_id(pkey)
-          if (id != EVP_PKEY_RSA) throw new WrongKeyType(id, EVP_PKEY_RSA, algorithm)
+          checkRsaKeyType(id, algorithm, pss.isDefined)
 
           val ctx = EVP_MD_CTX_new()
           if (ctx == null) throw opensslError("EVP_MD_CTX_new")
@@ -345,7 +345,7 @@ private[crypto] trait CryptoCompanionPlatform {
             if (EVP_DigestVerifyInit(ctx, pctxPtr, evpMd, null, pkey) != 1)
               throw opensslError("EVP_DigestVerifyInit")
 
-            pss.foreach(saltLength => rsaSetPss(!pctxPtr, evpMd, saltLength))
+            pss.foreach(saltLength => rsaSetPss(!pctxPtr, evpMd, saltLength, id))
 
             val data = message.toArrayUnsafe
             val dataPtr = if (data.isEmpty) null else data.atUnsafe(0)
@@ -364,15 +364,24 @@ private[crypto] trait CryptoCompanionPlatform {
       }
     }
 
+  private[this] def checkRsaKeyType(
+    id: Int,
+    algorithm: AsymmetricAlgorithm,
+    pss: Boolean
+  ): Unit =
+    if (id != EVP_PKEY_RSA && !(pss && id == EVP_PKEY_RSA_PSS))
+      throw new WrongKeyType(id, EVP_PKEY_RSA, algorithm)
+
   private[this] def rsaSetPss(
     pctx: Ptr[EVP_PKEY_CTX],
     evpMd: Ptr[EVP_MD],
-    saltLength: Int
+    saltLength: Int,
+    keyType: Int
   ): Unit = {
     if (
       EVP_PKEY_CTX_ctrl(
         pctx,
-        EVP_PKEY_RSA,
+        keyType,
         -1,
         EVP_PKEY_CTRL_RSA_PADDING,
         RSA_PKCS1_PSS_PADDING,
@@ -383,7 +392,7 @@ private[crypto] trait CryptoCompanionPlatform {
     if (
       EVP_PKEY_CTX_ctrl(
         pctx,
-        EVP_PKEY_RSA,
+        keyType,
         -1,
         EVP_PKEY_CTRL_RSA_PSS_SALTLEN,
         saltLength,
@@ -394,7 +403,7 @@ private[crypto] trait CryptoCompanionPlatform {
     if (
       EVP_PKEY_CTX_ctrl(
         pctx,
-        EVP_PKEY_RSA,
+        keyType,
         -1,
         EVP_PKEY_CTRL_RSA_MGF1_MD,
         0,
@@ -540,6 +549,7 @@ private object openssl {
   final val EVP_MAX_MD_SIZE = 64
   final val EVP_PKEY_RSA = 6
   final val EVP_PKEY_EC = 408
+  final val EVP_PKEY_RSA_PSS = 912
   final val EVP_PKEY_ED25519 = 1087
   final val EVP_PKEY_ED448 = 1088
 
