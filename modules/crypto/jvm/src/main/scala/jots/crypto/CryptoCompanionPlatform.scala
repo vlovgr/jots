@@ -24,6 +24,7 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.PSSParameterSpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.spec.SecretKeySpec
+import jots.crypto.internal.KeyAlgorithm
 import scodec.bits.ByteVector
 
 private[crypto] trait CryptoCompanionPlatform {
@@ -86,8 +87,7 @@ private[crypto] trait CryptoCompanionPlatform {
     message: ByteVector
   ): F[Signature] =
     Sync[F].delay {
-      val keySpec = new PKCS8EncodedKeySpec(privateKey.toPkcs8.toArrayUnsafe)
-      val key = KeyFactory.getInstance("RSA").generatePrivate(keySpec)
+      val key = rsaPrivateKey(privateKey)
       val signing = java.security.Signature.getInstance(nameOf(algorithm))
       signing.initSign(key)
       signing.update(message.toArrayUnsafe)
@@ -100,8 +100,7 @@ private[crypto] trait CryptoCompanionPlatform {
     message: ByteVector
   ): F[Signature] =
     Sync[F].delay {
-      val keySpec = new PKCS8EncodedKeySpec(privateKey.toPkcs8.toArrayUnsafe)
-      val key = KeyFactory.getInstance("RSA").generatePrivate(keySpec)
+      val key = rsaPrivateKey(privateKey)
       val signing = java.security.Signature.getInstance("RSASSA-PSS")
       signing.setParameter(pssParameterSpec(algorithm))
       signing.initSign(key)
@@ -162,8 +161,7 @@ private[crypto] trait CryptoCompanionPlatform {
     signature: Signature
   ): F[Verified] =
     Sync[F].delay {
-      val keySpec = new X509EncodedKeySpec(publicKey.toX509Spki.toArrayUnsafe)
-      val key = KeyFactory.getInstance("RSA").generatePublic(keySpec)
+      val key = rsaPublicKey(publicKey)
       val signing = java.security.Signature.getInstance(nameOf(algorithm))
       signing.initVerify(key)
       signing.update(message.toArrayUnsafe)
@@ -178,8 +176,7 @@ private[crypto] trait CryptoCompanionPlatform {
     signature: Signature
   ): F[Verified] =
     Sync[F].delay {
-      val keySpec = new X509EncodedKeySpec(publicKey.toX509Spki.toArrayUnsafe)
-      val key = KeyFactory.getInstance("RSA").generatePublic(keySpec)
+      val key = rsaPublicKey(publicKey)
       val signing = java.security.Signature.getInstance("RSASSA-PSS")
       signing.setParameter(pssParameterSpec(algorithm))
       signing.initVerify(key)
@@ -221,6 +218,18 @@ private[crypto] trait CryptoCompanionPlatform {
       case EddsaAlgorithms.Ed25519 => "Ed25519"
       case EddsaAlgorithms.Ed448 => "Ed448"
     }
+
+  private[this] def rsaPrivateKey(privateKey: PrivateKey): java.security.PrivateKey = {
+    val name = if (KeyAlgorithm.isRsaPss(privateKey)) "RSASSA-PSS" else "RSA"
+    val keySpec = new PKCS8EncodedKeySpec(privateKey.toPkcs8.toArrayUnsafe)
+    KeyFactory.getInstance(name).generatePrivate(keySpec)
+  }
+
+  private[this] def rsaPublicKey(publicKey: PublicKey): java.security.PublicKey = {
+    val name = if (KeyAlgorithm.isRsaPss(publicKey)) "RSASSA-PSS" else "RSA"
+    val keySpec = new X509EncodedKeySpec(publicKey.toX509Spki.toArrayUnsafe)
+    KeyFactory.getInstance(name).generatePublic(keySpec)
+  }
 
   private[this] def pssParameterSpec(algorithm: RsaPssAlgorithm): PSSParameterSpec =
     algorithm match {

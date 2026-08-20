@@ -56,8 +56,7 @@ private[crypto] trait CryptoCompanionPlatform {
   ): F[Signature] =
     Sync[F].delay {
       val key = createPrivateKey(privateKey)
-      if (key.asymmetricKeyType != keyType(algorithm))
-        throw new WrongKeyType(key.asymmetricKeyType, keyType(algorithm), algorithm)
+      checkKeyType(key, algorithm)
 
       val sign = JsCrypto.createSign(nameOf(algorithm.hashAlgorithm))
       sign.update(message.toUint8Array)
@@ -76,8 +75,7 @@ private[crypto] trait CryptoCompanionPlatform {
   ): F[Signature] =
     Sync[F].delay {
       val key = createPrivateKey(privateKey)
-      if (key.asymmetricKeyType != keyType(algorithm))
-        throw new WrongKeyType(key.asymmetricKeyType, keyType(algorithm), algorithm)
+      checkKeyType(key, algorithm)
 
       Signature(ByteVector.view(JsCrypto.sign(null, message.toUint8Array, key)))
     }
@@ -89,8 +87,7 @@ private[crypto] trait CryptoCompanionPlatform {
   ): F[Signature] =
     Sync[F].delay {
       val key = createPrivateKey(privateKey)
-      if (key.asymmetricKeyType != keyType(algorithm))
-        throw new WrongKeyType(key.asymmetricKeyType, keyType(algorithm), algorithm)
+      checkKeyType(key, algorithm)
 
       val sign = JsCrypto.createSign(nameOf(algorithm.hashAlgorithm))
       sign.update(message.toUint8Array)
@@ -105,8 +102,7 @@ private[crypto] trait CryptoCompanionPlatform {
   ): F[Signature] =
     Sync[F].delay {
       val key = createPrivateKey(privateKey)
-      if (key.asymmetricKeyType != keyType(algorithm))
-        throw new WrongKeyType(key.asymmetricKeyType, keyType(algorithm), algorithm)
+      checkKeyType(key, algorithm)
 
       val sign = JsCrypto.createSign(nameOf(algorithm.hashAlgorithm))
       sign.update(message.toUint8Array)
@@ -140,8 +136,7 @@ private[crypto] trait CryptoCompanionPlatform {
   ): F[Verified] =
     Sync[F].delay {
       val key = createPublicKey(publicKey)
-      if (key.asymmetricKeyType != keyType(algorithm))
-        throw new WrongKeyType(key.asymmetricKeyType, keyType(algorithm), algorithm)
+      checkKeyType(key, algorithm)
 
       val verify = JsCrypto.createVerify(nameOf(algorithm.hashAlgorithm))
       verify.update(message.toUint8Array)
@@ -162,8 +157,7 @@ private[crypto] trait CryptoCompanionPlatform {
   ): F[Verified] =
     Sync[F].delay {
       val key = createPublicKey(publicKey)
-      if (key.asymmetricKeyType != keyType(algorithm))
-        throw new WrongKeyType(key.asymmetricKeyType, keyType(algorithm), algorithm)
+      checkKeyType(key, algorithm)
 
       try Verified(JsCrypto.verify(null, message.toUint8Array, key, signature.toByteVector.toUint8Array))
       catch { case _: JavaScriptException => Verified.Invalid }
@@ -177,8 +171,7 @@ private[crypto] trait CryptoCompanionPlatform {
   ): F[Verified] =
     Sync[F].delay {
       val key = createPublicKey(publicKey)
-      if (key.asymmetricKeyType != keyType(algorithm))
-        throw new WrongKeyType(key.asymmetricKeyType, keyType(algorithm), algorithm)
+      checkKeyType(key, algorithm)
 
       val verify = JsCrypto.createVerify(nameOf(algorithm.hashAlgorithm))
       verify.update(message.toUint8Array)
@@ -195,8 +188,7 @@ private[crypto] trait CryptoCompanionPlatform {
   ): F[Verified] =
     Sync[F].delay {
       val key = createPublicKey(publicKey)
-      if (key.asymmetricKeyType != keyType(algorithm))
-        throw new WrongKeyType(key.asymmetricKeyType, keyType(algorithm), algorithm)
+      checkKeyType(key, algorithm)
 
       val verify = JsCrypto.createVerify(nameOf(algorithm.hashAlgorithm))
       verify.update(message.toUint8Array)
@@ -210,13 +202,19 @@ private[crypto] trait CryptoCompanionPlatform {
       catch { case _: JavaScriptException => Verified.Invalid }
     }
 
-  private[this] def keyType(algorithm: AsymmetricAlgorithm): String =
+  private[this] def checkKeyType(key: KeyObject, algorithm: AsymmetricAlgorithm): Unit = {
+    val expected = keyTypes(algorithm)
+    if (!expected.contains(key.asymmetricKeyType))
+      throw new WrongKeyType(key.asymmetricKeyType, expected.head, algorithm)
+  }
+
+  private[this] def keyTypes(algorithm: AsymmetricAlgorithm): List[String] =
     algorithm match {
-      case _: EcdsaAlgorithm => "ec"
-      case EddsaAlgorithms.Ed25519 => "ed25519"
-      case EddsaAlgorithms.Ed448 => "ed448"
-      case _: RsaAlgorithm => "rsa"
-      case _: RsaPssAlgorithm => "rsa"
+      case _: EcdsaAlgorithm => List("ec")
+      case EddsaAlgorithms.Ed25519 => List("ed25519")
+      case EddsaAlgorithms.Ed448 => List("ed448")
+      case _: RsaAlgorithm => List("rsa")
+      case _: RsaPssAlgorithm => List("rsa", "rsa-pss")
     }
 
   private[this] def nameOf(algorithm: HashAlgorithm): String =

@@ -91,7 +91,7 @@ private[jots] object KeyLength {
     Asn1.readTlv(algorithmId.contents, 0L) match {
       case Some(oid) if oid.isOid =>
         oid.contents match {
-          case Oid.Rsa.contents =>
+          case Oid.Rsa.contents | Oid.RsaPss.contents =>
             rsaModulus.map(modulus => Rsa(rsaModulusBits(modulus))).getOrElse(Unknown)
           case Oid.Ec.contents =>
             ecdsaCurveBits(algorithmId, oid.end).map(Ecdsa(_)).getOrElse(Unknown)
