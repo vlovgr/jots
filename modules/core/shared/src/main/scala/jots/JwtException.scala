@@ -103,6 +103,18 @@ object JwtException {
     extends JwtException(s"the token issuer (iss) [${issuer.noSpaces}] is invalid")
 
   /**
+    * Exception raised when parsing a JSON Web Key (JWK) fails.
+    */
+  final class InvalidJwk(details: String, cause: Option[Throwable] = None)
+    extends JwtException(s"the Json Web Key (JWK) is invalid: $details", cause)
+
+  /**
+    * Exception raised when parsing a JSON Web Key Set (JWK Set) fails.
+    */
+  final class InvalidJwkSet(details: String, cause: Option[Throwable] = None)
+    extends JwtException(s"the Json Web Key Set (JWK Set) is invalid: $details", cause)
+
+  /**
     * Exception raised when parsing a JWT signature fails.
     */
   final class InvalidJwtSignature(details: String) extends JwtException(s"the signature is invalid: $details")

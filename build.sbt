@@ -65,7 +65,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.typelevel" %%% "cats-core" % catsVersion,
       "org.typelevel" %%% "cats-effect-kernel" % catsEffectVersion,
       "org.typelevel" %%% "cats-kernel" % catsVersion
-    )
+    ) ++ scalaReflect(scalaVersion.value)
   )
 
 lazy val crypto = crossProject(JVMPlatform, JSPlatform, NativePlatform)

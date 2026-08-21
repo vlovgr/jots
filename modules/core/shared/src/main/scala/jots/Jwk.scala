@@ -21,8 +21,11 @@ import cats.Show
 import cats.syntax.all.*
 import io.circe.Decoder
 import io.circe.Encoder
+import io.circe.Error
 import io.circe.Json
 import io.circe.JsonObject
+import io.circe.jawn.JawnParser
+import jots.JwtException.InvalidJwk
 import jots.JwtException.InvalidKeyId
 import jots.JwtException.InvalidKeyType
 import jots.JwtException.InvalidPrivateKey
@@ -161,6 +164,17 @@ object Jwk {
       case None => Left(new MissingKeyType())
     }
 
+  /**
+    * Returns a new [[Jwk]] from the specified `String`
+    * representation of a JSON Web Key (JWK), or a
+    * [[JwtException]] if the key is invalid.
+    */
+  def fromString(jwk: String): Either[JwtException, Jwk] =
+    decode(jwk) match {
+      case Right(jsonObject) => fromJsonObject(jsonObject)
+      case Left(e) => Left(new InvalidJwk("failed to decode as JsonObject", Some(e)))
+    }
+
   implicit val jwkDecoder: Decoder[Jwk] =
     Decoder[JsonObject].emap(fromJsonObject(_).leftMap(_.message))
 
@@ -185,6 +199,12 @@ object Jwk {
         }
       case None => Left(s"missing property $name")
     }
+
+  private val parser: JawnParser =
+    JawnParser(allowDuplicateKeys = false)
+
+  private def decode(s: String): Either[Error, JsonObject] =
+    parser.decodeCharSequence[JsonObject](s)
 }
 
 private[jots] object JwkEc {

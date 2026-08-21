@@ -201,6 +201,43 @@ Note verification works because the token header has a matching `kid` (Key ID).
 userJwtJwk.unsafeRunSync()
 ```
 
+#### JWK String Interpolators
+
+There are `String` interpolators available for `Jwk` and `JwkSet`.
+
+```scala mdoc:to-string
+import jots.syntax.*
+
+val jwk =
+  jwk"""
+    {
+      "kty": "OKP",
+      "alg": "EdDSA",
+      "kid": "59c7bacd-b8d0-4e9d-a061-c82942f2d845",
+      "crv": "Ed25519",
+      "x": "CQQsdHb50GMb0AoEKHa5DZn_Jw6hRoI-bpwWsJCGxxg"
+    }
+  """
+
+val jwkSet =
+  jwkSet"""
+    {
+      "keys": [
+        {
+          "kty": "RSA",
+          "kid": "4ae8b438-34c4-4855-badb-453c3923f7bf",
+          "n": "y-n6DkNvtP1gmG_U1NZ4tO4AWcg8mqcoHJp31T4_XGuuEr-yQWf4xF3dLIU0PIHc09I31Ps54xitZyKY_fu6X0xahyHgSH1Y_igmCv64SMu-p8V91dzi1HQ-66idM6jWvNYSPk1ovK6z95HX3w-KQ7caBNMmbUfSIVYdqP0AbfJM72xgvGItH6EsFcRrtn95q8YASL0-YAnkSr9OAJTWZSmygdEWE3hxVsuBw3hgbceQmh8U4QxVWOR0mS4MW2mI-5fhgszYKIjCZAdls-Ioewq38cTtXPraaI5vSlIUQgJ8IT4FkYYU5m0MTTZzBqF0pgBikofCUAJBkHuPt98h8rCuno6R-Ln2Hk3-NHezp9gQ7jtvtICCnd3pzS4WEiNqHqZohgC9xnLaF4Olw1Yowpg_SXBl0MWH3wJxPKdTp83Drua2DpuK4_ZpsPTFcCPT6TBGyuAm7BCN4GbiAC3ahickQXM8_cdPuAZ3DLfm7-owyO2P3lYm_AjroPr1rAjQN5S2GyBt9aqk1IdLxC6tlDGBo4JhS3gpJAWhboqyGlHz1ykwwF8rgBskshtO4x-3vhClJMP9m884iC-cIodvQ6O6UUppmYSJep6EetRQDk14_fjQyh6EZnaRLMBkoRryZgtkehdKuoVuF-7Ef5WpObPtIyztPMFo_47WHFMANXk",
+          "e": "AQAB"
+        }
+      ]
+    }
+  """
+```
+
+@:callout(info)
+Note the `String` interpolators can be used for private keys, public keys and secret keys. While public keys are the most common for verification purposes, we should take care to _not_ put secrets, like private keys or secret keys, in source code.
+@:@
+
 ## Custom Verification
 
 The `VerifiedJwt` type can only be instantiated by the default `JwtVerification` instances. So while it is possible to create custom `JwtVerification` instances, these will have to make use of the default instances. This holds true as long as your code keeps to the following rules.
