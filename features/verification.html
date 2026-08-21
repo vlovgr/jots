@@ -296,6 +296,41 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
 //   issuedAt = 1767225600L
 // )</span></code></pre>
         
+        <h4 id="jwk-string-interpolators" class="section"><a class="anchor-link left" href="#jwk-string-interpolators"><i class="icofont-laika link">&#xef71;</i></a>JWK String Interpolators</h4>
+        <p>There are <code>String</code> interpolators available for <code>Jwk</code> and <code>JwkSet</code>.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">syntax</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">jwk</span><span> =
+  </span><span class="string-literal">jwk&quot;&quot;&quot;
+    {
+      &quot;kty&quot;: &quot;OKP&quot;,
+      &quot;alg&quot;: &quot;EdDSA&quot;,
+      &quot;kid&quot;: &quot;59c7bacd-b8d0-4e9d-a061-c82942f2d845&quot;,
+      &quot;crv&quot;: &quot;Ed25519&quot;,
+      &quot;x&quot;: &quot;CQQsdHb50GMb0AoEKHa5DZn_Jw6hRoI-bpwWsJCGxxg&quot;
+    }
+  &quot;&quot;&quot;</span><span>
+</span><span class="comment">// jwk: Jwk = Jwk(59c7bacd-b8d0-4e9d-a061-c82942f2d845, OKP)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">jwkSet</span><span> =
+  </span><span class="string-literal">jwkSet&quot;&quot;&quot;
+    {
+      &quot;keys&quot;: [
+        {
+          &quot;kty&quot;: &quot;RSA&quot;,
+          &quot;kid&quot;: &quot;4ae8b438-34c4-4855-badb-453c3923f7bf&quot;,
+          &quot;n&quot;: &quot;y-n6DkNvtP1gmG_U1NZ4tO4AWcg8mqcoHJp31T4_XGuuEr-yQWf4xF3dLIU0PIHc09I31Ps54xitZyKY_fu6X0xahyHgSH1Y_igmCv64SMu-p8V91dzi1HQ-66idM6jWvNYSPk1ovK6z95HX3w-KQ7caBNMmbUfSIVYdqP0AbfJM72xgvGItH6EsFcRrtn95q8YASL0-YAnkSr9OAJTWZSmygdEWE3hxVsuBw3hgbceQmh8U4QxVWOR0mS4MW2mI-5fhgszYKIjCZAdls-Ioewq38cTtXPraaI5vSlIUQgJ8IT4FkYYU5m0MTTZzBqF0pgBikofCUAJBkHuPt98h8rCuno6R-Ln2Hk3-NHezp9gQ7jtvtICCnd3pzS4WEiNqHqZohgC9xnLaF4Olw1Yowpg_SXBl0MWH3wJxPKdTp83Drua2DpuK4_ZpsPTFcCPT6TBGyuAm7BCN4GbiAC3ahickQXM8_cdPuAZ3DLfm7-owyO2P3lYm_AjroPr1rAjQN5S2GyBt9aqk1IdLxC6tlDGBo4JhS3gpJAWhboqyGlHz1ykwwF8rgBskshtO4x-3vhClJMP9m884iC-cIodvQ6O6UUppmYSJep6EetRQDk14_fjQyh6EZnaRLMBkoRryZgtkehdKuoVuF-7Ef5WpObPtIyztPMFo_47WHFMANXk&quot;,
+          &quot;e&quot;: &quot;AQAB&quot;
+        }
+      ]
+    }
+  &quot;&quot;&quot;</span><span>
+</span><span class="comment">// jwkSet: JwkSet = JwkSet(Jwk(4ae8b438-34c4-4855-badb-453c3923f7bf, RSA))</span></code></pre>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Note the <code>String</code> interpolators can be used for private keys, public keys and secret keys. While public keys are the most common for verification purposes, we should take care to <em>not</em> put secrets, like private keys or secret keys, in source code.</p>
+        </div>
+        
         <h2 id="custom-verification" class="section"><a class="anchor-link left" href="#custom-verification"><i class="icofont-laika link">&#xef71;</i></a>Custom Verification</h2>
         <p>The <code>VerifiedJwt</code> type can only be instantiated by the default <code>JwtVerification</code> instances. So while it is possible to create custom <code>JwtVerification</code> instances, these will have to make use of the default instances. This holds true as long as your code keeps to the following rules.</p>
         <ol class="arabic">
