@@ -303,10 +303,9 @@ object JwtException {
     * Exception raised when creating a [[JwtSigning]]
     * with a [[Jwk]] that is not suitable for signing.
     */
-  final class UnsuitableSigningKey(keyId: Option[JwkKeyId])
+  final class UnsuitableSigningKey(keyId: JwkKeyId)
     extends JwtException({
-      val withId = keyId.foldMap(keyId => s" with id [${keyId.value}]")
-      s"the key$withId is not suitable for signing"
+      s"the key with id [${keyId.value}] is not suitable for signing"
     })
 
   /**

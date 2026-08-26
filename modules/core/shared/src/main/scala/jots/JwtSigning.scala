@@ -203,45 +203,45 @@ object JwtSigning {
   )(implicit F: MonadThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] = {
     import builder.*
 
-    def signing: F[JwtSigning[G]] =
-      key.keyId.liftTo[F].flatMap { keyId =>
-        def withKeyId(signing: JwtSigning[G]): JwtSigning[G] =
-          signing.mapJwt(_.mapHeader(_.withKeyId(keyId)))
+    def signing(keyId: JwkKeyId): F[JwtSigning[G]] = {
+      def withKeyId(signing: JwtSigning[G]): JwtSigning[G] =
+        signing.mapJwt(_.mapHeader(_.withKeyId(keyId)))
 
-        (algorithm, key.keyType) match {
-          case (algorithm: JwtEcdsaAlgorithm, JwkKeyTypes.EC) =>
-            val ecdsa = JwtSigningBuilder.default[F].signWith[G].ecdsa(algorithm, _)
-            key.toPrivateKey.liftTo[F].map(ecdsa).flatMap(build).map(withKeyId)
-          case (algorithm: JwtHmacAlgorithm, JwkKeyTypes.Oct) =>
-            val hmac = JwtSigningBuilder.default[F].signWith[G].hmac(algorithm, _)
-            key.toSecretKey.liftTo[F].map(hmac).flatMap(build).map(withKeyId)
-          case (algorithm: JwtEddsaAlgorithm, JwkKeyTypes.OKP) =>
-            val eddsa = JwtSigningBuilder.default[F].signWith[G].eddsa(algorithm, _)
-            key.toPrivateKey.liftTo[F].map(eddsa).flatMap(build).map(withKeyId)
-          case (algorithm: JwtRsaAlgorithm, JwkKeyTypes.RSA) =>
-            val rsa = JwtSigningBuilder.default[F].signWith[G].rsa(algorithm, _)
-            key.toPrivateKey.liftTo[F].map(rsa).flatMap(build).map(withKeyId)
-          case (algorithm, keyType) =>
-            F.raiseError(new UnsupportedKey(keyId, keyType, Some(algorithm)))
-        }
+      (algorithm, key.keyType) match {
+        case (algorithm: JwtEcdsaAlgorithm, JwkKeyTypes.EC) =>
+          val ecdsa = JwtSigningBuilder.default[F].signWith[G].ecdsa(algorithm, _)
+          key.toPrivateKey.liftTo[F].map(ecdsa).flatMap(build).map(withKeyId)
+        case (algorithm: JwtHmacAlgorithm, JwkKeyTypes.Oct) =>
+          val hmac = JwtSigningBuilder.default[F].signWith[G].hmac(algorithm, _)
+          key.toSecretKey.liftTo[F].map(hmac).flatMap(build).map(withKeyId)
+        case (algorithm: JwtEddsaAlgorithm, JwkKeyTypes.OKP) =>
+          val eddsa = JwtSigningBuilder.default[F].signWith[G].eddsa(algorithm, _)
+          key.toPrivateKey.liftTo[F].map(eddsa).flatMap(build).map(withKeyId)
+        case (algorithm: JwtRsaAlgorithm, JwkKeyTypes.RSA) =>
+          val rsa = JwtSigningBuilder.default[F].signWith[G].rsa(algorithm, _)
+          key.toPrivateKey.liftTo[F].map(rsa).flatMap(build).map(withKeyId)
+        case (algorithm, keyType) =>
+          F.raiseError(new UnsupportedKey(keyId, keyType, Some(algorithm)))
       }
+    }
 
-    val isForSigning: Boolean =
-      key.keyId.isRight &&
+    key.keyId.liftTo[F].flatMap { keyId =>
+      val isForSigning: Boolean =
         key.toJsonObject("use").forall(_.asString.contains("sig")) &&
-        key.toJsonObject("key_ops").forall(_.as[List[String]].exists(_.contains("sign")))
+          key.toJsonObject("key_ops").forall(_.as[List[String]].exists(_.contains("sign")))
 
-    if (isForSigning) {
-      key.toJsonObject("alg") match {
-        case Some(algorithmJson) =>
-          algorithmJson.asString match {
-            case Some(algorithmName) if algorithmMatches(algorithmName) => signing
-            case Some(_) => F.raiseError(new RejectedAlgorithm())
-            case None => F.raiseError(new InvalidAlgorithm())
-          }
-        case None =>
-          signing
-      }
-    } else F.raiseError(new UnsuitableSigningKey(key.keyId.toOption))
+      if (isForSigning) {
+        key.toJsonObject("alg") match {
+          case Some(algorithmJson) =>
+            algorithmJson.asString match {
+              case Some(algorithmName) if algorithmMatches(algorithmName) => signing(keyId)
+              case Some(_) => F.raiseError(new RejectedAlgorithm())
+              case None => F.raiseError(new InvalidAlgorithm())
+            }
+          case None =>
+            signing(keyId)
+        }
+      } else F.raiseError(new UnsuitableSigningKey(keyId))
+    }
   }
 }
