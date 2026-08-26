@@ -18,12 +18,19 @@ package jots
 
 import cats.Show
 import cats.kernel.laws.discipline.HashTests
+import io.circe.syntax.*
 import jots.testing.*
 import weaver.SimpleIOSuite
 import weaver.discipline.Discipline
 import weaver.scalacheck.Checkers
 
 object JwkKeyIdSuite extends SimpleIOSuite with Checkers with Discipline {
+  test("JwkKeyId.codec") {
+    forall { (keyId: JwkKeyId) =>
+      expect.eql(Right(keyId), keyId.asJson.as[JwkKeyId])
+    }
+  }
+
   checkAll("JwkKeyId.hash", HashTests[JwkKeyId].hash)
 
   test("JwkKeyId.show") {
