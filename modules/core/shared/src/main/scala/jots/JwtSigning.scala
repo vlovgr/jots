@@ -18,9 +18,14 @@ package jots
 
 import cats.ApplicativeThrow
 import cats.Functor
+import cats.MonadThrow
 import cats.syntax.all.*
+import jots.JwtException.InvalidAlgorithm
 import jots.JwtException.InvalidPrivateKey
 import jots.JwtException.InvalidSecretKeyLength
+import jots.JwtException.RejectedAlgorithm
+import jots.JwtException.UnsuitableSigningKey
+import jots.JwtException.UnsupportedKey
 import jots.crypto.Crypto
 import jots.crypto.PrivateKey
 import jots.crypto.SecretKey
@@ -111,6 +116,16 @@ object JwtSigning {
 
     /**
       * Returns a new [[JwtSigning]] instance which signs tokens
+      * using the specified algorithm and [[Jwk]].
+      */
+    def jwk(
+      algorithm: JwtAlgorithm,
+      key: Jwk
+    )(implicit F: MonadThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] =
+      JwtSigningBuilder.default[F].signWith[G].jwk(algorithm, key).build
+
+    /**
+      * Returns a new [[JwtSigning]] instance which signs tokens
       * using the specified RSA algorithm and private key.
       */
     def rsa(
@@ -181,5 +196,52 @@ object JwtSigning {
             .map(jwt.toSigned)
       }
     }
+  }
+
+  private[jots] def fromJwkBuilder[F[_], G[_]](
+    builder: JwtJwkSigningBuilder[F, G]
+  )(implicit F: MonadThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] = {
+    import builder.*
+
+    def signing: F[JwtSigning[G]] =
+      key.keyId.liftTo[F].flatMap { keyId =>
+        def withKeyId(signing: JwtSigning[G]): JwtSigning[G] =
+          signing.mapJwt(_.mapHeader(_.withKeyId(keyId)))
+
+        (algorithm, key.keyType) match {
+          case (algorithm: JwtEcdsaAlgorithm, JwkKeyTypes.EC) =>
+            val ecdsa = JwtSigningBuilder.default[F].signWith[G].ecdsa(algorithm, _)
+            key.toPrivateKey.liftTo[F].map(ecdsa).flatMap(build).map(withKeyId)
+          case (algorithm: JwtHmacAlgorithm, JwkKeyTypes.Oct) =>
+            val hmac = JwtSigningBuilder.default[F].signWith[G].hmac(algorithm, _)
+            key.toSecretKey.liftTo[F].map(hmac).flatMap(build).map(withKeyId)
+          case (algorithm: JwtEddsaAlgorithm, JwkKeyTypes.OKP) =>
+            val eddsa = JwtSigningBuilder.default[F].signWith[G].eddsa(algorithm, _)
+            key.toPrivateKey.liftTo[F].map(eddsa).flatMap(build).map(withKeyId)
+          case (algorithm: JwtRsaAlgorithm, JwkKeyTypes.RSA) =>
+            val rsa = JwtSigningBuilder.default[F].signWith[G].rsa(algorithm, _)
+            key.toPrivateKey.liftTo[F].map(rsa).flatMap(build).map(withKeyId)
+          case (algorithm, keyType) =>
+            F.raiseError(new UnsupportedKey(keyId, keyType, Some(algorithm)))
+        }
+      }
+
+    val isForSigning: Boolean =
+      key.keyId.isRight &&
+        key.toJsonObject("use").forall(_.asString.contains("sig")) &&
+        key.toJsonObject("key_ops").forall(_.as[List[String]].exists(_.contains("sign")))
+
+    if (isForSigning) {
+      key.toJsonObject("alg") match {
+        case Some(algorithmJson) =>
+          algorithmJson.asString match {
+            case Some(algorithmName) if algorithmMatches(algorithmName) => signing
+            case Some(_) => F.raiseError(new RejectedAlgorithm())
+            case None => F.raiseError(new InvalidAlgorithm())
+          }
+        case None =>
+          signing
+      }
+    } else F.raiseError(new UnsuitableSigningKey(key.keyId.toOption))
   }
 }

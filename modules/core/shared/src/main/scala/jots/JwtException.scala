@@ -300,6 +300,16 @@ object JwtException {
     extends JwtException(s"the token is not valid before ${notBefore.toSeconds} epoch seconds")
 
   /**
+    * Exception raised when creating a [[JwtSigning]]
+    * with a [[Jwk]] that is not suitable for signing.
+    */
+  final class UnsuitableSigningKey(keyId: Option[JwkKeyId])
+    extends JwtException({
+      val withId = keyId.foldMap(keyId => s" with id [${keyId.value}]")
+      s"the key$withId is not suitable for signing"
+    })
+
+  /**
     * Exception raised by [[JwtVerification]] when a token `crit` header lists a
     * critical header that the verification has not been configured to accept.
     */
@@ -307,7 +317,8 @@ object JwtException {
     extends JwtException(s"the critical header [$criticalHeader] is not supported")
 
   /**
-    * Exception raised by [[JwtVerification]] when a provided [[Jwk]] is not supported.
+    * Exception raised by [[JwtSigning]] or [[JwtVerification]]
+    * when a provided [[Jwk]] is not supported by the library.
     */
   final class UnsupportedKey(keyId: JwkKeyId, keyType: JwkKeyType, algorithm: Option[JwtAlgorithm] = None)
     extends JwtException({
