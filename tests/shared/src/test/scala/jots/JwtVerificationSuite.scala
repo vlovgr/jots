@@ -275,7 +275,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
   test("JwtVerification.jwkSet.verifiesByKeyId") {
     val keySet = JwkSet(octJwk("key-1"))
     for {
-      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId("key-1"))
+      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-1")))
       verification <- JwtVerification.default[IO].jwkSetAll(keySet)
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
@@ -285,7 +285,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
   test("JwtVerification.jwkSet.rejectUnknownKeyId") {
     val keySet = JwkSet(octJwk("key-1"))
     for {
-      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId("key-2"))
+      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-2")))
       verification <- JwtVerification.default[IO].jwkSetAll(keySet)
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.MissingKey) => () }
@@ -313,7 +313,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
   test("JwtVerification.jwkSet.acceptsKeyForSignatureUse") {
     val keySet = JwkSet(octJwk("key-1", "use" -> "sig".asJson))
     for {
-      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId("key-1"))
+      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-1")))
       verification <- JwtVerification.default[IO].jwkSetAll(keySet)
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
@@ -331,7 +331,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
   test("JwtVerification.jwkSet.acceptsKeyWithVerifyKeyOp") {
     val keySet = JwkSet(octJwk("key-1", "key_ops" -> List("sign", "verify").asJson))
     for {
-      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId("key-1"))
+      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-1")))
       verification <- JwtVerification.default[IO].jwkSetAll(keySet)
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
@@ -346,10 +346,10 @@ object JwtVerificationSuite extends SimpleIOSuite {
 
     for {
       verification <- JwtVerification.default[IO].jwkSetAll(keySet)
-      signedSig <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId("sig-key"))
+      signedSig <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("sig-key")))
       resultSig <- signedSig.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](resultSig) { case Right(_) => () }
-      signedEnc <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId("enc-key"))
+      signedEnc <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("enc-key")))
       resultEnc <- signedEnc.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](resultEnc) { case Left(_: JwtException.MissingKey) => () }
     } yield success
@@ -365,7 +365,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
 
     val keySet = JwkSet(missingKeyIdJwk, octJwk("key-1"))
     for {
-      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId("key-1"))
+      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-1")))
       verification <- JwtVerification.default[IO].jwkSetAll(keySet)
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
@@ -430,7 +430,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
 
   test("JwtVerification.jwkSet.rejectUnsupportedCriticalHeader") {
     val keySet = JwkSet(octJwk("key-1"))
-    val header = criticalHeader("jots-example").withKeyId("key-1")
+    val header = criticalHeader("jots-example").withKeyId(JwkKeyId("key-1"))
     for {
       signed <- sign(JwtClaims.empty, header)
       verification <- JwtVerification.default[IO].jwkSetAll(keySet)

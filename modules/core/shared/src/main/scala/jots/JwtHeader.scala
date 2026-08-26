@@ -93,13 +93,13 @@ sealed abstract class JwtHeader {
     * Returns a new [[JwtHeader]] with the specified key id
     * set for the `kid` key.
     */
-  def withKeyId(keyId: String): JwtHeader
+  def withKeyId(keyId: JwkKeyId): JwtHeader
 
   /**
     * Returns a new [[JwtHeader]] with the `kid` key set to the
     * specified key id, or removed if `None`.
     */
-  def withKeyIdOption(keyId: Option[String]): JwtHeader
+  def withKeyIdOption(keyId: Option[JwkKeyId]): JwtHeader
 
   /**
     * Returns a new [[JwtHeader]] with the `kid` key removed.
@@ -219,10 +219,10 @@ object JwtHeader {
     override def withoutCriticalHeaders: JwtHeader =
       remove("crit")
 
-    override def withKeyId(keyId: String): JwtHeader =
+    override def withKeyId(keyId: JwkKeyId): JwtHeader =
       add("kid", keyId.asJson)
 
-    override def withKeyIdOption(keyId: Option[String]): JwtHeader =
+    override def withKeyIdOption(keyId: Option[JwkKeyId]): JwtHeader =
       keyId.fold(withoutKeyId)(withKeyId)
 
     override def withoutKeyId: JwtHeader =
