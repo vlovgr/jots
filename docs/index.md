@@ -8,7 +8,7 @@ Jots is a library for working with [JSON Web Tokens (JWTs)](https://en.wikipedia
 - Supports [signing](features/signing.md) and [verification](features/verification.md) for standard ECDSA, EdDSA, HMAC and RSA algorithms.
 - Provides [testing](features/testing.md) support with [ScalaCheck](https://scalacheck.org) generators and String interpolators for secrets.
 - Separates token parsing and verification, so tokens can be inspected before verification.
-- Handles token signature verification using keys from a [JSON Web Key Set (JWK Set)](features/verification.md#json-web-key-set).
+- Handles token signing with a [JSON Web Key (JWK)](features/signing.md#json-web-key) and verification with a [JWK Set](features/verification.md#json-web-key-set).
 - Based on the [cats-effect](https://typelevel.org/cats-effect), [circe-jawn](https://circe.io/circe), [literally](https://github.com/typelevel/literally) and [scodec-bits](https://github.com/scodec/scodec-bits) libraries.
 
 Documentation is kept up-to-date, currently documenting v@VERSION@ on Scala @SCALA_DOCS_VERSION@.

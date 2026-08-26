@@ -189,6 +189,68 @@ Finally, let's generate the `String` representation of the token using `show`.
 signedJwt.map(_.show).unsafeRunSync()
 ```
 
+### JSON Web Key
+
+There is a `Jwk` type representing a JSON Web Key (JWK). A `Jwk` can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.
+
+1. The `kid` (Key ID) parameter must be specified for the key.
+2. If `key_ops` is specified, it must contain the `sign` operation.
+3. If `use` is specified for the key, it must be set to `sig` (signature).
+
+Additionally, the private or secret key must be supported by the library. This means having the `kty` parameter set with other key-type appropriate parameters. Depending on if `alg` (algorithm) is set or not on the key, the algorithm has to match with the provided algorithm.
+
+#### JWK Example
+
+Following is an example of signing a token using a `Jwk` private key.
+
+```scala mdoc:silent
+import jots.Jwk
+
+val signedJwtJwk: SyncIO[SignedJwt] =
+  for {
+    jwk <- Jwk(
+      "kty" -> "EC".asJson,
+      "d" -> "J8dDt-BOCMfRm_ZNaioMeMQBGDewXEvC5WSpvijtCz4".asJson,
+      "use" -> "sig".asJson,
+      "crv" -> "P-256".asJson,
+      "kid" -> "h7G57sMQDgpDPh-qbImQOeDLbBLZybe_GXjsGKqZwfk".asJson,
+      "x" -> "lzDfLfjnBIN3ZGoc1wS9fN3wyoNiwYcq8FnAhK_Gnmo".asJson,
+      "y" -> "U4Y4v5C3emBPjCSxRpce2wSQvb091uCM3tVFzqwne5c".asJson,
+      "alg" -> "ES256".asJson
+    ).liftTo[SyncIO]
+    signing <- JwtSigning.default[SyncIO].jwk(ES256, jwk)
+    jwt <- userJwt.asJwt.signWith(signing)
+  } yield jwt
+```
+
+Note signing sets the `kid` (Key ID) in the token header to the value from the `Jwk`.
+
+```scala mdoc:to-string
+signedJwtJwk.unsafeRunSync()
+```
+
+#### JWK String Interpolator
+
+There is a `String` interpolator available for `Jwk`.
+
+```scala mdoc:to-string
+import jots.syntax.*
+
+val jwk =
+  jwk"""
+    {
+      "kty": "EC",
+      "d": "J8dDt-BOCMfRm_ZNaioMeMQBGDewXEvC5WSpvijtCz4",
+      "use": "sig",
+      "crv": "P-256",
+      "kid": "h7G57sMQDgpDPh-qbImQOeDLbBLZybe_GXjsGKqZwfk",
+      "x": "lzDfLfjnBIN3ZGoc1wS9fN3wyoNiwYcq8FnAhK_Gnmo",
+      "y": "U4Y4v5C3emBPjCSxRpce2wSQvb091uCM3tVFzqwne5c",
+      "alg": "ES256"
+    }
+  """
+```
+
 ## Custom Signing
 
 It is possible to create custom `JwtSigning` instances by using `JwtSigning.signWith` or by directly instantiating or extending `JwtSigning`. The `SignedJwt` type returned by `JwtSigning` place no restrictions on the token signature. Signatures are even allowed to be empty, which can be the case for unsecured tokens. Note [token verification](verification.md) will always reject invalid signatures and unsecured tokens.
