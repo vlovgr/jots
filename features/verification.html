@@ -243,6 +243,18 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
 // )</span></code></pre>
         <p>There&#39;s also <code>JwtVerification#decode</code> for returning a <code>VerifiedJwt</code> (without <code>JwtDecoder</code> requirement). Similarly, there is <code>verify</code> for returning a <code>VerifiedJwt</code> from a <code>SignedJwt</code>, and <code>verifyAs</code> for also decoding with <code>JwtDecoder</code>. These are useful when we want to handle parsing or decoding separately from <code>JwtVerification</code>. Note these can be overridden for <a href="#custom-verification">custom verifications</a>.</p>
         
+        <h4 id="separate-parsing-verification-and-decoding" class="section"><a class="anchor-link left" href="#separate-parsing-verification-and-decoding"><i class="icofont-laika link">&#xef71;</i></a>Separate Parsing, Verification and Decoding</h4>
+        <p>We do not have to use the convenience functions on <code>JwtVerification</code>. The parsing, verification and decoding steps can be separated depending on use case. Let&#39;s see how we achieve the same result as <code>JwtVerification#decodeAs</code> above, but with the three steps separated explicitly.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">SignedJwt</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">userJwtSeparate</span><span>(</span><span class="identifier">verification</span><span>: </span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">SyncIO</span><span>]): </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">UserJwt</span><span>] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">signedJwt</span><span> &lt;- </span><span class="type-name">SignedJwt</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="identifier">jwt</span><span>).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
+    </span><span class="identifier">verifiedJwt</span><span> &lt;- </span><span class="identifier">signedJwt</span><span>.</span><span class="identifier">verifyWith</span><span>(</span><span class="identifier">verification</span><span>)
+    </span><span class="identifier">userJwt</span><span> &lt;- </span><span class="identifier">verifiedJwt</span><span>.</span><span class="identifier">as</span><span>[</span><span class="type-name">UserJwt</span><span>].</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">userJwt</span></code></pre>
+        <p>This gives us the option to inspect the <code>SignedJwt</code> before making verification and decoding decisions. Alternatively, for cases where we always use the same <code>JwtVerification</code> instance, like in the example above, it can be more convenient to instead use <a href="#custom-verification">custom verifications</a>.</p>
+        
         <h3 id="default-verifications" class="section"><a class="anchor-link left" href="#default-verifications"><i class="icofont-laika link">&#xef71;</i></a>Default Verifications</h3>
         <p>The default <code>JwtVerification</code> instances perform the following verifications.</p>
         <ul>
