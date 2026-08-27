@@ -143,6 +143,23 @@ userJwt.unsafeRunSync()
 
 There's also `JwtVerification#decode` for returning a `VerifiedJwt` (without `JwtDecoder` requirement). Similarly, there is `verify` for returning a `VerifiedJwt` from a `SignedJwt`, and `verifyAs` for also decoding with `JwtDecoder`. These are useful when we want to handle parsing or decoding separately from `JwtVerification`. Note these can be overridden for [custom verifications](#custom-verification).
 
+#### Separate Parsing, Verification and Decoding
+
+We do not have to use the convenience functions on `JwtVerification`. The parsing, verification and decoding steps can be separated depending on use case. Let's see how we achieve the same result as `JwtVerification#decodeAs` above, but with the three steps separated explicitly.
+
+```scala mdoc:silent
+import jots.SignedJwt
+
+def userJwtSeparate(verification: JwtVerification[SyncIO]): SyncIO[UserJwt] =
+  for {
+    signedJwt <- SignedJwt.fromString(jwt).liftTo[SyncIO]
+    verifiedJwt <- signedJwt.verifyWith(verification)
+    userJwt <- verifiedJwt.as[UserJwt].liftTo[SyncIO]
+  } yield userJwt
+```
+
+This gives us the option to inspect the `SignedJwt` before making verification and decoding decisions. Alternatively, for cases where we always use the same `JwtVerification` instance, like in the example above, it can be more convenient to instead use [custom verifications](#custom-verification).
+
 ### Default Verifications
 
 The default `JwtVerification` instances perform the following verifications.
