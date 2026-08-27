@@ -119,6 +119,7 @@ mermaid.initialize({
     <li class="level1 nav-node"><a href="#signing-tokens">Signing Tokens</a></li>
     <li class="level2 nav-leaf"><a href="#key-requirements">Key Requirements</a></li>
     <li class="level2 nav-leaf"><a href="#signature-generation">Signature Generation</a></li>
+    <li class="level2 nav-leaf"><a href="#json-web-key">JSON Web Key</a></li>
     <li class="level1 nav-leaf"><a href="#custom-signing">Custom Signing</a></li>
   </ul>
 
@@ -338,7 +339,61 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
         <p>The <code>SignedJwt</code> represent a parsed or generated token which has <em>not</em> been verified. Since we&#39;ve generated this token, we can be reasonably confident it also verifies successfully. However, in the general case, a <code>SignedJwt</code> should not be trusted before it has been verified. <code>VerifiedJwt</code> represents a verified token, covered on the <a href="verification.html">verification</a> page.</p>
         <p>Finally, let&#39;s generate the <code>String</code> representation of the token using <code>show</code>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signedJwt</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">show</span><span>).</span><span class="identifier">unsafeRunSync</span><span>()
-</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.1hJCKt7koUrH2uVyN_CFSc6vihe5YREj2LupGykXsXJjUX3jTFT6T37BZIAuy5JOYYLP6tvHGkONnbfBTCr7EA&quot;</span></code></pre>
+</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.lzOlTuAx0HUbmcVvEzujCPpEte14bTQfNAURN7VXPvOoCJ6tyMnFbOWIXbqrXwJXYOpXVvBsWHBeMrXT29Dk3Q&quot;</span></code></pre>
+        
+        <h3 id="json-web-key" class="section"><a class="anchor-link left" href="#json-web-key"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key</h3>
+        <p>There is a <code>Jwk</code> type representing a JSON Web Key (JWK). A <code>Jwk</code> can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.</p>
+        <ol class="arabic">
+          <li>If <code>key_ops</code> is specified, it must contain the <code>sign</code> operation.</li>
+          <li>If <code>use</code> is specified for the key, it must be set to <code>sig</code> (signature).</li>
+        </ol>
+        <p>Additionally, the private or secret key must be supported by the library. This means having the <code>kty</code> parameter set with other key-type appropriate parameters. Depending on if <code>alg</code> (algorithm) is set or not on the key, the algorithm has to match with the provided algorithm.</p>
+        
+        <h4 id="jwk-example" class="section"><a class="anchor-link left" href="#jwk-example"><i class="icofont-laika link">&#xef71;</i></a>JWK Example</h4>
+        <p>Following is an example of signing a token using a <code>Jwk</code> private key.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">Jwk</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">signedJwtJwk</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">SignedJwt</span><span>] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">jwk</span><span> &lt;- </span><span class="type-name">Jwk</span><span>(
+      </span><span class="string-literal">&quot;kty&quot;</span><span> -&gt; </span><span class="string-literal">&quot;EC&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;d&quot;</span><span> -&gt; </span><span class="string-literal">&quot;J8dDt-BOCMfRm_ZNaioMeMQBGDewXEvC5WSpvijtCz4&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;use&quot;</span><span> -&gt; </span><span class="string-literal">&quot;sig&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;crv&quot;</span><span> -&gt; </span><span class="string-literal">&quot;P-256&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;kid&quot;</span><span> -&gt; </span><span class="string-literal">&quot;h7G57sMQDgpDPh-qbImQOeDLbBLZybe_GXjsGKqZwfk&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;x&quot;</span><span> -&gt; </span><span class="string-literal">&quot;lzDfLfjnBIN3ZGoc1wS9fN3wyoNiwYcq8FnAhK_Gnmo&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;y&quot;</span><span> -&gt; </span><span class="string-literal">&quot;U4Y4v5C3emBPjCSxRpce2wSQvb091uCM3tVFzqwne5c&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
+      </span><span class="string-literal">&quot;alg&quot;</span><span> -&gt; </span><span class="string-literal">&quot;ES256&quot;</span><span>.</span><span class="identifier">asJson</span><span>
+    ).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
+    </span><span class="identifier">signing</span><span> &lt;- </span><span class="type-name">JwtSigning</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">jwk</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">jwk</span><span>)
+    </span><span class="identifier">jwt</span><span> &lt;- </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">asJwt</span><span>.</span><span class="identifier">signWith</span><span>(</span><span class="identifier">signing</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">jwt</span></code></pre>
+        <p>If the <code>Jwk</code> has a <code>kid</code> (Key ID) set, this will also be set in the header of the token.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signedJwtJwk</span><span>.</span><span class="identifier">unsafeRunSync</span><span>()
+</span><span class="comment">// res4: SignedJwt = SignedJwt(SignedJwtHeader(typ -&gt; &quot;JWT&quot;,kid -&gt; &quot;h7G57sMQDgpDPh-qbImQOeDLbBLZybe_GXjsGKqZwfk&quot;,alg -&gt; &quot;ES256&quot;),SignedJwtClaims(userId -&gt; &quot;8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1&quot;,exp -&gt; 3345062400,iat -&gt; 1767225600))</span></code></pre>
+        
+        <h4 id="jwk-string-interpolator" class="section"><a class="anchor-link left" href="#jwk-string-interpolator"><i class="icofont-laika link">&#xef71;</i></a>JWK String Interpolator</h4>
+        <p>There is a <code>String</code> interpolator available for <code>Jwk</code>.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">syntax</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">jwk</span><span> =
+  </span><span class="string-literal">jwk&quot;&quot;&quot;
+    {
+      &quot;kty&quot;: &quot;EC&quot;,
+      &quot;d&quot;: &quot;J8dDt-BOCMfRm_ZNaioMeMQBGDewXEvC5WSpvijtCz4&quot;,
+      &quot;use&quot;: &quot;sig&quot;,
+      &quot;crv&quot;: &quot;P-256&quot;,
+      &quot;kid&quot;: &quot;h7G57sMQDgpDPh-qbImQOeDLbBLZybe_GXjsGKqZwfk&quot;,
+      &quot;x&quot;: &quot;lzDfLfjnBIN3ZGoc1wS9fN3wyoNiwYcq8FnAhK_Gnmo&quot;,
+      &quot;y&quot;: &quot;U4Y4v5C3emBPjCSxRpce2wSQvb091uCM3tVFzqwne5c&quot;,
+      &quot;alg&quot;: &quot;ES256&quot;
+    }
+  &quot;&quot;&quot;</span><span>
+</span><span class="comment">// jwk: Jwk = Jwk(h7G57sMQDgpDPh-qbImQOeDLbBLZybe_GXjsGKqZwfk, EC)</span></code></pre>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Note the <code>String</code> interpolator can be used for private keys, public keys and secret keys. Since token signing makes use of private keys or secret keys, we should take care to <em>not</em> put secrets in source code.</p>
+        </div>
         
         <h2 id="custom-signing" class="section"><a class="anchor-link left" href="#custom-signing"><i class="icofont-laika link">&#xef71;</i></a>Custom Signing</h2>
         <p>It is possible to create custom <code>JwtSigning</code> instances by using <code>JwtSigning.signWith</code> or by directly instantiating or extending <code>JwtSigning</code>. The <code>SignedJwt</code> type returned by <code>JwtSigning</code> place no restrictions on the token signature. Signatures are even allowed to be empty, which can be the case for unsecured tokens. Note <a href="verification.html">token verification</a> will always reject invalid signatures and unsecured tokens.</p>
