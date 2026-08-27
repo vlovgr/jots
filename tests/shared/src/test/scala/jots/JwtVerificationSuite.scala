@@ -16,6 +16,7 @@
 
 package jots
 
+import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.syntax.all.*
 import io.circe.syntax.*
@@ -532,4 +533,43 @@ object JwtVerificationSuite extends SimpleIOSuite {
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.InvalidEcKeyLength) => () }
     } yield success
   }
+
+  test("JwtVerification.jwkSet.rejectMismatchedKeyAlgorithm") {
+    val keySet = JwkSet(octJwkWithAlgorithm("key-1", "HS384".asJson))
+
+    JwtVerification
+      .default[IO]
+      .jwkSet(NonEmptyList.of(JwtAlgorithm.HS256), keySet)
+      .attempt
+      .map {
+        case Left(e: JwtException.RejectedKeyAlgorithm) =>
+          expect.eql(
+            "the key with id [key-1] algorithm (alg) [HS384] was rejected, expected [HS256]",
+            e.message
+          )
+        case _ => failure("unexpected case")
+      }
+  }
+
+  test("JwtVerification.jwkSet.rejectInvalidKeyAlgorithm") {
+    val keySet = JwkSet(octJwkWithAlgorithm("key-1", 256.asJson))
+
+    JwtVerification
+      .default[IO]
+      .jwkSet(NonEmptyList.of(JwtAlgorithm.HS256), keySet)
+      .attempt
+      .map {
+        case Left(e: JwtException.InvalidKeyAlgorithm) =>
+          expect.eql("the key with id [key-1] algorithm (alg) [256] is invalid", e.message)
+        case _ => failure("unexpected case")
+      }
+  }
+
+  private def octJwkWithAlgorithm(keyId: String, algorithm: io.circe.Json): Jwk =
+    Jwk(
+      "kty" -> "oct".asJson,
+      "kid" -> keyId.asJson,
+      "alg" -> algorithm,
+      "k" -> secretKey.toByteVector.toBase64UrlNoPad.asJson
+    ).fold(throw _, identity)
 }

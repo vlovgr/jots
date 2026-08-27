@@ -19,11 +19,12 @@ package jots
 import cats.ApplicativeThrow
 import cats.Functor
 import cats.MonadThrow
+import cats.data.NonEmptyList
 import cats.syntax.all.*
-import jots.JwtException.InvalidAlgorithm
+import jots.JwtException.InvalidKeyAlgorithm
 import jots.JwtException.InvalidPrivateKey
 import jots.JwtException.InvalidSecretKeyLength
-import jots.JwtException.RejectedAlgorithm
+import jots.JwtException.RejectedKeyAlgorithm
 import jots.JwtException.UnsuitableSigningKey
 import jots.JwtException.UnsupportedKey
 import jots.crypto.Crypto
@@ -225,23 +226,52 @@ object JwtSigning {
       }
     }
 
-    key.keyId.liftTo[F].flatMap { keyId =>
-      val isForSigning: Boolean =
-        key.toJsonObject("use").forall(_.asString.contains("sig")) &&
-          key.toJsonObject("key_ops").forall(_.as[List[String]].exists(_.contains("sign")))
+    def ensureSuitableForSigning(keyId: JwkKeyId): F[Unit] =
+      key.toJsonObject("use") match {
+        case Some(use) if !use.asString.contains("sig") =>
+          F.raiseError(new UnsuitableSigningKey(keyId, s"the key use (use) [${use.noSpaces}] is not [sig]"))
+        case _ =>
+          key.toJsonObject("key_ops") match {
+            case Some(keyOps) =>
+              keyOps.as[List[String]] match {
+                case Right(operations) if operations.contains("sign") =>
+                  F.unit
+                case Right(_) =>
+                  F.raiseError(
+                    new UnsuitableSigningKey(
+                      keyId,
+                      s"the key operations (key_ops) [${keyOps.noSpaces}] do not include [sign]"
+                    )
+                  )
+                case Left(_) =>
+                  F.raiseError(
+                    new UnsuitableSigningKey(
+                      keyId,
+                      s"the key operations (key_ops) [${keyOps.noSpaces}] are invalid"
+                    )
+                  )
+              }
+            case None =>
+              F.unit
+          }
+      }
 
-      if (isForSigning) {
-        key.toJsonObject("alg") match {
-          case Some(algorithmJson) =>
-            algorithmJson.asString match {
-              case Some(algorithmName) if algorithmMatches(algorithmName) => signing(keyId)
-              case Some(_) => F.raiseError(new RejectedAlgorithm())
-              case None => F.raiseError(new InvalidAlgorithm())
-            }
-          case None =>
-            signing(keyId)
-        }
-      } else F.raiseError(new UnsuitableSigningKey(keyId))
-    }
+    for {
+      keyId <- key.keyId.liftTo[F]
+      _ <- ensureSuitableForSigning(keyId)
+      signing <- key.toJsonObject("alg") match {
+        case Some(algorithmJson) =>
+          algorithmJson.asString match {
+            case Some(algorithmName) if algorithmMatches(algorithmName) =>
+              signing(keyId)
+            case Some(algorithmName) =>
+              F.raiseError(new RejectedKeyAlgorithm(keyId, algorithmName, NonEmptyList.one(algorithm)))
+            case None =>
+              F.raiseError(new InvalidKeyAlgorithm(keyId, algorithmJson))
+          }
+        case None =>
+          signing(keyId)
+      }
+    } yield signing
   }
 }
