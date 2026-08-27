@@ -27,7 +27,6 @@ import jots.JwtException.InvalidKeyId
 import jots.JwtException.InvalidPrivateKey
 import jots.JwtException.InvalidRsaKeyLength
 import jots.JwtException.InvalidSecretKeyLength
-import jots.JwtException.MissingKeyId
 import jots.JwtException.RejectedKeyAlgorithm
 import jots.JwtException.UnsuitableSigningKey
 import jots.JwtException.UnsupportedKey
@@ -183,7 +182,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
     } yield expect.eql(Some(keyId.value), signed.header.toJsonObject("kid").flatMap(_.asString))
   }
 
-  test("JwtSigning.jwk.rejectMissingKeyId") {
+  test("JwtSigning.jwk.allowMissingKeyId") {
     val key =
       jwk(
         "kty" -> "oct".asJson,
@@ -191,7 +190,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
       )
 
     JwtSigning.default[IO].jwk(HS256, key).attempt.map {
-      case Left(_: MissingKeyId) => success
+      case Right(_) => success
       case _ => failure("unexpected case")
     }
   }
@@ -280,7 +279,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
     JwtSigning.default[IO].jwk(HS256, key).attempt.map {
       case Left(e: RejectedKeyAlgorithm) =>
         expect.eql(
-          "the key with id [key-1] algorithm (alg) [HS384] was rejected, expected [HS256]",
+          "the key with id [key-1] and algorithm (alg) [HS384] was rejected, expected [HS256]",
           e.message
         )
       case _ => failure("unexpected case")
@@ -292,7 +291,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
 
     JwtSigning.default[IO].jwk(HS256, key).attempt.map {
       case Left(e: InvalidKeyAlgorithm) =>
-        expect.eql("the key with id [key-1] algorithm (alg) [256] is invalid", e.message)
+        expect.eql("the key with id [key-1] has invalid algorithm (alg) [256]", e.message)
       case _ => failure("unexpected case")
     }
   }

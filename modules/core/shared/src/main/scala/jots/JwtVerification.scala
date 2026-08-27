@@ -468,7 +468,7 @@ object JwtVerification {
             val rsa = JwtVerificationBuilder.default[F].verifyWith[G].rsa(algorithm, _)
             key.toPublicKey.liftTo[F].map(rsa).flatMap(build).tupleLeft(keyId)
           case (algorithm, keyType) =>
-            F.raiseError(new UnsupportedKey(keyId, keyType, Some(algorithm)))
+            F.raiseError(new UnsupportedKey(keyId.some, keyType, Some(algorithm)))
         }
       }
 
@@ -517,7 +517,7 @@ object JwtVerification {
                 F.raiseError(new NoAcceptedAlgorithms(keyId, key.keyType))
             }
           case keyType =>
-            F.raiseError(new UnsupportedKey(keyId, keyType))
+            F.raiseError(new UnsupportedKey(keyId.some, keyType))
         }
       }
 
@@ -548,10 +548,10 @@ object JwtVerification {
               case Some(algorithmName) =>
                 algorithmWithName(algorithmName) match {
                   case Some(algorithm) => verify(algorithm, key)
-                  case None => F.raiseError(new RejectedKeyAlgorithm(keyId, algorithmName, algorithms))
+                  case None => F.raiseError(new RejectedKeyAlgorithm(keyId.some, algorithmName, algorithms))
                 }
               case None =>
-                F.raiseError(new InvalidKeyAlgorithm(keyId, algorithmJson))
+                F.raiseError(new InvalidKeyAlgorithm(keyId.some, algorithmJson))
             }
           }
         case None =>

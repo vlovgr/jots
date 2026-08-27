@@ -544,7 +544,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
       .map {
         case Left(e: JwtException.RejectedKeyAlgorithm) =>
           expect.eql(
-            "the key with id [key-1] algorithm (alg) [HS384] was rejected, expected [HS256]",
+            "the key with id [key-1] and algorithm (alg) [HS384] was rejected, expected [HS256]",
             e.message
           )
         case _ => failure("unexpected case")
@@ -560,7 +560,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
       .attempt
       .map {
         case Left(e: JwtException.InvalidKeyAlgorithm) =>
-          expect.eql("the key with id [key-1] algorithm (alg) [256] is invalid", e.message)
+          expect.eql("the key with id [key-1] has invalid algorithm (alg) [256]", e.message)
         case _ => failure("unexpected case")
       }
   }

@@ -24,6 +24,7 @@ import cats.syntax.all.*
 import jots.JwtException.InvalidKeyAlgorithm
 import jots.JwtException.InvalidPrivateKey
 import jots.JwtException.InvalidSecretKeyLength
+import jots.JwtException.MissingKeyId
 import jots.JwtException.RejectedKeyAlgorithm
 import jots.JwtException.UnsuitableSigningKey
 import jots.JwtException.UnsupportedKey
@@ -204,9 +205,12 @@ object JwtSigning {
   )(implicit F: MonadThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] = {
     import builder.*
 
-    def signing(keyId: JwkKeyId): F[JwtSigning[G]] = {
+    def signing(keyId: Option[JwkKeyId]): F[JwtSigning[G]] = {
       def withKeyId(signing: JwtSigning[G]): JwtSigning[G] =
-        signing.mapJwt(_.mapHeader(_.withKeyId(keyId)))
+        keyId match {
+          case Some(keyId) => signing.mapJwt(_.mapHeader(_.withKeyId(keyId)))
+          case None => signing
+        }
 
       (algorithm, key.keyType) match {
         case (algorithm: JwtEcdsaAlgorithm, JwkKeyTypes.EC) =>
@@ -226,7 +230,7 @@ object JwtSigning {
       }
     }
 
-    def ensureSuitableForSigning(keyId: JwkKeyId): F[Unit] =
+    def ensureSuitableForSigning(keyId: Option[JwkKeyId]): F[Unit] =
       key.toJsonObject("use") match {
         case Some(use) if !use.asString.contains("sig") =>
           F.raiseError(new UnsuitableSigningKey(keyId, s"the key use (use) [${use.noSpaces}] is not [sig]"))
@@ -256,8 +260,11 @@ object JwtSigning {
           }
       }
 
+    def extractKeyId: F[Option[JwkKeyId]] =
+      key.keyId.liftTo[F].map(_.some).recover { case _: MissingKeyId => None }
+
     for {
-      keyId <- key.keyId.liftTo[F]
+      keyId <- extractKeyId
       _ <- ensureSuitableForSigning(keyId)
       signing <- key.toJsonObject("alg") match {
         case Some(algorithmJson) =>

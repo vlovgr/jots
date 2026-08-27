@@ -85,10 +85,11 @@ object JwtException {
     * Exception raised by [[JwtSigning]] or [[JwtVerification]] when
     * the `alg` algorithm of a provided [[Jwk]] is not a `String`.
     */
-  final class InvalidKeyAlgorithm(keyId: JwkKeyId, algorithm: Json)
-    extends JwtException(
-      s"the key with id [${keyId.value}] algorithm (alg) [${algorithm.noSpaces}] is invalid"
-    )
+  final class InvalidKeyAlgorithm(keyId: Option[JwkKeyId], algorithm: Json)
+    extends JwtException({
+      val id = keyId.foldMap(keyId => s" with id [${keyId.value}]")
+      s"the key$id has invalid algorithm (alg) [${algorithm.noSpaces}]"
+    })
 
   /**
     * Exception raised when the `kid` key identifier is not a `String`.
@@ -292,12 +293,13 @@ object JwtException {
     * or verification has been configured to use.
     */
   final class RejectedKeyAlgorithm(
-    keyId: JwkKeyId,
+    keyId: Option[JwkKeyId],
     keyAlgorithm: String,
     algorithms: NonEmptyList[JwtAlgorithm]
   ) extends JwtException({
+      val id = keyId.foldMap(keyId => s" id [${keyId.value}] and")
       val expected = algorithms.toList.map(_.name).mkString(",")
-      s"the key with id [${keyId.value}] algorithm (alg) [$keyAlgorithm] " +
+      s"the key with$id algorithm (alg) [$keyAlgorithm] " +
         s"was rejected, expected [$expected]"
     })
 
@@ -329,9 +331,10 @@ object JwtException {
     * Exception raised when creating a [[JwtSigning]] with a [[Jwk]] that is
     * not suitable for signing, as detailed by the specified `details`.
     */
-  final class UnsuitableSigningKey(keyId: JwkKeyId, details: String)
+  final class UnsuitableSigningKey(keyId: Option[JwkKeyId], details: String)
     extends JwtException({
-      s"the key with id [${keyId.value}] is not suitable for signing: $details"
+      val id = keyId.foldMap(keyId => s" with id [${keyId.value}]")
+      s"the key${id} is not suitable for signing: $details"
     })
 
   /**
@@ -345,10 +348,14 @@ object JwtException {
     * Exception raised by [[JwtSigning]] or [[JwtVerification]]
     * when a provided [[Jwk]] is not supported by the library.
     */
-  final class UnsupportedKey(keyId: JwkKeyId, keyType: JwkKeyType, algorithm: Option[JwtAlgorithm] = None)
-    extends JwtException({
-      val details = algorithm.foldMap(algorithm => s" and algorithm [${algorithm.name}]")
-      s"the key with id [${keyId.value}] and type [${keyType.name}]${details} is not supported"
+  final class UnsupportedKey(
+    keyId: Option[JwkKeyId],
+    keyType: JwkKeyType,
+    algorithm: Option[JwtAlgorithm] = None
+  ) extends JwtException({
+      val andId = keyId.foldMap(keyId => s" and id [${keyId.value}]")
+      val andAlgorithm = algorithm.foldMap(algorithm => s" and algorithm [${algorithm.name}]")
+      s"the key with type [${keyType.name}]${andId}${andAlgorithm} is not supported"
     })
 
   /**

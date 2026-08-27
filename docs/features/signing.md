@@ -193,9 +193,8 @@ signedJwt.map(_.show).unsafeRunSync()
 
 There is a `Jwk` type representing a JSON Web Key (JWK). A `Jwk` can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.
 
-1. The `kid` (Key ID) parameter must be specified for the key.
-2. If `key_ops` is specified, it must contain the `sign` operation.
-3. If `use` is specified for the key, it must be set to `sig` (signature).
+1. If `key_ops` is specified, it must contain the `sign` operation.
+2. If `use` is specified for the key, it must be set to `sig` (signature).
 
 Additionally, the private or secret key must be supported by the library. This means having the `kty` parameter set with other key-type appropriate parameters. Depending on if `alg` (algorithm) is set or not on the key, the algorithm has to match with the provided algorithm.
 
@@ -223,7 +222,7 @@ val signedJwtJwk: SyncIO[SignedJwt] =
   } yield jwt
 ```
 
-Note signing sets the `kid` (Key ID) in the token header to the value from the `Jwk`.
+If the `Jwk` has a `kid` (Key ID) set, this will also be set in the header of the token.
 
 ```scala mdoc:to-string
 signedJwtJwk.unsafeRunSync()
@@ -250,6 +249,10 @@ val jwk =
     }
   """
 ```
+
+@:callout(info)
+Note the `String` interpolator can be used for private keys, public keys and secret keys. Since token signing makes use of private keys or secret keys, we should take care to _not_ put secrets in source code.
+@:@
 
 ## Custom Signing
 
