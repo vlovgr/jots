@@ -468,7 +468,7 @@ object JwtVerification {
             val rsa = JwtVerificationBuilder.default[F].verifyWith[G].rsa(algorithm, _)
             key.toPublicKey.liftTo[F].map(rsa).flatMap(build).tupleLeft(keyId)
           case (algorithm, keyType) =>
-            F.raiseError(new UnsupportedKey(keyId, keyType, Some(algorithm)))
+            F.raiseError(new UnsupportedKey(keyId.some, keyType, Some(algorithm)))
         }
       }
 
@@ -517,7 +517,7 @@ object JwtVerification {
                 F.raiseError(new NoAcceptedAlgorithms(keyId, key.keyType))
             }
           case keyType =>
-            F.raiseError(new UnsupportedKey(keyId, keyType))
+            F.raiseError(new UnsupportedKey(keyId.some, keyType))
         }
       }
 
@@ -542,15 +542,17 @@ object JwtVerification {
 
     def keyVerification(key: Jwk): F[(JwkKeyId, JwtVerification[G])] =
       key.toJsonObject("alg") match {
-        case Some(algorithm) =>
-          algorithm.asString match {
-            case Some(algorithm) =>
-              algorithmWithName(algorithm) match {
-                case Some(algorithm) => verify(algorithm, key)
-                case None => F.raiseError(new RejectedAlgorithm())
-              }
-            case None =>
-              F.raiseError(new InvalidAlgorithm())
+        case Some(algorithmJson) =>
+          key.keyId.liftTo[F].flatMap { keyId =>
+            algorithmJson.asString match {
+              case Some(algorithmName) =>
+                algorithmWithName(algorithmName) match {
+                  case Some(algorithm) => verify(algorithm, key)
+                  case None => F.raiseError(new RejectedKeyAlgorithm(keyId.some, algorithmName, algorithms))
+                }
+              case None =>
+                F.raiseError(new InvalidKeyAlgorithm(keyId.some, algorithmJson))
+            }
           }
         case None =>
           verifyAll(key)

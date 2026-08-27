@@ -18,6 +18,8 @@ package jots
 
 import cats.Hash
 import cats.Show
+import io.circe.Decoder
+import io.circe.Encoder
 
 /**
   * The key identifier used to identify a specific key in a [[JwkSet]].
@@ -57,6 +59,12 @@ object JwkKeyId {
 
   def unapply(keyId: JwkKeyId): Some[String] =
     Some(keyId.value)
+
+  implicit val jwkKeyIdDecoder: Decoder[JwkKeyId] =
+    Decoder[String].map(fromString)
+
+  implicit val jwkKeyIdEncoder: Encoder[JwkKeyId] =
+    Encoder[String].contramap(_.value)
 
   implicit val jwkKeyIdHash: Hash[JwkKeyId] =
     Hash.fromUniversalHashCode

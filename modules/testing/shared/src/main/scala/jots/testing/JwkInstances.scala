@@ -82,6 +82,18 @@ private[jots] trait JwkInstances {
       List(
         jwk(
           "kty" -> "OKP".asJson,
+          "d" -> "jTlG6mEdJ6Gk9knqXzE78Gtx-zYhGdb4j2lcLh-yUTAALwxNtfEPp8BBQQ4BKSxjkH4MjWydMwxc".asJson,
+          "crv" -> "Ed448".asJson,
+          "kid" -> "vDjtZY_B1IGbTGMOmq3CwZ55e43TKSzKpP6_YZzSc3A".asJson,
+          "x" -> "tCD-LhWRI-145Cs2-xiUpWK1jBml1pBc2e0j0DBCuDfuAQBHAi8ArxOe3u5fkuMGhkNdNu3j4cMA".asJson
+        ) -> jwk(
+          "kty" -> "OKP".asJson,
+          "crv" -> "Ed448".asJson,
+          "kid" -> "vDjtZY_B1IGbTGMOmq3CwZ55e43TKSzKpP6_YZzSc3A".asJson,
+          "x" -> "tCD-LhWRI-145Cs2-xiUpWK1jBml1pBc2e0j0DBCuDfuAQBHAi8ArxOe3u5fkuMGhkNdNu3j4cMA".asJson
+        ),
+        jwk(
+          "kty" -> "OKP".asJson,
           "d" -> "5h1NYZg7SoQgbivlpWgcleu6qdMsHNPCmMDWZVl3vX8".asJson,
           "crv" -> "Ed25519".asJson,
           "kid" -> "VCZXu7zoBvQNv7ijRyFjW7i2-wqoVOhyPjuBGDz-MY8".asJson,

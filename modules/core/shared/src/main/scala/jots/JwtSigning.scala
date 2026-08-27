@@ -18,9 +18,16 @@ package jots
 
 import cats.ApplicativeThrow
 import cats.Functor
+import cats.MonadThrow
+import cats.data.NonEmptyList
 import cats.syntax.all.*
+import jots.JwtException.InvalidKeyAlgorithm
 import jots.JwtException.InvalidPrivateKey
 import jots.JwtException.InvalidSecretKeyLength
+import jots.JwtException.MissingKeyId
+import jots.JwtException.RejectedKeyAlgorithm
+import jots.JwtException.UnsuitableSigningKey
+import jots.JwtException.UnsupportedKey
 import jots.crypto.Crypto
 import jots.crypto.PrivateKey
 import jots.crypto.SecretKey
@@ -49,6 +56,13 @@ trait JwtSigning[F[_]] {
     * Returns a [[SignedJwt]] for the specified [[JwtBuilder]].
     */
   def sign(jwt: JwtBuilder): F[SignedJwt]
+
+  /**
+    * Returns a new [[JwtSigning]] instance which applies the
+    * specified function on the [[JwtBuilder]] before signing.
+    */
+  def mapJwt(f: JwtBuilder => JwtBuilder): JwtSigning[F] =
+    JwtSigning.signWith(jwt => sign(f(jwt)))
 }
 
 object JwtSigning {
@@ -101,6 +115,16 @@ object JwtSigning {
       secretKey: SecretKey
     )(implicit F: ApplicativeThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] =
       JwtSigningBuilder.default[F].signWith[G].hmac(algorithm, secretKey).build
+
+    /**
+      * Returns a new [[JwtSigning]] instance which signs tokens
+      * using the specified algorithm and [[Jwk]].
+      */
+    def jwk(
+      algorithm: JwtAlgorithm,
+      key: Jwk
+    )(implicit F: MonadThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] =
+      JwtSigningBuilder.default[F].signWith[G].jwk(algorithm, key).build
 
     /**
       * Returns a new [[JwtSigning]] instance which signs tokens
@@ -174,5 +198,87 @@ object JwtSigning {
             .map(jwt.toSigned)
       }
     }
+  }
+
+  private[jots] def fromJwkBuilder[F[_], G[_]](
+    builder: JwtJwkSigningBuilder[F, G]
+  )(implicit F: MonadThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] = {
+    import builder.*
+
+    def signing(keyId: Option[JwkKeyId]): F[JwtSigning[G]] = {
+      def withKeyId(signing: JwtSigning[G]): JwtSigning[G] =
+        keyId match {
+          case Some(keyId) => signing.mapJwt(_.mapHeader(_.withKeyId(keyId)))
+          case None => signing
+        }
+
+      (algorithm, key.keyType) match {
+        case (algorithm: JwtEcdsaAlgorithm, JwkKeyTypes.EC) =>
+          val ecdsa = JwtSigningBuilder.default[F].signWith[G].ecdsa(algorithm, _)
+          key.toPrivateKey.liftTo[F].map(ecdsa).flatMap(build).map(withKeyId)
+        case (algorithm: JwtHmacAlgorithm, JwkKeyTypes.Oct) =>
+          val hmac = JwtSigningBuilder.default[F].signWith[G].hmac(algorithm, _)
+          key.toSecretKey.liftTo[F].map(hmac).flatMap(build).map(withKeyId)
+        case (algorithm: JwtEddsaAlgorithm, JwkKeyTypes.OKP) =>
+          val eddsa = JwtSigningBuilder.default[F].signWith[G].eddsa(algorithm, _)
+          key.toPrivateKey.liftTo[F].map(eddsa).flatMap(build).map(withKeyId)
+        case (algorithm: JwtRsaAlgorithm, JwkKeyTypes.RSA) =>
+          val rsa = JwtSigningBuilder.default[F].signWith[G].rsa(algorithm, _)
+          key.toPrivateKey.liftTo[F].map(rsa).flatMap(build).map(withKeyId)
+        case (algorithm, keyType) =>
+          F.raiseError(new UnsupportedKey(keyId, keyType, Some(algorithm)))
+      }
+    }
+
+    def ensureSuitableForSigning(keyId: Option[JwkKeyId]): F[Unit] =
+      key.toJsonObject("use") match {
+        case Some(use) if !use.asString.contains("sig") =>
+          F.raiseError(new UnsuitableSigningKey(keyId, s"the key use (use) [${use.noSpaces}] is not [sig]"))
+        case _ =>
+          key.toJsonObject("key_ops") match {
+            case Some(keyOps) =>
+              keyOps.as[List[String]] match {
+                case Right(operations) if operations.contains("sign") =>
+                  F.unit
+                case Right(_) =>
+                  F.raiseError(
+                    new UnsuitableSigningKey(
+                      keyId,
+                      s"the key operations (key_ops) [${keyOps.noSpaces}] do not include [sign]"
+                    )
+                  )
+                case Left(_) =>
+                  F.raiseError(
+                    new UnsuitableSigningKey(
+                      keyId,
+                      s"the key operations (key_ops) [${keyOps.noSpaces}] are invalid"
+                    )
+                  )
+              }
+            case None =>
+              F.unit
+          }
+      }
+
+    def extractKeyId: F[Option[JwkKeyId]] =
+      key.keyId.liftTo[F].map(_.some).recover { case _: MissingKeyId => None }
+
+    for {
+      keyId <- extractKeyId
+      _ <- ensureSuitableForSigning(keyId)
+      signing <- key.toJsonObject("alg") match {
+        case Some(algorithmJson) =>
+          algorithmJson.asString match {
+            case Some(algorithmName) if algorithmMatches(algorithmName) =>
+              signing(keyId)
+            case Some(algorithmName) =>
+              F.raiseError(new RejectedKeyAlgorithm(keyId, algorithmName, NonEmptyList.one(algorithm)))
+            case None =>
+              F.raiseError(new InvalidKeyAlgorithm(keyId, algorithmJson))
+          }
+        case None =>
+          signing(keyId)
+      }
+    } yield signing
   }
 }

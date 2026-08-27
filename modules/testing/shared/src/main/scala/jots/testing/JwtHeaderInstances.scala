@@ -16,6 +16,7 @@
 
 package jots.testing
 
+import jots.JwkKeyId
 import jots.JwtHeader
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
@@ -32,7 +33,7 @@ private[jots] trait JwtHeaderInstances {
     for {
       algorithm <- Gen.option(jwtAlgorithmGen)
       contentType <- Gen.option(arbitrary[String])
-      keyId <- Gen.option(arbitrary[String])
+      keyId <- Gen.option(arbitrary[JwkKeyId])
       typ <- Gen.oneOf(
         Gen.const(Some("JWT")),
         Gen.option(arbitrary[String])

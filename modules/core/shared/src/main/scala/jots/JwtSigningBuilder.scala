@@ -18,6 +18,7 @@ package jots
 
 import cats.ApplicativeThrow
 import cats.Functor
+import cats.MonadThrow
 import jots.crypto.Crypto
 import jots.crypto.PrivateKey
 import jots.crypto.SecretKey
@@ -105,6 +106,16 @@ object JwtSigningBuilder {
 
     /**
       * Returns a new [[JwtSigningBuilder]] instance which signs
+      * tokens using the specified algorithm and [[Jwk]].
+      */
+    def jwk(
+      algorithm: JwtAlgorithm,
+      key: Jwk
+    )(implicit F: MonadThrow[F], G: Functor[G], crypto: Crypto[G]): JwtSigningBuilder[F, G] =
+      JwtJwkSigningBuilder.default(algorithm, key)
+
+    /**
+      * Returns a new [[JwtSigningBuilder]] instance which signs
       * tokens using the specified RSA algorithm and private key.
       */
     def rsa(
@@ -166,5 +177,40 @@ private[jots] object JwtHmacSigningBuilder {
       checkKeyRequirements = true,
       algorithm = algorithm,
       secretKey = secretKey
+    )
+}
+
+private[jots] final case class JwtJwkSigningBuilder[F[_]: MonadThrow, G[_]: Crypto: Functor](
+  override val checkKeyRequirements: Boolean,
+  algorithm: JwtAlgorithm,
+  key: Jwk
+) extends JwtSigningBuilder[F, G] {
+  def algorithmMatches(name: String): Boolean =
+    name == algorithm.name
+
+  /**
+    * Builds the specified builder using the settings from this builder.
+    */
+  def build(builder: JwtSigningBuilder[F, G]): F[JwtSigning[G]] =
+    builder
+      .withCheckKeyRequirements(checkKeyRequirements)
+      .build
+
+  override def withCheckKeyRequirements(checkKeyRequirements: Boolean): JwtSigningBuilder[F, G] =
+    copy(checkKeyRequirements = checkKeyRequirements)
+
+  override def build: F[JwtSigning[G]] =
+    JwtSigning.fromJwkBuilder(this)
+}
+
+private[jots] object JwtJwkSigningBuilder {
+  def default[F[_]: MonadThrow, G[_]: Crypto: Functor](
+    algorithm: JwtAlgorithm,
+    key: Jwk
+  ): JwtJwkSigningBuilder[F, G] =
+    JwtJwkSigningBuilder(
+      checkKeyRequirements = true,
+      algorithm = algorithm,
+      key = key
     )
 }
