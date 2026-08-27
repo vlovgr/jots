@@ -371,6 +371,7 @@ private[jots] object JwkOkp {
 
   private def oid(curve: String): Either[String, Oid] =
     curve match {
+      case "Ed448" => Right(Oid.Ed448)
       case "Ed25519" => Right(Oid.Ed25519)
       case curve => Left(s"unsupported curve [$curve]")
     }
