@@ -264,7 +264,21 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
           <li>The not-before claim (<code>nbf</code>), when present, is verified to not be in the future.</li>
           <li>Tokens containing a set of critical headers (<code>crit</code>) will be rejected by default.</li>
         </ul>
-        <p>Except for the signature verification, these checks can be adjusted using various <code>JwtVerificationBuilder</code> methods. There is also additional checks which can be enabled, like requiring certain claims to be present, and further tweaks, like accounting for clock skew. If the provided verifications are not enough, resort to <a href="#custom-verification">custom verifications</a>.</p>
+        
+        <h4 id="customizing-default-verifications" class="section"><a class="anchor-link left" href="#customizing-default-verifications"><i class="icofont-laika link">&#xef71;</i></a>Customizing Default Verifications</h4>
+        <p>Except for the signature verification, the above checks can be adjusted using <code>JwtVerificationBuilder</code>. There is also additional checks which can be enabled, like requiring certain claims to be present, and further tweaks, like accounting for clock skew. The following example requires <code>exp</code>, <code>iat</code>, and <code>nbf</code> to be present, and allows a 30 second clock skew.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">jwtVerificationCustom</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">IO</span><span>]] =
+  </span><span class="type-name">JwtVerificationBuilder</span><span>
+    .</span><span class="identifier">default</span><span>[</span><span class="type-name">IO</span><span>]
+    .</span><span class="identifier">ecdsa</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">publicKey</span><span>)
+    .</span><span class="identifier">withRequireExpiration</span><span>(</span><span class="boolean-literal">true</span><span>)
+    .</span><span class="identifier">withRequireIssuedAt</span><span>(</span><span class="boolean-literal">true</span><span>)
+    .</span><span class="identifier">withRequireNotBefore</span><span>(</span><span class="boolean-literal">true</span><span>)
+    .</span><span class="identifier">withClockSkew</span><span>(</span><span class="number-literal">30</span><span>.</span><span class="identifier">seconds</span><span>)
+    .</span><span class="identifier">build</span></code></pre>
+        <p>If the default verifications are not enough, resort to <a href="#custom-verification">custom verifications</a>.</p>
         
         <h3 id="json-web-key-set" class="section"><a class="anchor-link left" href="#json-web-key-set"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key Set</h3>
         <p>There is a <code>Jwk</code> type representing a JSON Web Key (JWK) and a <code>JwkSet</code> type for JWK Set. A <code>JwkSet</code> can be used for verification as long as it contains at least one key that meet all of the following criteria. Keys which do not match the criteria will be filtered out, and if there are no keys available after filtering, an exception is raised.</p>
