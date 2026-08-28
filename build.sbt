@@ -4,7 +4,7 @@ val circeVersion = "0.14.16"
 val literallyVersion = "1.2.0"
 val scala213Version = "2.13.18"
 val scala3Version = "3.3.8"
-val scalaCheckVersion = "1.19.0"
+val scalaCheckVersion = "1.20.0"
 val scodecBitsVersion = "1.2.5"
 val weaverVersion = "0.13.0"
 
