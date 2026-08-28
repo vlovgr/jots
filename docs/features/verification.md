@@ -170,7 +170,25 @@ The default `JwtVerification` instances perform the following verifications.
 - The not-before claim (`nbf`), when present, is verified to not be in the future.
 - Tokens containing a set of critical headers (`crit`) will be rejected by default.
 
-Except for the signature verification, these checks can be adjusted using various `JwtVerificationBuilder` methods. There is also additional checks which can be enabled, like requiring certain claims to be present, and further tweaks, like accounting for clock skew. If the provided verifications are not enough, resort to [custom verifications](#custom-verification).
+#### Customizing Default Verifications
+
+Except for the signature verification, the above checks can be adjusted using `JwtVerificationBuilder`. There is also additional checks which can be enabled, like requiring certain claims to be present, and further tweaks, like accounting for clock skew. The following example requires `exp`, `iat`, and `nbf` to be present, and allows a 30 second clock skew.
+
+```scala mdoc:silent
+import scala.concurrent.duration.*
+
+val jwtVerificationCustom: IO[JwtVerification[IO]] =
+  JwtVerificationBuilder
+    .default[IO]
+    .ecdsa(ES256, publicKey)
+    .withRequireExpiration(true)
+    .withRequireIssuedAt(true)
+    .withRequireNotBefore(true)
+    .withClockSkew(30.seconds)
+    .build
+```
+
+If the default verifications are not enough, resort to [custom verifications](#custom-verification).
 
 ### JSON Web Key Set
 
