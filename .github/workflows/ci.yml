@@ -95,11 +95,11 @@ jobs:
 
       - name: Make target directories
         if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
-        run: mkdir -p modules/testing/jvm/target modules/crypto/jvm/target unidocs/target modules/core/native/target modules/testing/native/target modules/core/js/target modules/testing/js/target modules/core/jvm/target tests/js/target modules/crypto/native/target modules/crypto/js/target tests/jvm/target tests/native/target project/target
+        run: mkdir -p modules/testing/jvm/target modules/crypto/jvm/target modules/http4s/jvm/target modules/http4s/js/target unidocs/target modules/core/native/target modules/testing/native/target modules/core/js/target modules/testing/js/target modules/core/jvm/target tests/js/target modules/crypto/native/target modules/http4s/native/target modules/crypto/js/target tests/jvm/target tests/native/target project/target
 
       - name: Compress target directories
         if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
-        run: tar cf targets.tar modules/testing/jvm/target modules/crypto/jvm/target unidocs/target modules/core/native/target modules/testing/native/target modules/core/js/target modules/testing/js/target modules/core/jvm/target tests/js/target modules/crypto/native/target modules/crypto/js/target tests/jvm/target tests/native/target project/target
+        run: tar cf targets.tar modules/testing/jvm/target modules/crypto/jvm/target modules/http4s/jvm/target modules/http4s/js/target unidocs/target modules/core/native/target modules/testing/native/target modules/core/js/target modules/testing/js/target modules/core/jvm/target tests/js/target modules/crypto/native/target modules/http4s/native/target modules/crypto/js/target tests/jvm/target tests/native/target project/target
 
       - name: Upload target directories
         if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
