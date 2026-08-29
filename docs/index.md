@@ -66,6 +66,7 @@ Refer to the table below for dependencies and version support across modules.
 | -------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------ |
 | `jots`         | `jots-crypto` and circe-jawn @CIRCE_VERSION@                                                               | Scala @SCALA_PUBLISH_VERSIONS@ |
 | `jots-crypto`  | cats-effect-kernel @CATS_EFFECT_VERSION@, literally @LITERALLY_VERSION@, scodec-bits @SCODEC_BITS_VERSION@ | Scala @SCALA_PUBLISH_VERSIONS@ |
+| `jots-http4s`  | `jots` and http4s @HTTP4S_VERSION@                                                                         | Scala @SCALA_PUBLISH_VERSIONS@ |
 | `jots-testing` | `jots` and cats-effect @CATS_EFFECT_VERSION@, scalacheck @SCALACHECK_VERSION@                              | Scala @SCALA_PUBLISH_VERSIONS@ |
 
 For Scala.js and Scala Native version support, refer to the following table.

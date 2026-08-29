@@ -1,6 +1,7 @@
 val catsEffectVersion = "3.7.1"
 val catsVersion = "2.13.0"
 val circeVersion = "0.14.16"
+val http4sVersion = "0.23.36"
 val literallyVersion = "1.2.0"
 val scala213Version = "2.13.18"
 val scala3Version = "3.3.8"
@@ -51,7 +52,7 @@ inThisBuild(
 )
 
 lazy val root = tlCrossRootProject
-  .aggregate(core, crypto, testing, tests, unidocs)
+  .aggregate(core, crypto, http4s, testing, tests, unidocs)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("modules/core"))
@@ -84,7 +85,7 @@ lazy val crypto = crossProject(JVMPlatform, JSPlatform, NativePlatform)
 lazy val docs = project
   .in(file("site"))
   .enablePlugins(TypelevelSitePlugin)
-  .dependsOn(testing.jvm)
+  .dependsOn(http4s.jvm, testing.jvm)
   .settings {
     import laika.ast.Path.Root
     import laika.config.LaikaKeys
@@ -97,6 +98,7 @@ lazy val docs = project
       mdocVariables := mdocVariables.value
         .updated("CATS_EFFECT_VERSION", catsEffectVersion)
         .updated("CIRCE_VERSION", circeVersion)
+        .updated("HTTP4S_VERSION", http4sVersion)
         .updated("LITERALLY_VERSION", literallyVersion)
         .updated("MAJOR_VERSION", majorVersion(version.value))
         .updated("ORGANIZATION", (ThisBuild / organization).value)
@@ -118,6 +120,16 @@ lazy val docs = project
     )
   }
 
+lazy val http4s = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+  .in(file("modules/http4s"))
+  .dependsOn(core)
+  .settings(
+    name := "jots-http4s",
+    libraryDependencies ++= Seq(
+      "org.http4s" %%% "http4s-core" % http4sVersion
+    )
+  )
+
 lazy val testing = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("modules/testing"))
   .dependsOn(core)
@@ -137,7 +149,7 @@ lazy val testing = crossProject(JVMPlatform, JSPlatform, NativePlatform)
 
 lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("tests"))
-  .dependsOn(testing)
+  .dependsOn(http4s, testing)
   .settings(
     name := "jots-tests",
     publish / skip := true,
@@ -165,6 +177,7 @@ lazy val unidocs = project
     ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(
       core.jvm,
       crypto.jvm,
+      http4s.jvm,
       testing.jvm
     )
   )
