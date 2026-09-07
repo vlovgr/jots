@@ -1,12 +1,17 @@
+val caseInsensitiveVersion = "1.5.0"
 val catsEffectVersion = "3.7.1"
 val catsVersion = "2.13.0"
 val circeVersion = "0.14.16"
+val fs2Version = "3.14.0"
 val http4sVersion = "0.23.36"
 val literallyVersion = "1.2.0"
+val log4catsVersion = "2.8.0"
 val scala213Version = "2.13.18"
 val scala3Version = "3.3.8"
 val scalaCheckVersion = "1.20.0"
 val scodecBitsVersion = "1.2.5"
+val slf4jVersion = "1.7.36"
+val vaultVersion = "3.7.0"
 val weaverVersion = "0.13.0"
 
 inThisBuild(
@@ -65,7 +70,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.scodec" %%% "scodec-bits" % scodecBitsVersion,
       "org.typelevel" %%% "cats-core" % catsVersion,
       "org.typelevel" %%% "cats-effect-kernel" % catsEffectVersion,
-      "org.typelevel" %%% "cats-kernel" % catsVersion
+      "org.typelevel" %%% "cats-kernel" % catsVersion,
+      "org.typelevel" %%% "literally" % literallyVersion
     ) ++ scalaReflect(scalaVersion.value)
   )
 
@@ -126,8 +132,18 @@ lazy val http4s = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     name := "jots-http4s",
     libraryDependencies ++= Seq(
+      "co.fs2" %%% "fs2-core" % fs2Version,
+      "io.circe" %%% "circe-core" % circeVersion,
       "org.http4s" %%% "http4s-circe" % http4sVersion,
-      "org.http4s" %%% "http4s-server" % http4sVersion
+      "org.http4s" %%% "http4s-client" % http4sVersion,
+      "org.http4s" %%% "http4s-core" % http4sVersion,
+      "org.http4s" %%% "http4s-server" % http4sVersion,
+      "org.typelevel" %%% "case-insensitive" % caseInsensitiveVersion,
+      "org.typelevel" %%% "cats-core" % catsVersion,
+      "org.typelevel" %%% "cats-effect-kernel" % catsEffectVersion,
+      "org.typelevel" %%% "cats-effect" % catsEffectVersion,
+      "org.typelevel" %%% "log4cats-core" % log4catsVersion,
+      "org.typelevel" %%% "vault" % vaultVersion
     )
   )
 
@@ -167,6 +183,11 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     Test / scalaJSStage := FastOptStage,
     jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
+  )
+  .jvmSettings(
+    libraryDependencies ++= Seq(
+      "org.slf4j" % "slf4j-nop" % slf4jVersion % Runtime
+    )
   )
   .nativeEnablePlugins(ScalaNativeBrewedConfigPlugin)
   .nativeSettings(Test / nativeBrewFormulas += "openssl")
