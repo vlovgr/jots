@@ -126,6 +126,7 @@ lazy val http4s = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     name := "jots-http4s",
     libraryDependencies ++= Seq(
+      "org.http4s" %%% "http4s-circe" % http4sVersion,
       "org.http4s" %%% "http4s-server" % http4sVersion
     )
   )

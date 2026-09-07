@@ -16,14 +16,29 @@
 
 package jots
 
+import cats.effect.Concurrent
 import cats.syntax.all.*
 import org.http4s.AuthScheme
 import org.http4s.Credentials
+import org.http4s.EntityDecoder
+import org.http4s.EntityEncoder
 import org.http4s.Header
 import org.http4s.ParseFailure
+import org.http4s.circe.CirceEntityCodec
 import org.http4s.headers.Authorization
 
 package object http4s {
+  implicit def jwkEntityDecoder[F[_]: Concurrent]: EntityDecoder[F, Jwk] =
+    CirceEntityCodec.circeEntityDecoder
+
+  implicit def jwkEntityEncoder[F[_]]: EntityEncoder[F, Jwk] =
+    CirceEntityCodec.circeEntityEncoder
+
+  implicit def jwkSetEntityDecoder[F[_]: Concurrent]: EntityDecoder[F, JwkSet] =
+    CirceEntityCodec.circeEntityDecoder
+
+  implicit def jwkSetEntityEncoder[F[_]]: EntityEncoder[F, JwkSet] =
+    CirceEntityCodec.circeEntityEncoder
 
   /**
     * Instance for reading and writing [[SignedJwt]]s
