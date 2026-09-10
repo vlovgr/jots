@@ -65,7 +65,7 @@ import scala.concurrent.duration.FiniteDuration
   *
   * The [[RefreshingJwtVerification.refreshWith]] function accepts the
   * function to use for refreshing [[JwtVerification]], while there is
-  * [[jwkSet]] and [[jwkSetAll]] provided as convenience functions.
+  * [[RefreshingJwtVerification.jwkSet]] for convenience.
   *
   * The [[RefreshingJwtVerificationBuilder]] provides customization of
   * the default settings. Notably, logging is no-op by default, so set
