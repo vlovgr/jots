@@ -26,6 +26,7 @@ import cats.effect.syntax.all.*
 import cats.syntax.all.*
 import jots.JwkSet
 import jots.JwtAlgorithm
+import jots.JwtException
 import jots.JwtVerification
 import jots.SignedJwt
 import jots.VerifiedJwt
@@ -51,6 +52,11 @@ import scala.concurrent.duration.FiniteDuration
   * has been retrieved. Errors will be surfaced until the initial keys
   * are available. Subsequent errors retrieving keys continues to keep
   * the current [[JwkSet]] instead of surfacing the errors.
+  *
+  * When verification fails because there is no key in the current set
+  * with a matching key id (kid), an extra refresh is requested, and a
+  * second verification attempt is done with the refreshed keys. These
+  * refreshes are by default performed at most once every 60 seconds.
   *
   * If the `Resource` is released, verification will continue with the
   * current [[JwkSet]] and refreshing stops. If no initial key set has
@@ -149,48 +155,82 @@ object RefreshingJwtVerification {
       for {
         keys <- retryClient.expect[JwkSet](uri)
         verification <- builder.verification(keys)
-        state = State(keys, verification)
+        state <- State.next(keys, verification)
       } yield state
 
     def refreshState(ref: PhaseRef[F]): F[Unit] =
       for {
         result <- fetchState.attempt
-        _ <- updateState(ref, result)
+        phase <- updateState(ref, result)
         _ <- logResult(result)
-        wait <- nextRefresh(result)
-        _ <- F.sleep(wait)
+        wait <- nextWait(result)
+        _ <- awaitRefresh(phase, wait)
       } yield ()
 
-    def logResult(result: StateResult[F]): F[Unit] =
-      result match {
-        case Right(state) => log(_.debug(s"Refreshed key set with ${state.keys.size} key(s)"))
-        case Left(cause) => log(_.warn(cause)(s"Failed to refresh key set"))
+    def awaitRefresh(phase: Phase[F], wait: FiniteDuration): F[Unit] =
+      phase match {
+        case Phase.Ready(state) => F.race(F.sleep(wait), state.requestRefresh.get).void
+        case _ => F.sleep(wait)
       }
 
-    def nextRefresh(result: StateResult[F]): F[FiniteDuration] = {
+    def nextWait(result: StateResult[F]): F[FiniteDuration] = {
       val wait = if (result.isRight) refreshInterval else refreshIntervalOnError
       log(_.debug(s"The next key set refresh is in $wait")).as(wait)
     }
 
-    def updateState(ref: PhaseRef[F], result: StateResult[F]): F[Unit] =
-      ref.flatModify {
-        case ready @ Phase.Ready(_) if result.isLeft => (ready, F.unit)
-        case Phase.Pending(deferred) => (Phase.fromResult(result), deferred.complete(result).void)
-        case _ => (Phase.fromResult(result), F.unit)
+    def nextPhase(ref: PhaseRef[F], result: StateResult[F]): F[Phase[F]] =
+      result match {
+        case Right(state) =>
+          F.pure(Phase.Ready(state))
+        case Left(error) =>
+          ref.get.flatMap {
+            case ready @ Phase.Ready(_) => ready.next
+            case _ => F.pure(Phase.Failed(error))
+          }
       }
 
-    def completePending(ref: PhaseRef[F])(outcome: Outcome[F, Throwable, Unit]): F[Unit] =
+    def updateState(ref: PhaseRef[F], result: StateResult[F]): F[Phase[F]] =
+      nextPhase(ref, result).flatMap { next =>
+        ref.flatModify {
+          case Phase.Pending(deferred) => (next, deferred.complete(result).as(next))
+          case Phase.Ready(state) => (next, state.refresh.complete(result).as(next))
+          case _ => (next, next.pure)
+        }
+      }
+
+    def refreshOnMissingKey(ref: PhaseRef[F]): F[Option[State[F]]] =
+      (F.monotonic, ref.get).tupled.flatMap {
+        case (now, Phase.Ready(state)) if now - state.refreshedAt >= minRefreshIntervalOnMissingKey =>
+          requestRefresh(state) >> state.refresh.get.map(_.toOption)
+        case _ =>
+          none[State[F]].pure
+      }
+
+    def requestRefresh(state: State[F]): F[Unit] =
+      state.requestRefresh.complete(()).ifM(logRequestRefresh, F.unit)
+
+    def complete(ref: PhaseRef[F])(outcome: Outcome[F, Throwable, Unit]): F[Unit] =
       outcome.embedError.attempt.flatMap {
         case Left(error) =>
           ref.flatModify {
             case Phase.Pending(deferred) => (Phase.Failed(error), deferred.complete(error.asLeft).void)
+            case ready @ Phase.Ready(state) => (ready, state.refresh.complete(error.asLeft).void)
             case phase => (phase, F.unit)
-          } >> logComplete(error)
+          } >> logCompleted(error)
         case Right(_) =>
           F.unit
       }
 
-    def logComplete(cause: Throwable): F[Unit] =
+    def logRequestRefresh: F[Unit] =
+      log(_.debug("Refreshing key set since a referenced key is missing"))
+
+    def logResult(result: StateResult[F]): F[Unit] =
+      result match {
+        case Right(state) => log(_.debug(s"Refreshed key set with ${state.keys.size} key(s)"))
+        case Left(cause) => log(_.warn(cause)("Failed to refresh key set"))
+      }
+
+    def logCompleted(cause: Throwable): F[Unit] =
       log(_.debug(cause)("Key set refreshing was stopped"))
 
     def log(f: Logger[F] => F[Unit]): F[Unit] =
@@ -199,7 +239,7 @@ object RefreshingJwtVerification {
     for {
       deferred <- Deferred[F, StateResult[F]].toResource
       ref <- Ref.of[F, Phase[F]](Phase.Pending(deferred)).toResource
-      _ <- refreshState(ref).foreverM[Unit].guaranteeCase(completePending(ref)).background
+      _ <- refreshState(ref).foreverM[Unit].guaranteeCase(complete(ref)).background
     } yield new RefreshingJwtVerification[F] {
       override def keys: F[JwkSet] =
         state.map(_.keys)
@@ -212,11 +252,39 @@ object RefreshingJwtVerification {
         }
 
       override def verify(jwt: SignedJwt): F[VerifiedJwt] =
-        state.flatMap(_.verification.verify(jwt))
+        state.flatMap { current =>
+          current.verification.verify(jwt).recoverWith { case missingKey: JwtException.MissingKey =>
+            refreshOnMissingKey(ref).flatMap {
+              case Some(refreshed) => refreshed.verification.verify(jwt)
+              case None => missingKey.raiseError
+            }
+          }
+        }
     }
   }
 
-  private final case class State[F[_]](keys: JwkSet, verification: JwtVerification[F])
+  private final case class State[F[_]](
+    keys: JwkSet,
+    verification: JwtVerification[F],
+    refreshedAt: FiniteDuration,
+    requestRefresh: Deferred[F, Unit],
+    refresh: DeferredStateResult[F]
+  ) {
+    def next(implicit F: Temporal[F]): F[State[F]] =
+      State.next(keys, verification)
+  }
+
+  private object State {
+    def next[F[_]](
+      keys: JwkSet,
+      verification: JwtVerification[F]
+    )(implicit F: Temporal[F]): F[State[F]] =
+      for {
+        refreshedAt <- F.monotonic
+        requested <- Deferred[F, Unit]
+        refreshed <- Deferred[F, StateResult[F]]
+      } yield State(keys, verification, refreshedAt, requested, refreshed)
+  }
 
   private type StateResult[F[_]] = Either[Throwable, State[F]]
 
@@ -229,13 +297,10 @@ object RefreshingJwtVerification {
 
     final case class Failed[F[_]](error: Throwable) extends Phase[F]
 
-    final case class Ready[F[_]](state: State[F]) extends Phase[F]
-
-    def fromResult[F[_]](result: StateResult[F]): Phase[F] =
-      result match {
-        case Left(error) => Failed[F](error)
-        case Right(state) => Ready[F](state)
-      }
+    final case class Ready[F[_]](state: State[F]) extends Phase[F] {
+      def next(implicit F: Temporal[F]): F[Phase[F]] =
+        state.next.map(Ready(_))
+    }
   }
 
   private type PhaseRef[F[_]] = Ref[F, Phase[F]]
