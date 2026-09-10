@@ -202,7 +202,7 @@ Additionally, the public or secret key must be supported by the library. This me
 
 #### JWK Set Example
 
-Following is an example of decoding using a JWK Set. The keys are normally retrieved from an HTTP endpoint, but this is beyond the scope of the library. Instead, we provide the `Jwk` directly and create a `JwkSet` using the key. We create a `JwtVerification` instance, allowing all supported ECDSA algorithms, and finally decode the [token](#signature-verification) from before.
+Following is an example of decoding using a JWK Set. If the keys are retrieved from an HTTP endpoint, there is support in the `jots-http4s` module for periodically fetching a new `JwkSet` and [refreshing verification](../integrations/http4s.md#refreshing-verification). For the example, we'll instead provide the `Jwk` directly and create a `JwkSet`. We proceed to create a `JwtVerification`, allowing all of the supported ECDSA algorithms, and finally decode the previously seen [token](#signature-verification).
 
 ```scala mdoc:silent
 import io.circe.syntax.*
