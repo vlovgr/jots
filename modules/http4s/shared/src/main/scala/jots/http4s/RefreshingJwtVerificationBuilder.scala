@@ -108,8 +108,8 @@ sealed abstract class RefreshingJwtVerificationBuilder[F[_]] {
     * Returns the retry policy used when refreshing keys.
     *
     * The default retry policy is a jittered exponential
-    * backoff with up to 5 retries and a maximum wait of
-    * 1 minute between retries.
+    * backoff with up to 4 retries and a maximum wait of
+    * 5 seconds between retries.
     */
   def retryPolicy: RetryPolicy[F]
 
@@ -117,8 +117,8 @@ sealed abstract class RefreshingJwtVerificationBuilder[F[_]] {
     * Sets the retry policy used when refreshing keys.
     *
     * The default retry policy is a jittered exponential
-    * backoff with up to 5 retries and a maximum wait of
-    * 1 minute between retries.
+    * backoff with up to 4 retries and a maximum wait of
+    * 5 seconds between retries.
     */
   def withRetryPolicy(retryPolicy: RetryPolicy[F]): RefreshingJwtVerificationBuilder[F]
 
@@ -242,7 +242,7 @@ object RefreshingJwtVerificationBuilder {
       refreshInterval = 60.minutes,
       refreshIntervalOnError = 60.seconds,
       minRefreshIntervalOnMissingKey = 60.seconds,
-      retryPolicy = RetryPolicy(RetryPolicy.exponentialBackoff(maxWait = 1.minute, maxRetry = 5)),
+      retryPolicy = RetryPolicy(RetryPolicy.exponentialBackoff(maxWait = 5.seconds, maxRetry = 4)),
       uri = uri,
       verification = verification
     )
