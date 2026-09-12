@@ -35,7 +35,6 @@ import jots.crypto.Crypto
 import org.http4s.Uri
 import org.http4s.client.Client
 import org.http4s.client.middleware.Retry
-import org.typelevel.log4cats.Logger
 import scala.concurrent.duration.FiniteDuration
 
 /**
@@ -176,7 +175,7 @@ object RefreshingJwtVerification {
 
     def nextWait(result: StateResult[F]): F[FiniteDuration] = {
       val wait = if (result.isRight) refreshInterval else refreshIntervalOnError
-      log(_.debug(s"The next key set refresh is in $wait")).as(wait)
+      logger.debug(s"The next key set refresh is in $wait").as(wait)
     }
 
     def nextPhase(ref: PhaseRef[F], result: StateResult[F]): F[Phase[F]] =
@@ -215,12 +214,15 @@ object RefreshingJwtVerification {
       state.requestRefresh.complete(()).ifM(logRequestRefresh, F.unit)
 
     def cancel(ref: PhaseRef[F]): F[Unit] =
-      stop(ref, new CancellationException("Key set refreshing was canceled"))
+      stop(ref, new CancellationException("Key set refreshing was canceled"))(logStopped)
+
+    def fail(ref: PhaseRef[F], error: Throwable): F[Unit] =
+      stop(ref, error)(logFailed)
 
     def complete(ref: PhaseRef[F])(outcome: Outcome[F, Throwable, Unit]): F[Unit] =
-      outcome.fold(cancel(ref), stop(ref, _), _ => F.unit)
+      outcome.fold(cancel(ref), fail(ref, _), _ => F.unit)
 
-    def stop(ref: PhaseRef[F], error: => Throwable): F[Unit] =
+    def stop(ref: PhaseRef[F], error: => Throwable)(logStop: Throwable => F[Unit]): F[Unit] =
       ref
         .flatModify {
           case Phase.Pending(deferred) =>
@@ -232,22 +234,22 @@ object RefreshingJwtVerification {
           case phase =>
             (phase, none[Throwable].pure)
         }
-        .flatMap(_.traverse_(logStopped))
+        .flatMap(_.traverse_(logStop))
 
     def logStopped(cause: Throwable): F[Unit] =
-      log(_.debug(cause)("Key set refreshing was stopped"))
+      logger.debug(cause)("Key set refreshing was stopped")
+
+    def logFailed(cause: Throwable): F[Unit] =
+      logger.warn(cause)("Key set refreshing was stopped unexpectedly")
 
     def logRequestRefresh: F[Unit] =
-      log(_.debug("Refreshing key set since a referenced key is missing"))
+      logger.debug("Refreshing key set since a referenced key is missing")
 
     def logResult(result: StateResult[F]): F[Unit] =
       result match {
-        case Right(state) => log(_.debug(s"Refreshed key set with ${state.keys.size} key(s)"))
-        case Left(cause) => log(_.warn(cause)("Failed to refresh key set"))
+        case Right(state) => logger.debug(s"Refreshed key set with ${state.keys.size} key(s)")
+        case Left(cause) => logger.warn(cause)("Failed to refresh key set")
       }
-
-    def log(f: Logger[F] => F[Unit]): F[Unit] =
-      f(logger).attempt.void
 
     for {
       deferred <- Deferred[F, StateResult[F]].toResource
