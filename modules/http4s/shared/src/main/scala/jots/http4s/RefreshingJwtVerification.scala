@@ -200,8 +200,12 @@ object RefreshingJwtVerification {
         }
       }
 
-    def refreshOnMissingKey(ref: PhaseRef[F]): F[Option[State[F]]] =
+    def refreshOnMissingKey(ref: PhaseRef[F], current: State[F]): F[Option[State[F]]] =
       (F.monotonic, ref.get).tupled.flatMap {
+        case (_, Phase.Ready(state)) if state ne current =>
+          state.some.pure
+        case (_, Phase.Stopped(state)) if state ne current =>
+          state.some.pure
         case (now, Phase.Ready(state)) if now - state.refreshedAt >= minRefreshIntervalOnMissingKey =>
           requestRefresh(state) >> state.refresh.get.map(_.toOption)
         case _ =>
@@ -259,7 +263,7 @@ object RefreshingJwtVerification {
       override def verify(jwt: SignedJwt): F[VerifiedJwt] =
         state.flatMap { current =>
           current.verification.verify(jwt).recoverWith { case missingKey: JwtException.MissingKey =>
-            refreshOnMissingKey(ref).flatMap {
+            refreshOnMissingKey(ref, current).flatMap {
               case Some(refreshed) => refreshed.verification.verify(jwt)
               case None => missingKey.raiseError
             }

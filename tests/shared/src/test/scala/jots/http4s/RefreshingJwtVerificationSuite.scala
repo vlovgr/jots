@@ -17,6 +17,7 @@
 package jots.http4s
 
 import cats.data.NonEmptyList
+import cats.effect.Deferred
 import cats.effect.IO
 import cats.effect.Ref
 import cats.effect.Resource
@@ -376,6 +377,48 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
     } yield expect.eql(1, verified) && expect.eql(1, requests.size)
   }
 
+  test("RefreshingJwtVerification.refreshedKeysOnMissingKey") {
+    for {
+      signed <- sign("key-2")
+      testClient <- TestClient(keysResponse(keySet), keysResponse(otherKeySet))
+      entered <- Deferred[IO, Unit]
+      proceed <- Deferred[IO, Unit]
+      result <- refreshedKeysBuilder(testClient.client, entered, proceed).build
+        .use { verification =>
+          for {
+            fiber <- verification.verify(signed).attempt.start
+            _ <- entered.get
+            _ <- eventually(verification.keys)(_ === otherKeySet)
+            _ <- proceed.complete(())
+            verified <- fiber.joinWithNever
+          } yield verified
+        }
+        .timeout(30.seconds)
+      _ <- matchOrFailFast[IO](result) { case Right(_) => () }
+    } yield success
+  }
+
+  test("RefreshingJwtVerification.releaseRefreshedKeysOnMissingKey") {
+    for {
+      signed <- sign("key-2")
+      testClient <- TestClient(keysResponse(keySet), keysResponse(otherKeySet))
+      entered <- Deferred[IO, Unit]
+      proceed <- Deferred[IO, Unit]
+      fiber <- refreshedKeysBuilder(testClient.client, entered, proceed).build
+        .use { verification =>
+          for {
+            fiber <- verification.verify(signed).attempt.start
+            _ <- entered.get
+            _ <- eventually(verification.keys)(_ === otherKeySet)
+          } yield fiber
+        }
+        .timeout(30.seconds)
+      _ <- proceed.complete(())
+      result <- fiber.joinWithNever.timeout(30.seconds)
+      _ <- matchOrFailFast[IO](result) { case Right(_) => () }
+    } yield success
+  }
+
   test("RefreshingJwtVerification.releaseBeforeRefresh") {
     List
       .fill(50)(())
@@ -427,6 +470,25 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
       .jwkSetAll[IO](client, uri)
       .withRefreshInterval(refreshInterval)
       .withRefreshIntervalOnError(refreshIntervalOnError)
+      .withRetryPolicy(noRetries)
+
+  private def refreshedKeysBuilder(
+    client: Client[IO],
+    entered: Deferred[IO, Unit],
+    proceed: Deferred[IO, Unit]
+  ): RefreshingJwtVerificationBuilder[IO] =
+    RefreshingJwtVerificationBuilder
+      .refreshWith[IO](client, uri) { keys =>
+        JwtVerification.default[IO].jwkSetAll(keys).map { verification =>
+          if (keys === keySet)
+            JwtVerification.verifyWith[IO] { jwt =>
+              entered.complete(()) >> proceed.get >> verification.verify(jwt)
+            }
+          else verification
+        }
+      }
+      .withRefreshInterval(refreshInterval)
+      .withMinRefreshIntervalOnMissingKey(1.hour)
       .withRetryPolicy(noRetries)
 
   private def missingKeyBuilder(client: Client[IO]): RefreshingJwtVerificationBuilder[IO] =
