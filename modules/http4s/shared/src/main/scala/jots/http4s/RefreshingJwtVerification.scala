@@ -61,9 +61,8 @@ import scala.concurrent.duration.FiniteDuration
   *
   * If the `Resource` is released, verification will continue with the
   * current [[JwkSet]] and refreshing stops. When a key is missing, no
-  * extra refresh is requested, and there is no second attempt, so the
-  * original error is raised. If no initial key set has been retrieved
-  * and no error occurred, a `CancellationException` will be raised.
+  * extra refresh is requested. If no initial key set is available and
+  * and no error occurred, a `CancellationException` is raised.
   *
   * The [[RefreshingJwtVerification.refreshWith]] function accepts the
   * function to use for refreshing [[JwtVerification]], while there is
