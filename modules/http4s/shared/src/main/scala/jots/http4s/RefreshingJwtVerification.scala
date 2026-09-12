@@ -204,6 +204,8 @@ object RefreshingJwtVerification {
       (ref.get, F.monotonic).tupled.flatMap {
         case (Phase.Ready(state), _) if state.keys =!= current.keys =>
           state.some.pure
+        case (Phase.Stopped(Right(state)), _) if state.keys =!= current.keys =>
+          state.some.pure
         case (Phase.Ready(state), now) if now - state.refreshedAt >= minRefreshIntervalOnMissingKey =>
           requestRefresh(state) >> state.refresh.get.map(_.toOption)
         case _ =>
@@ -222,22 +224,21 @@ object RefreshingJwtVerification {
     def complete(ref: PhaseRef[F])(outcome: Outcome[F, Throwable, Unit]): F[Unit] =
       outcome.fold(cancel(ref), fail(ref, _), _ => F.unit)
 
-    def stop(ref: PhaseRef[F], error: => Throwable)(log: Throwable => F[Unit]): F[Unit] =
-      ref
-        .flatModify {
-          case Phase.Pending(deferred) =>
-            val cause = error
-            (Phase.Failed(cause), deferred.complete(cause.asLeft).as(cause.some))
-          case ready @ Phase.Ready(state) =>
-            val cause = error
-            val preventRefresh = state.requestRefresh.complete(())
-            val completeRefresh = state.refresh.complete(cause.asLeft)
-            val stopped = preventRefresh >> completeRefresh
-            (ready, stopped.map(Option.when(_)(cause)))
-          case phase =>
-            (phase, none[Throwable].pure)
-        }
-        .flatMap(_.traverseVoid(log))
+    def stop(ref: PhaseRef[F], cause: Throwable)(log: Throwable => F[Unit]): F[Unit] =
+      ref.flatModify {
+        case Phase.Pending(deferred) =>
+          val stopped = deferred.complete(cause.asLeft) >> log(cause)
+          (Phase.Stopped(cause.asLeft[State[F]]), stopped)
+        case Phase.Ready(state) =>
+          val preventRefresh = state.requestRefresh.complete(())
+          val completeRefresh = state.refresh.complete(cause.asLeft)
+          val stopped = preventRefresh >> completeRefresh >> log(cause)
+          (Phase.Stopped(state.asRight[Throwable]), stopped)
+        case Phase.Failed(failure) =>
+          (Phase.Stopped(failure.asLeft[State[F]]), log(cause))
+        case stopped @ Phase.Stopped(_) =>
+          (stopped, F.unit)
+      }
 
     def logStopped(cause: Throwable): F[Unit] =
       logger.debug(cause)("Key set refreshing was stopped")
@@ -266,6 +267,7 @@ object RefreshingJwtVerification {
       private def state: F[State[F]] =
         ref.get.flatMap {
           case Phase.Ready(state) => state.pure
+          case Phase.Stopped(result) => result.liftTo[F]
           case Phase.Failed(error) => error.raiseError
           case Phase.Pending(deferred) => deferred.get.rethrow
         }
@@ -320,6 +322,8 @@ object RefreshingJwtVerification {
       def next(implicit F: Temporal[F]): F[Phase[F]] =
         state.next.map(Ready(_))
     }
+
+    final case class Stopped[F[_]](result: StateResult[F]) extends Phase[F]
   }
 
   private type PhaseRef[F[_]] = Ref[F, Phase[F]]
