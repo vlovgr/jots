@@ -56,12 +56,14 @@ import scala.concurrent.duration.FiniteDuration
   * When verification fails because there is no key in the current set
   * with a matching key id (kid), an extra refresh is requested, and a
   * second verification attempt is done with the refreshed keys. These
-  * refreshes are by default performed at most once every 60 seconds.
+  * refreshes are by default run at most every 60 seconds. If the keys
+  * already changed while verifying, then no extra refresh is run, and
+  * the changed keys are used for the second attempt.
   *
   * If the `Resource` is released, verification will continue with the
   * current [[JwkSet]] and refreshing stops. When a key is missing, no
   * extra refresh is requested. If no initial key set is available and
-  * and no error occurred, a `CancellationException` is raised.
+  * no error occurred, a `CancellationException` is raised instead.
   *
   * The [[RefreshingJwtVerification.refreshWith]] function accepts the
   * function to use for refreshing [[JwtVerification]], while there is
@@ -190,21 +192,21 @@ object RefreshingJwtVerification {
       }
 
     def updateState(ref: PhaseRef[F], result: StateResult[F]): F[Phase[F]] =
-      nextPhase(ref, result).flatMap { next =>
+      nextPhase(ref, result).flatTap { next =>
         ref.flatModify {
-          case Phase.Pending(deferred) => (next, deferred.complete(result).as(next))
-          case Phase.Ready(state) => (next, state.refresh.complete(result).as(next))
-          case _ => (next, next.pure)
+          case Phase.Pending(deferred) => (next, deferred.complete(result).void)
+          case Phase.Ready(state) => (next, state.refresh.complete(result).void)
+          case _ => (next, F.unit)
         }
       }
 
     def refreshOnMissingKey(ref: PhaseRef[F], current: State[F]): F[Option[State[F]]] =
-      (F.monotonic, ref.get).tupled.flatMap {
-        case (_, Phase.Ready(state)) if state ne current =>
+      (ref.get, F.monotonic).tupled.flatMap {
+        case (Phase.Ready(state), _) if state.keys =!= current.keys =>
           state.some.pure
-        case (_, Phase.Stopped(state)) if state ne current =>
+        case (Phase.Stopped(state), _) if state.keys =!= current.keys =>
           state.some.pure
-        case (now, Phase.Ready(state)) if now - state.refreshedAt >= minRefreshIntervalOnMissingKey =>
+        case (Phase.Ready(state), now) if now - state.refreshedAt >= minRefreshIntervalOnMissingKey =>
           requestRefresh(state) >> state.refresh.get.map(_.toOption)
         case _ =>
           none[State[F]].pure
@@ -222,7 +224,7 @@ object RefreshingJwtVerification {
     def complete(ref: PhaseRef[F])(outcome: Outcome[F, Throwable, Unit]): F[Unit] =
       outcome.fold(cancel(ref), fail(ref, _), _ => F.unit)
 
-    def stop(ref: PhaseRef[F], error: => Throwable)(logStop: Throwable => F[Unit]): F[Unit] =
+    def stop(ref: PhaseRef[F], error: => Throwable)(log: Throwable => F[Unit]): F[Unit] =
       ref
         .flatModify {
           case Phase.Pending(deferred) =>
@@ -234,7 +236,7 @@ object RefreshingJwtVerification {
           case phase =>
             (phase, none[Throwable].pure)
         }
-        .flatMap(_.traverse_(logStop))
+        .flatMap(_.traverseVoid(log))
 
     def logStopped(cause: Throwable): F[Unit] =
       logger.debug(cause)("Key set refreshing was stopped")

@@ -398,6 +398,32 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
     } yield success
   }
 
+  test("RefreshingJwtVerification.refreshOnMissingKeyAfterFailedRefresh") {
+    for {
+      signed <- sign("key-2")
+      testClient <- TestClient(keysResponse(keySet), errorResponse, keysResponse(otherKeySet))
+      entered <- Deferred[IO, Unit]
+      proceed <- Deferred[IO, Unit]
+      result <- refreshedKeysBuilder(testClient.client, entered, proceed)
+        .withRefreshIntervalOnError(1.hour)
+        .withMinRefreshIntervalOnMissingKey(minRefreshIntervalOnMissingKey)
+        .build
+        .use { verification =>
+          for {
+            fiber <- verification.verify(signed).attempt.start
+            _ <- entered.get
+            _ <- eventually(testClient.requests)(_.size >= 2)
+            _ <- IO.sleep(minRefreshIntervalOnMissingKey * 10)
+            _ <- proceed.complete(())
+            verified <- fiber.joinWithNever
+          } yield verified
+        }
+        .timeout(30.seconds)
+      requests <- testClient.requests
+      _ <- matchOrFailFast[IO](result) { case Right(_) => () }
+    } yield expect.eql(3, requests.size)
+  }
+
   test("RefreshingJwtVerification.releaseRefreshedKeysOnMissingKey") {
     for {
       signed <- sign("key-2")
