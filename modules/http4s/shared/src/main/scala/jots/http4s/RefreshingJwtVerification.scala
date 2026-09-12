@@ -216,13 +216,13 @@ object RefreshingJwtVerification {
       state.requestRefresh.complete(()).ifM(logRequestRefresh, F.unit)
 
     def cancel(ref: PhaseRef[F]): F[Unit] =
-      stop(ref, new CancellationException("Key set refreshing was canceled"))(logStopped)
+      stop(ref, new CancellationException("Key set refreshing was canceled"))(logCanceled)
 
-    def fail(ref: PhaseRef[F], error: Throwable): F[Unit] =
+    def fail(ref: PhaseRef[F])(error: Throwable): F[Unit] =
       stop(ref, error)(logFailed)
 
     def complete(ref: PhaseRef[F])(outcome: Outcome[F, Throwable, Unit]): F[Unit] =
-      outcome.fold(cancel(ref), fail(ref, _), _ => F.unit)
+      outcome.fold(cancel(ref), fail(ref), _ => F.unit)
 
     def stop(ref: PhaseRef[F], cause: Throwable)(log: Throwable => F[Unit]): F[Unit] =
       ref.flatModify {
@@ -240,7 +240,7 @@ object RefreshingJwtVerification {
           (stopped, F.unit)
       }
 
-    def logStopped(cause: Throwable): F[Unit] =
+    def logCanceled(cause: Throwable): F[Unit] =
       logger.debug(cause)("Key set refreshing was stopped")
 
     def logFailed(cause: Throwable): F[Unit] =
@@ -251,7 +251,7 @@ object RefreshingJwtVerification {
 
     def logResult(result: StateResult[F]): F[Unit] =
       result match {
-        case Right(state) => logger.debug(s"Refreshed key set with ${state.keys.size} key(s)")
+        case Right(state) => logger.debug(s"Refreshed key set ${state.keys}")
         case Left(cause) => logger.warn(cause)("Failed to refresh key set")
       }
 
