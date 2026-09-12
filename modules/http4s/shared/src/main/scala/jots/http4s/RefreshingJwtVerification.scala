@@ -204,8 +204,6 @@ object RefreshingJwtVerification {
       (ref.get, F.monotonic).tupled.flatMap {
         case (Phase.Ready(state), _) if state.keys =!= current.keys =>
           state.some.pure
-        case (Phase.Stopped(state), _) if state.keys =!= current.keys =>
-          state.some.pure
         case (Phase.Ready(state), now) if now - state.refreshedAt >= minRefreshIntervalOnMissingKey =>
           requestRefresh(state) >> state.refresh.get.map(_.toOption)
         case _ =>
@@ -230,9 +228,12 @@ object RefreshingJwtVerification {
           case Phase.Pending(deferred) =>
             val cause = error
             (Phase.Failed(cause), deferred.complete(cause.asLeft).as(cause.some))
-          case Phase.Ready(state) =>
+          case ready @ Phase.Ready(state) =>
             val cause = error
-            (Phase.Stopped(state), state.refresh.complete(cause.asLeft).as(cause.some))
+            val preventRefresh = state.requestRefresh.complete(())
+            val completeRefresh = state.refresh.complete(cause.asLeft)
+            val stopped = preventRefresh >> completeRefresh
+            (ready, stopped.map(Option.when(_)(cause)))
           case phase =>
             (phase, none[Throwable].pure)
         }
@@ -265,7 +266,6 @@ object RefreshingJwtVerification {
       private def state: F[State[F]] =
         ref.get.flatMap {
           case Phase.Ready(state) => state.pure
-          case Phase.Stopped(state) => state.pure
           case Phase.Failed(error) => error.raiseError
           case Phase.Pending(deferred) => deferred.get.rethrow
         }
@@ -320,8 +320,6 @@ object RefreshingJwtVerification {
       def next(implicit F: Temporal[F]): F[Phase[F]] =
         state.next.map(Ready(_))
     }
-
-    final case class Stopped[F[_]](state: State[F]) extends Phase[F]
   }
 
   private type PhaseRef[F[_]] = Ref[F, Phase[F]]
