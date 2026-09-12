@@ -206,7 +206,7 @@ object RefreshingJwtVerification {
           state.some.pure
         case (Phase.Stopped(Right(state)), _) if state.keys =!= current.keys =>
           state.some.pure
-        case (Phase.Ready(state), now) if now - state.refreshedAt >= minRefreshIntervalOnMissingKey =>
+        case (Phase.Ready(state), now) if now - state.refreshAttemptedAt >= minRefreshIntervalOnMissingKey =>
           requestRefresh(state) >> state.refresh.get.map(_.toOption)
         case _ =>
           none[State[F]].pure
@@ -287,7 +287,7 @@ object RefreshingJwtVerification {
   private final case class State[F[_]](
     keys: JwkSet,
     verification: JwtVerification[F],
-    refreshedAt: FiniteDuration,
+    refreshAttemptedAt: FiniteDuration,
     requestRefresh: Deferred[F, Unit],
     refresh: DeferredStateResult[F]
   ) {
@@ -301,10 +301,10 @@ object RefreshingJwtVerification {
       verification: JwtVerification[F]
     )(implicit F: Temporal[F]): F[State[F]] =
       for {
-        refreshedAt <- F.monotonic
+        refreshAttemptedAt <- F.monotonic
         requested <- Deferred[F, Unit]
         refreshed <- Deferred[F, StateResult[F]]
-      } yield State(keys, verification, refreshedAt, requested, refreshed)
+      } yield State(keys, verification, refreshAttemptedAt, requested, refreshed)
   }
 
   private type StateResult[F[_]] = Either[Throwable, State[F]]
