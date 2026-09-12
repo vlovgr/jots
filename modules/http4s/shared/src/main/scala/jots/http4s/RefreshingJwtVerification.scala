@@ -221,12 +221,19 @@ object RefreshingJwtVerification {
     def complete(ref: PhaseRef[F])(outcome: Outcome[F, Throwable, Unit]): F[Unit] =
       outcome.fold(cancel(ref), stop(ref, _), _ => F.unit)
 
-    def stop(ref: PhaseRef[F], error: Throwable): F[Unit] =
-      ref.flatModify {
-        case Phase.Pending(deferred) => (Phase.Failed(error), deferred.complete(error.asLeft).void)
-        case Phase.Ready(state) => (Phase.Stopped(state), state.refresh.complete(error.asLeft).void)
-        case phase => (phase, F.unit)
-      } >> logStopped(error)
+    def stop(ref: PhaseRef[F], error: => Throwable): F[Unit] =
+      ref
+        .flatModify {
+          case Phase.Pending(deferred) =>
+            val cause = error
+            (Phase.Failed(cause), deferred.complete(cause.asLeft).as(cause.some))
+          case Phase.Ready(state) =>
+            val cause = error
+            (Phase.Stopped(state), state.refresh.complete(cause.asLeft).as(cause.some))
+          case phase =>
+            (phase, none[Throwable].pure)
+        }
+        .flatMap(_.traverse_(logStopped))
 
     def logStopped(cause: Throwable): F[Unit] =
       log(_.debug(cause)("Key set refreshing was stopped"))
