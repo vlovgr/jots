@@ -187,7 +187,7 @@ object RefreshingJwtVerification {
         case Left(error) =>
           ref.get.flatMap {
             case ready @ Phase.Ready(_) => ready.next
-            case _ => F.pure(Phase.Failed(error))
+            case _ => F.pure(Phase.Unavailable(error))
           }
       }
 
@@ -234,8 +234,8 @@ object RefreshingJwtVerification {
           val completeRefresh = state.refresh.complete(cause.asLeft)
           val stopped = preventRefresh >> completeRefresh >> log(cause)
           (Phase.Stopped(state.asRight[Throwable]), stopped)
-        case Phase.Failed(failure) =>
-          (Phase.Stopped(failure.asLeft[State[F]]), log(cause))
+        case Phase.Unavailable(error) =>
+          (Phase.Stopped(error.asLeft[State[F]]), log(cause))
         case stopped @ Phase.Stopped(_) =>
           (stopped, F.unit)
       }
@@ -268,7 +268,7 @@ object RefreshingJwtVerification {
         ref.get.flatMap {
           case Phase.Ready(state) => state.pure
           case Phase.Stopped(result) => result.liftTo[F]
-          case Phase.Failed(error) => error.raiseError
+          case Phase.Unavailable(error) => error.raiseError
           case Phase.Pending(deferred) => deferred.get.rethrow
         }
 
@@ -316,7 +316,7 @@ object RefreshingJwtVerification {
   private object Phase {
     final case class Pending[F[_]](deferred: DeferredStateResult[F]) extends Phase[F]
 
-    final case class Failed[F[_]](error: Throwable) extends Phase[F]
+    final case class Unavailable[F[_]](error: Throwable) extends Phase[F]
 
     final case class Ready[F[_]](state: State[F]) extends Phase[F] {
       def next(implicit F: Temporal[F]): F[Phase[F]] =
