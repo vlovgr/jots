@@ -24,6 +24,7 @@ import cats.effect.Resource
 import cats.effect.Temporal
 import cats.effect.syntax.all.*
 import cats.syntax.all.*
+import java.util.concurrent.CancellationException
 import jots.JwkSet
 import jots.JwtAlgorithm
 import jots.JwtException
@@ -59,9 +60,10 @@ import scala.concurrent.duration.FiniteDuration
   * refreshes are by default performed at most once every 60 seconds.
   *
   * If the `Resource` is released, verification will continue with the
-  * current [[JwkSet]] and refreshing stops. If no initial key set has
-  * been retrieved and no error has occurred, callers will instead get
-  * a `CancellationException` raised.
+  * current [[JwkSet]] and refreshing stops. When a key is missing, no
+  * extra refresh is requested, and there is no second attempt, so the
+  * original error is raised. If no initial key set has been retrieved
+  * and no error occurred, a `CancellationException` will be raised.
   *
   * The [[RefreshingJwtVerification.refreshWith]] function accepts the
   * function to use for refreshing [[JwtVerification]], while there is
@@ -209,17 +211,21 @@ object RefreshingJwtVerification {
     def requestRefresh(state: State[F]): F[Unit] =
       state.requestRefresh.complete(()).ifM(logRequestRefresh, F.unit)
 
+    def cancel(ref: PhaseRef[F]): F[Unit] =
+      stop(ref, new CancellationException("Key set refreshing was canceled"))
+
     def complete(ref: PhaseRef[F])(outcome: Outcome[F, Throwable, Unit]): F[Unit] =
-      outcome.embedError.attempt.flatMap {
-        case Left(error) =>
-          ref.flatModify {
-            case Phase.Pending(deferred) => (Phase.Failed(error), deferred.complete(error.asLeft).void)
-            case ready @ Phase.Ready(state) => (ready, state.refresh.complete(error.asLeft).void)
-            case phase => (phase, F.unit)
-          } >> logCompleted(error)
-        case Right(_) =>
-          F.unit
-      }
+      outcome.fold(cancel(ref), stop(ref, _), _ => F.unit)
+
+    def stop(ref: PhaseRef[F], error: Throwable): F[Unit] =
+      ref.flatModify {
+        case Phase.Pending(deferred) => (Phase.Failed(error), deferred.complete(error.asLeft).void)
+        case Phase.Ready(state) => (Phase.Stopped(state), state.refresh.complete(error.asLeft).void)
+        case phase => (phase, F.unit)
+      } >> logStopped(error)
+
+    def logStopped(cause: Throwable): F[Unit] =
+      log(_.debug(cause)("Key set refreshing was stopped"))
 
     def logRequestRefresh: F[Unit] =
       log(_.debug("Refreshing key set since a referenced key is missing"))
@@ -230,15 +236,13 @@ object RefreshingJwtVerification {
         case Left(cause) => log(_.warn(cause)("Failed to refresh key set"))
       }
 
-    def logCompleted(cause: Throwable): F[Unit] =
-      log(_.debug(cause)("Key set refreshing was stopped"))
-
     def log(f: Logger[F] => F[Unit]): F[Unit] =
       f(logger).attempt.void
 
     for {
       deferred <- Deferred[F, StateResult[F]].toResource
       ref <- Ref.of[F, Phase[F]](Phase.Pending(deferred)).toResource
+      _ <- Resource.onFinalize(cancel(ref))
       _ <- refreshState(ref).foreverM[Unit].guaranteeCase(complete(ref)).background
     } yield new RefreshingJwtVerification[F] {
       override def keys: F[JwkSet] =
@@ -247,6 +251,7 @@ object RefreshingJwtVerification {
       private def state: F[State[F]] =
         ref.get.flatMap {
           case Phase.Ready(state) => state.pure
+          case Phase.Stopped(state) => state.pure
           case Phase.Failed(error) => error.raiseError
           case Phase.Pending(deferred) => deferred.get.rethrow
         }
@@ -301,6 +306,8 @@ object RefreshingJwtVerification {
       def next(implicit F: Temporal[F]): F[Phase[F]] =
         state.next.map(Ready(_))
     }
+
+    final case class Stopped[F[_]](state: State[F]) extends Phase[F]
   }
 
   private type PhaseRef[F[_]] = Ref[F, Phase[F]]

@@ -22,6 +22,7 @@ import cats.effect.Ref
 import cats.effect.Resource
 import cats.syntax.all.*
 import io.circe.syntax.*
+import java.util.concurrent.CancellationException
 import jots.Jwk
 import jots.JwkKeyId
 import jots.JwkSet
@@ -350,6 +351,48 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
       requests <- testClient.requests
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.MissingKey) => () }
     } yield expect.eql(1, requests.size)
+  }
+
+  test("RefreshingJwtVerification.releaseVerifyOnceOnMissingKey") {
+    for {
+      signed <- sign("key-2")
+      testClient <- TestClient(keysResponse(keySet), keysResponse(otherKeySet))
+      attempts <- Ref[IO].of(0)
+      verification <- RefreshingJwtVerificationBuilder
+        .refreshWith[IO](testClient.client, uri) { _ =>
+          IO.pure(JwtVerification.verifyWith[IO] { _ =>
+            attempts.update(_ + 1) *> IO.raiseError(new JwtException.MissingKey())
+          })
+        }
+        .withRefreshInterval(1.hour)
+        .withMinRefreshIntervalOnMissingKey(minRefreshIntervalOnMissingKey)
+        .withRetryPolicy(noRetries)
+        .build
+        .use(verification => awaitInitialKeys(verification).as(verification))
+      result <- verification.verify(signed).attempt.timeout(30.seconds)
+      verified <- attempts.get
+      requests <- testClient.requests
+      _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.MissingKey) => () }
+    } yield expect.eql(1, verified) && expect.eql(1, requests.size)
+  }
+
+  test("RefreshingJwtVerification.releaseBeforeRefresh") {
+    List
+      .fill(50)(())
+      .traverse { _ =>
+        for {
+          testClient <- TestClient(keysResponse(keySet))
+          verification <- builder(testClient.client).build.use(IO.pure)
+          keys <- verification.keys.attempt.timeout(30.seconds)
+        } yield keys
+      }
+      .flatMap(_.traverse_ { keys =>
+        matchOrFailFast[IO](keys) {
+          case Right(`keySet`) => ()
+          case Left(_: CancellationException) => ()
+        }
+      })
+      .as(success)
   }
 
   private val uri: Uri =
