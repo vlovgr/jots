@@ -86,6 +86,8 @@
     <li class="level2 nav-leaf"><a href="verification.html">Verifying Tokens</a></li>
     <li class="level2 active nav-leaf"><a href="#">Cryptography</a></li>
     <li class="level2 nav-leaf"><a href="testing.html">Testing</a></li>
+    <li class="level1 nav-header">integrations</li>
+    <li class="level2 nav-leaf"><a href="../integrations/http4s.html">http4s</a></li>
   </ul>
 
 </nav>
@@ -174,7 +176,7 @@
         </div>
         <p>The generated signature is represented with <code>Signature</code> and is usually represented in hexadecimal encoding, which is the default for <code>Signature</code>. When the output is used as a signature for tokens, it&#39;s represented using <code>Base64UrlNoPad</code> encoding using <code>JwtSignature.fromSignature</code> in the core module.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signature</span><span>.</span><span class="identifier">unsafeRunSync</span><span>()
-</span><span class="comment">// res1: Signature = Signature(8ea2484e81b1bd4b754fc20ef8b6092cced0b5697169d606a74110057445413d68ff4a5bf069346e3e67f4d7bc99a1d7ec829330ddaecb570637effb58c7ecaa)</span></code></pre>
+</span><span class="comment">// res1: Signature = Signature(3a14d8ff0efde09c1caca851b3cfb1070ed315400b583646abfad0a822bb077ec06f6874fc6777903b71ba4a310fd675497e6da2fcea4837c0167e25fd2bcb54)</span></code></pre>
         
         <h3 id="verification-with-public-key" class="section"><a class="anchor-link left" href="#verification-with-public-key"><i class="icofont-laika link">&#xef71;</i></a>Verification with Public Key</h3>
         <p>The <code>Crypto#verify</code> function implements asymmetric verification using a public key. This means we have to provide an <code>AsymmetricAlgorithm</code> and matching <code>PublicKey</code> in addition to a <code>ByteVector</code> message and signature. Note the public key needs to match the algorithm, or an exception will be raised at runtime. Following is an example which matches the <code>ES256</code> algorithm for tokens (ECDSA using P-256 and SHA-256).</p>

@@ -104,6 +104,8 @@ mermaid.initialize({
     <li class="level2 active nav-leaf"><a href="#">Verifying Tokens</a></li>
     <li class="level2 nav-leaf"><a href="cryptography.html">Cryptography</a></li>
     <li class="level2 nav-leaf"><a href="testing.html">Testing</a></li>
+    <li class="level1 nav-header">integrations</li>
+    <li class="level2 nav-leaf"><a href="../integrations/http4s.html">http4s</a></li>
   </ul>
 
 </nav>
@@ -159,7 +161,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
 
 </span><span class="keyword">object</span><span> </span><span class="type-name">UserJwt</span><span> {
   </span><span class="keyword">given</span><span> </span><span class="type-name">Decoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
-    </span><span class="type-name">Decoder</span><span>.</span><span class="identifier">forProduct3</span><span>(</span><span class="string-literal">&quot;userId&quot;</span><span>, </span><span class="string-literal">&quot;exp&quot;</span><span>, </span><span class="string-literal">&quot;iat&quot;</span><span>)(</span><span class="type-name">UserJwt</span><span>.</span><span class="identifier">apply</span><span>)
+    </span><span class="type-name">Decoder</span><span>.</span><span class="identifier">forProduct3</span><span>(</span><span class="string-literal">&quot;userId&quot;</span><span>, </span><span class="string-literal">&quot;exp&quot;</span><span>, </span><span class="string-literal">&quot;iat&quot;</span><span>)(</span><span class="identifier">apply</span><span>)
 
   </span><span class="keyword">given</span><span> </span><span class="type-name">JwtDecoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
     </span><span class="type-name">JwtDecoder</span><span>.</span><span class="identifier">decodeClaims</span><span>
@@ -290,7 +292,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
         <p>Additionally, the public or secret key must be supported by the library. This means having the <code>kty</code> parameter set with other key-type appropriate parameters. Depending on if <code>alg</code> (algorithm) is set or not on the key, the algorithm has to be supported and allowed, or there must be at least one allowed algorithm for the key type.</p>
         
         <h4 id="jwk-set-example" class="section"><a class="anchor-link left" href="#jwk-set-example"><i class="icofont-laika link">&#xef71;</i></a>JWK Set Example</h4>
-        <p>Following is an example of decoding using a JWK Set. The keys are normally retrieved from an HTTP endpoint, but this is beyond the scope of the library. Instead, we provide the <code>Jwk</code> directly and create a <code>JwkSet</code> using the key. We create a <code>JwtVerification</code> instance, allowing all supported ECDSA algorithms, and finally decode the <a href="#signature-verification">token</a> from before.</p>
+        <p>Following is an example of decoding using a JWK Set. If the keys are retrieved from an HTTP endpoint, there is support in the <code>jots-http4s</code> module for periodically fetching a new <code>JwkSet</code> and <a href="../integrations/http4s.html#refreshing-verification">refreshing verification</a>. For the example, we&#39;ll instead provide the <code>Jwk</code> directly and create a <code>JwkSet</code>. We proceed to create a <code>JwtVerification</code>, allowing all of the supported ECDSA algorithms, and finally decode the previously seen <a href="#signature-verification">token</a>.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="identifier">syntax</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">Jwk</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwkSet</span><span>

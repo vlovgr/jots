@@ -86,6 +86,8 @@
     <li class="level2 nav-leaf"><a href="features/verification.html">Verifying Tokens</a></li>
     <li class="level2 nav-leaf"><a href="features/cryptography.html">Cryptography</a></li>
     <li class="level2 nav-leaf"><a href="features/testing.html">Testing</a></li>
+    <li class="level1 nav-header">integrations</li>
+    <li class="level2 nav-leaf"><a href="integrations/http4s.html">http4s</a></li>
   </ul>
 
 </nav>
@@ -121,6 +123,7 @@
           <li>Provides <a href="features/testing.html">testing</a> support with <a href="https://scalacheck.org">ScalaCheck</a> generators and String interpolators for secrets.</li>
           <li>Separates <a href="features/verification.html#separate-parsing-verification-and-decoding">token parsing and verification</a>, so tokens can be inspected before verification.</li>
           <li>Handles token signing with a <a href="features/signing.html#json-web-key">JSON Web Key (JWK)</a> and verification with a <a href="features/verification.html#json-web-key-set">JWK Set</a>.</li>
+          <li>Integrates with <a href="https://http4s.org">http4s</a> for <a href="integrations/http4s.html#auth-middleware">authentication</a> and for JWK Set <a href="integrations/http4s.html#refreshing-verification">refreshing verification</a>.</li>
           <li>Based on the <a href="https://typelevel.org/cats-effect">cats-effect</a>, <a href="https://circe.io/circe">circe-jawn</a>, <a href="https://github.com/typelevel/literally">literally</a> and <a href="https://github.com/scodec/scodec-bits">scodec-bits</a> libraries.</li>
         </ul>
         <p>Documentation is kept up-to-date, currently documenting v0.1.1 on Scala 3.3.</p>
@@ -232,6 +235,11 @@
               <td>Scala 2.13 and 3.3</td>
             </tr>
             <tr>
+              <td><code>jots-http4s</code></td>
+              <td><code>jots</code> and http4s 0.23.37</td>
+              <td>Scala 2.13 and 3.3</td>
+            </tr>
+            <tr>
               <td><code>jots-testing</code></td>
               <td><code>jots</code> and cats-effect 3.7.1, scalacheck 1.20.0</td>
               <td>Scala 2.13 and 3.3</td>
@@ -259,6 +267,11 @@
               <td>Scala Native 0.5 (Scala 2.13 and 3.3)</td>
             </tr>
             <tr>
+              <td><code>jots-http4s</code></td>
+              <td>Scala.js 1.22 (Scala 2.13 and 3.3)</td>
+              <td>Scala Native 0.5 (Scala 2.13 and 3.3)</td>
+            </tr>
+            <tr>
               <td><code>jots-testing</code></td>
               <td>Scala.js 1.22 (Scala 2.13 and 3.3)</td>
               <td>Scala Native 0.5 (Scala 2.13 and 3.3)</td>
@@ -278,7 +291,7 @@
         <p>To use the latest snapshot release, add the following lines to your <code>build.sbt</code> file.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">resolvers</span><span> += </span><span class="type-name">Resolver</span><span>.</span><span class="identifier">sonatypeCentralSnapshots</span><span>
 
-</span><span class="identifier">libraryDependencies</span><span> += </span><span class="string-literal">&quot;se.vlovgr&quot;</span><span> %% </span><span class="string-literal">&quot;jots&quot;</span><span> % </span><span class="string-literal">&quot;0.2-074c1ba-SNAPSHOT&quot;</span></code></pre>
+</span><span class="identifier">libraryDependencies</span><span> += </span><span class="string-literal">&quot;se.vlovgr&quot;</span><span> %% </span><span class="string-literal">&quot;jots&quot;</span><span> % </span><span class="string-literal">&quot;0.2-0b651f3-SNAPSHOT&quot;</span></code></pre>
         
         <h2 id="license" class="section"><a class="anchor-link left" href="#license"><i class="icofont-laika link">&#xef71;</i></a>License</h2>
         <p>The library is distributed under the <a href="https://github.com/vlovgr/jots/blob/main/license.txt">Apache License, Version 2.0</a>.</p>
