@@ -265,16 +265,19 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
           <li>The expiration claim (<code>exp</code>), when present, is verified to be in the future.</li>
           <li>The not-before claim (<code>nbf</code>), when present, is verified to not be in the future.</li>
           <li>Tokens containing a set of critical headers (<code>crit</code>) will be rejected by default.</li>
+          <li>Similarly, tokens containing an audience claim (<code>aud</code>) will be rejected by default.</li>
         </ul>
         
         <h4 id="customizing-default-verifications" class="section"><a class="anchor-link left" href="#customizing-default-verifications"><i class="icofont-laika link">&#xef71;</i></a>Customizing Default Verifications</h4>
-        <p>Except for the signature verification, the above checks can be adjusted using <code>JwtVerificationBuilder</code>. There is also additional checks which can be enabled, like requiring certain claims to be present, and further tweaks, like accounting for clock skew. The following example requires <code>exp</code>, <code>iat</code>, and <code>nbf</code> to be present, and allows a 30 second clock skew.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.*
+        <p>Except for the signature verification, the above checks can be adjusted using <code>JwtVerificationBuilder</code>. There is also additional checks which can be enabled, like requiring certain claims to be present, and further tweaks, like accounting for clock skew. The following example requires <code>exp</code>, <code>iat</code>, and <code>nbf</code> to be present, and allows a 30 second clock skew. It also specifies the accepted audiences and issuers.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.*
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">jwtVerificationCustom</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">IO</span><span>]] =
   </span><span class="type-name">JwtVerificationBuilder</span><span>
     .</span><span class="identifier">default</span><span>[</span><span class="type-name">IO</span><span>]
     .</span><span class="identifier">ecdsa</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">publicKey</span><span>)
+    .</span><span class="identifier">withAcceptedAudiences</span><span>(</span><span class="string-literal">&quot;https://api.example.com&quot;</span><span>)
+    .</span><span class="identifier">withAcceptedIssuers</span><span>(</span><span class="string-literal">&quot;https://example.auth0.com/&quot;</span><span>)
     .</span><span class="identifier">withRequireExpiration</span><span>(</span><span class="boolean-literal">true</span><span>)
     .</span><span class="identifier">withRequireIssuedAt</span><span>(</span><span class="boolean-literal">true</span><span>)
     .</span><span class="identifier">withRequireNotBefore</span><span>(</span><span class="boolean-literal">true</span><span>)

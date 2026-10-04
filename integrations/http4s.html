@@ -175,8 +175,8 @@
         </div>
         
         <h2 id="refreshing-verification" class="section"><a class="anchor-link left" href="#refreshing-verification"><i class="icofont-laika link">&#xef71;</i></a>Refreshing Verification</h2>
-        <p>There is <code>RefreshingJwtVerification</code> with support for periodically fetching a <code>JwkSet</code> from an HTTP endpoint and refreshing verification. The following example shows how to create a <code>RefreshingJwtVerification</code> instance. Note the example allows all supported algorithms and uses the <a href="#default-refresh-settings">default refresh settings</a>.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">Resource</span><span>
+        <p>There is <code>RefreshingJwtVerification</code> with support for periodically fetching a <code>JwkSet</code> from an HTTP endpoint and refreshing verification. The following example shows how to create a <code>RefreshingJwtVerification</code> instance, which accepts tokens issued by <code>https://example.auth0.com/</code> for the <code>https://api.example.com</code> audience. Note the example allows all supported algorithms and uses the <a href="#default-refresh-settings">default refresh settings</a>.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">Resource</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">http4s</span><span>.</span><span class="identifier">ember</span><span>.</span><span class="identifier">client</span><span>.</span><span class="type-name">EmberClientBuilder</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">http4s</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 
@@ -184,9 +184,17 @@
   </span><span class="keyword">for</span><span> {
     </span><span class="identifier">client</span><span> &lt;- </span><span class="type-name">EmberClientBuilder</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">build</span><span>
     </span><span class="identifier">uri</span><span> = </span><span class="string-literal">uri&quot;https://example.auth0.com/.well-known/jwks.json&quot;</span><span>
-    </span><span class="identifier">refreshing</span><span> &lt;- </span><span class="type-name">RefreshingJwtVerification</span><span>.</span><span class="identifier">jwkSetAll</span><span>(</span><span class="identifier">client</span><span>, </span><span class="identifier">uri</span><span>)
+    </span><span class="identifier">refreshing</span><span> &lt;- </span><span class="type-name">RefreshingJwtVerification</span><span>.</span><span class="identifier">jwkSetAllWith</span><span>(</span><span class="identifier">client</span><span>, </span><span class="identifier">uri</span><span>) { </span><span class="identifier">verification</span><span> =&gt;
+      </span><span class="identifier">verification</span><span>
+        .</span><span class="identifier">withAcceptedAudiences</span><span>(</span><span class="string-literal">&quot;https://api.example.com&quot;</span><span>)
+        .</span><span class="identifier">withAcceptedIssuers</span><span>(</span><span class="string-literal">&quot;https://example.auth0.com/&quot;</span><span>)
+    }
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">refreshing</span></code></pre>
-        <p>If we want to restrict the allowed algorithms, we can use <code>jwkSet</code> instead of <code>jwkSetAll</code>. If we want additional custom verification, there is <code>refreshWith</code> which accepts a function with which to create the underlying <code>JwtVerification</code> from a <code>JwkSet</code>. Following is an example of using <code>refreshWith</code> to provide a custom verification function.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Identity providers commonly sign tokens for many applications using the same keys. Make sure to set the accepted audiences, and preferably also the accepted issuers. Tokens with an audience (<code>aud</code>) are rejected unless the audience has been accepted.</p>
+        </div>
+        <p>If we want to restrict the allowed algorithms, we can use <code>jwkSetWith</code> instead of <code>jwkSetAllWith</code>. There is also <code>jwkSet</code> and <code>jwkSetAll</code> if we do not need to customize the verification. If we want additional custom verification, there is <code>refreshWith</code> which accepts a function with which to create the underlying <code>JwtVerification</code> from a <code>JwkSet</code>. Following is an example of using <code>refreshWith</code> to provide a custom verification function.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtRsaAlgorithm</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerificationBuilder</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.*
@@ -199,6 +207,8 @@
       </span><span class="type-name">JwtVerificationBuilder</span><span>
         .</span><span class="identifier">default</span><span>[</span><span class="type-name">IO</span><span>]
         .</span><span class="identifier">jwkSet</span><span>(</span><span class="type-name">JwtRsaAlgorithm</span><span>.</span><span class="type-name">All</span><span>, </span><span class="identifier">jwkSet</span><span>)
+        .</span><span class="identifier">withAcceptedAudiences</span><span>(</span><span class="string-literal">&quot;https://api.example.com&quot;</span><span>)
+        .</span><span class="identifier">withAcceptedIssuers</span><span>(</span><span class="string-literal">&quot;https://example.auth0.com/&quot;</span><span>)
         .</span><span class="identifier">withRequireExpiration</span><span>(</span><span class="boolean-literal">true</span><span>)
         .</span><span class="identifier">withClockSkew</span><span>(</span><span class="number-literal">30</span><span>.</span><span class="identifier">seconds</span><span>)
         .</span><span class="identifier">build</span><span>
@@ -243,13 +253,17 @@
     </span><span class="identifier">client</span><span> &lt;- </span><span class="type-name">EmberClientBuilder</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">build</span><span>
     </span><span class="identifier">uri</span><span> = </span><span class="string-literal">uri&quot;https://example.auth0.com/.well-known/jwks.json&quot;</span><span>
     </span><span class="identifier">refreshing</span><span> &lt;- </span><span class="type-name">RefreshingJwtVerificationBuilder</span><span>
-      .</span><span class="identifier">jwkSet</span><span>(</span><span class="type-name">JwtRsaAlgorithm</span><span>.</span><span class="type-name">All</span><span>, </span><span class="identifier">client</span><span>, </span><span class="identifier">uri</span><span>)
+      .</span><span class="identifier">jwkSetWith</span><span>(</span><span class="type-name">JwtRsaAlgorithm</span><span>.</span><span class="type-name">All</span><span>, </span><span class="identifier">client</span><span>, </span><span class="identifier">uri</span><span>) { </span><span class="identifier">verification</span><span> =&gt;
+        </span><span class="identifier">verification</span><span>
+          .</span><span class="identifier">withAcceptedAudiences</span><span>(</span><span class="string-literal">&quot;https://api.example.com&quot;</span><span>)
+          .</span><span class="identifier">withAcceptedIssuers</span><span>(</span><span class="string-literal">&quot;https://example.auth0.com/&quot;</span><span>)
+      }
       .</span><span class="identifier">withRefreshInterval</span><span>(</span><span class="number-literal">30</span><span>.</span><span class="identifier">minutes</span><span>)
       .</span><span class="identifier">withMinRefreshIntervalOnMissingKey</span><span>(</span><span class="number-literal">10</span><span>.</span><span class="identifier">minutes</span><span>)
       .</span><span class="identifier">withLogger</span><span>(</span><span class="identifier">logger</span><span>)
       .</span><span class="identifier">build</span><span>
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">refreshing</span></code></pre>
-        <p>Note there is also <code>jwkSetAll</code> and <code>refreshWith</code> like for <code>RefreshingJwtVerification</code>.</p>
+        <p>Note there is also <code>jwkSet</code>, <code>jwkSetAll</code>, <code>jwkSetAllWith</code> and <code>refreshWith</code> like for <code>RefreshingJwtVerification</code>.</p>
 
         
 <hr class="footer-rule"/>
