@@ -173,15 +173,15 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
   .</span><span class="identifier">encodeClaims</span><span>[</span><span class="type-name">UserJwt</span><span>]
   .</span><span class="identifier">mapHeader</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">add</span><span>(</span><span class="string-literal">&quot;key&quot;</span><span>, </span><span class="string-literal">&quot;value&quot;</span><span>.</span><span class="identifier">asJson</span><span>))</span></code></pre>
         <p>Note signing-related header keys (e.g. <code>alg</code>) are set by <code>JwtSigning</code> during signing, and not manually.</p>
-        <p>If we don&#39;t want to define an <code>Encoder.AsObject</code>, we can use <code>JwtEncoder.encodeClaimsWith</code> instead.</p>
+        <p>If we don&#39;t want to define an <code>Encoder.AsObject</code>, we can use <code>JwtEncoder.encodeClaimsWith</code> instead. Note there are several functions on <code>JwtClaims</code> for including registered claims, like e.g. <code>withAudience</code>, <code>withExpiration</code> and <code>withIssuedAt</code> to mention a few of them.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtClaims</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.*
 
 </span><span class="type-name">JwtEncoder</span><span>.</span><span class="identifier">encodeClaimsWith</span><span> { (</span><span class="identifier">userJwt</span><span>: </span><span class="type-name">UserJwt</span><span>) =&gt;
-  </span><span class="type-name">JwtClaims</span><span>.</span><span class="identifier">empty</span><span>.</span><span class="identifier">addAll</span><span>(
-    </span><span class="string-literal">&quot;userId&quot;</span><span> -&gt; </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">userId</span><span>.</span><span class="identifier">asJson</span><span>,
-    </span><span class="string-literal">&quot;exp&quot;</span><span> -&gt; </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">expiresAt</span><span>.</span><span class="identifier">asJson</span><span>,
-    </span><span class="string-literal">&quot;iat&quot;</span><span> -&gt; </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">issuedAt</span><span>.</span><span class="identifier">asJson</span><span>
-  )
+  </span><span class="type-name">JwtClaims</span><span>.</span><span class="identifier">empty</span><span>
+    .</span><span class="identifier">add</span><span>(</span><span class="string-literal">&quot;userId&quot;</span><span>, </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">userId</span><span>.</span><span class="identifier">asJson</span><span>)
+    .</span><span class="identifier">withExpiration</span><span>(</span><span class="identifier">userJwt</span><span>.</span><span class="identifier">expiresAt</span><span>.</span><span class="identifier">seconds</span><span>)
+    .</span><span class="identifier">withIssuedAt</span><span>(</span><span class="identifier">userJwt</span><span>.</span><span class="identifier">issuedAt</span><span>.</span><span class="identifier">seconds</span><span>)
 }</span></code></pre>
         <p>For full flexibility, <code>JwtEncoder.encodeWith</code> describes the entire <code>JwtBuilder</code> instance.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtBuilder</span><span>
@@ -341,7 +341,7 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
         <p>The <code>SignedJwt</code> represent a parsed or generated token which has <em>not</em> been verified. Since we&#39;ve generated this token, we can be reasonably confident it also verifies successfully. However, in the general case, a <code>SignedJwt</code> should not be trusted before it has been verified. <code>VerifiedJwt</code> represents a verified token, covered on the <a href="verification.html">verification</a> page.</p>
         <p>Finally, let&#39;s generate the <code>String</code> representation of the token using <code>show</code>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signedJwt</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">show</span><span>).</span><span class="identifier">unsafeRunSync</span><span>()
-</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.KOl8HhB9pLz8B1F8QKfbO22bBGXhwOSqH8Jx_tf7TbMW-i4SR2GtmW1FVncBp0T1P7eET8LS8clLJjPYUQPRPQ&quot;</span></code></pre>
+</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.S2tcBw0SbKPMuLd0w5o7_lsvGPuXGuuFfEhNYAjEpFWlE4OORiR2WNF-sLQprm_mrghbVosSWAubXWb_YPC6Og&quot;</span></code></pre>
         
         <h3 id="json-web-key" class="section"><a class="anchor-link left" href="#json-web-key"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key</h3>
         <p>There is a <code>Jwk</code> type representing a JSON Web Key (JWK). A <code>Jwk</code> can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.</p>
