@@ -173,6 +173,7 @@
           <i class="icofont-laika info">&#xef4e;</i>
           <p>We should take care to <em>not</em> put secrets, like <code>SecretKey</code>, in source code.</p>
         </div>
+        <p>Note the middleware protects every incoming request, so public routes should be combined before the authenticated routes. This normally looks something along the lines of: <code>publicRoutes &lt;+&gt; authMiddleware(authedRoutes)</code>. In case it is not done correctly, public routes will always get a <code>401 Unauthorized</code> without a token present.</p>
         
         <h2 id="refreshing-verification" class="section"><a class="anchor-link left" href="#refreshing-verification"><i class="icofont-laika link">&#xef71;</i></a>Refreshing Verification</h2>
         <p>There is <code>RefreshingJwtVerification</code> with support for periodically fetching a <code>JwkSet</code> from an HTTP endpoint and refreshing verification. The following example shows how to create a <code>RefreshingJwtVerification</code> instance, which accepts tokens issued by <code>https://example.auth0.com/</code> for the <code>https://api.example.com</code> audience. Note the example allows all supported asymmetric algorithms and uses the <a href="#default-refresh-settings">default refresh settings</a>.</p>
