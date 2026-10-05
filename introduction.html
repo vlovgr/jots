@@ -143,7 +143,7 @@
 </span><span class="comment">// userJwt: UserJwt = UserJwt(8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1,3345062400,1767225600)
 </span><span>
 </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">asJwt</span><span>
-</span><span class="comment">// res0: JwtBuilder = JwtBuilder(JwtHeader(typ -&gt; &quot;JWT&quot;),JwtClaims(userId -&gt; &quot;8d3bbd14-dfd9-47fa-aab4-d76daf00b4f1&quot;,exp -&gt; 3345062400,iat -&gt; 1767225600))</span></code></pre>
+</span><span class="comment">// res0: JwtBuilder = JwtBuilder(JwtHeader(typ -&gt; &quot;JWT&quot;),JwtClaims(userId,exp,iat))</span></code></pre>
         <p>Finally, we need to sign the <code>JwtBuilder</code> to create a <code>SignedJwt</code>. For this we need a <code>JwtSigning</code> instance. In this case we chose to use <code>HS256</code> (HMAC with SHA-256) which requires a secret key. The <code>JwtSigning</code> instance is only created and used once here, but it is normally reused multiple times.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">SyncIO</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
