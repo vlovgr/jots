@@ -241,6 +241,7 @@
         <ul>
           <li>The key set will be automatically refreshed every 60 minutes (the <code>refreshInterval</code> setting).</li>
           <li>If the refresh attempt failed, we retry after 60 seconds (the <code>refreshIntervalOnError</code> setting).</li>
+          <li>Keys from the last successful refresh are used without any age limit in place (the <code>maxKeyAge</code> setting).</li>
           <li>Missing keys cause an extra refresh at most every 60 seconds (<code>minRefreshIntervalOnMissingKey</code>).</li>
           <li>Retries with a jittered exponential backoff, up to 4 retries and max 5 seconds between (<code>retryPolicy</code>).</li>
           <li>The <code>Uri</code> for the key set must use HTTPS, except for loopback hosts like <code>localhost</code> (<code>requireHttps</code>).</li>
