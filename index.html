@@ -103,6 +103,7 @@
     <li class="level2 nav-leaf"><a href="#runtime-versions">Runtime Versions</a></li>
     <li class="level2 nav-leaf"><a href="#supported-algorithms">Supported Algorithms</a></li>
     <li class="level1 nav-leaf"><a href="#dependencies">Dependencies</a></li>
+    <li class="level1 nav-leaf"><a href="#specifications">Specifications</a></li>
     <li class="level1 nav-leaf"><a href="#compatibility">Compatibility</a></li>
     <li class="level1 nav-leaf"><a href="#signatures">Signatures</a></li>
     <li class="level1 nav-leaf"><a href="#snapshots">Snapshots</a></li>
@@ -137,7 +138,7 @@
         <p>Signing and verification is covered in the <a href="introduction.html">introduction</a>.</p>
         
         <h3 id="runtime-versions" class="section"><a class="anchor-link left" href="#runtime-versions"><i class="icofont-laika link">&#xef71;</i></a>Runtime Versions</h3>
-        <p>The library relies on each platform&#39;s native cryptography. The minimum required runtime version depends on the platform and algorithms being used. Prefer the latest runtime version available, as it usually has the best security posture. Following is some general guidance on minimum recommended versions.</p>
+        <p>The library relies on each platform&#39;s native cryptography (<a href="https://docs.oracle.com/en/java/javase/21/docs/specs/security/standard-names.html">Java</a>, <a href="https://nodejs.org/api/crypto.html">Node.js</a> and <a href="https://docs.openssl.org/3.0/man7/crypto/">OpenSSL</a>). The minimum required runtime version depends on the platform and algorithms being used. Prefer the latest runtime version available, as it usually has the best security posture. Following is some general guidance on minimum recommended versions.</p>
         <ul>
           <li>For Scala on the JVM, use Java 21 (LTS) or a later version.</li>
           <li>For Scala.js on Node.js, use Node.js 22 (LTS) or a later version.</li>
@@ -200,15 +201,15 @@
             </tr>
             <tr>
               <td><code>RS256</code></td>
-              <td>RSASSA-PKCS-v1_5 using SHA-256</td>
+              <td>RSASSA-PKCS1-v1_5 using SHA-256</td>
             </tr>
             <tr>
               <td><code>RS384</code></td>
-              <td>RSASSA-PKCS-v1_5 using SHA-384</td>
+              <td>RSASSA-PKCS1-v1_5 using SHA-384</td>
             </tr>
             <tr>
               <td><code>RS512</code></td>
-              <td>RSASSA-PKCS-v1_5 using SHA-512</td>
+              <td>RSASSA-PKCS1-v1_5 using SHA-512</td>
             </tr>
           </tbody>
         </table>
@@ -279,6 +280,78 @@
           </tbody>
         </table>
         
+        <h2 id="specifications" class="section"><a class="anchor-link left" href="#specifications"><i class="icofont-laika link">&#xef71;</i></a>Specifications</h2>
+        <p>Refer to the table below for specifications relevant to the library.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Specification</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc5280.html">RFC 5280</a></td>
+              <td>Internet X.509 PKI Certificate and CRL Profile</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc5915.html">RFC 5915</a></td>
+              <td>Elliptic Curve Private Key Structure (SEC 1)</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc5958.html">RFC 5958</a></td>
+              <td>Asymmetric Key Packages (PKCS #8)</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc6750.html">RFC 6750</a></td>
+              <td>OAuth 2.0 Bearer Token Usage</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc7468.html">RFC 7468</a></td>
+              <td>Textual Encodings of PKIX, PKCS, and CMS Structures (PEM)</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc7515.html">RFC 7515</a></td>
+              <td>JSON Web Signature (JWS)</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc7517.html">RFC 7517</a></td>
+              <td>JSON Web Key (JWK)</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc7518.html">RFC 7518</a></td>
+              <td>JSON Web Algorithms (JWA)</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc7519.html">RFC 7519</a></td>
+              <td>JSON Web Token (JWT)</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc8017.html">RFC 8017</a></td>
+              <td>RSA Cryptography Specifications (PKCS #1)</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc8037.html">RFC 8037</a></td>
+              <td>CFRG ECDH and Signatures in JOSE</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc8725.html">RFC 8725</a></td>
+              <td>JSON Web Token Best Current Practices</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.rfc-editor.org/rfc/rfc9864.html">RFC 9864</a></td>
+              <td>Fully-Specified Algorithms for JOSE and COSE</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The following IANA registries list the registered names used by the library.</p>
+        <ul>
+          <li><a href="https://www.iana.org/assignments/jose">JSON Object Signing and Encryption (JOSE)</a> for algorithms, header parameters and keys.</li>
+          <li><a href="https://www.iana.org/assignments/jwt">JSON Web Token (JWT)</a> for the standard registered claims normally used in JWTs.</li>
+          <li><a href="https://www.iana.org/assignments/media-types">Media Types</a> for the media types for JWT, JSON Web Key (JWK) and JWK Set.</li>
+          <li><a href="https://www.iana.org/assignments/http-authschemes">HTTP Authentication Schemes</a> for the <code>Bearer</code> authentication scheme.</li>
+        </ul>
+        
         <h2 id="compatibility" class="section"><a class="anchor-link left" href="#compatibility"><i class="icofont-laika link">&#xef71;</i></a>Compatibility</h2>
         <p>Backwards binary compatibility for the library is guaranteed between patch versions.</p>
         <p>Release version <code>0.a.b</code> is backwards binary compatible with <code>0.a.c</code> for any <code>b &gt; c</code>.</p>
@@ -291,7 +364,7 @@
         <p>To use the latest snapshot release, add the following lines to your <code>build.sbt</code> file.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">resolvers</span><span> += </span><span class="type-name">Resolver</span><span>.</span><span class="identifier">sonatypeCentralSnapshots</span><span>
 
-</span><span class="identifier">libraryDependencies</span><span> += </span><span class="string-literal">&quot;se.vlovgr&quot;</span><span> %% </span><span class="string-literal">&quot;jots&quot;</span><span> % </span><span class="string-literal">&quot;0.3.1-1-094e054-SNAPSHOT&quot;</span></code></pre>
+</span><span class="identifier">libraryDependencies</span><span> += </span><span class="string-literal">&quot;se.vlovgr&quot;</span><span> %% </span><span class="string-literal">&quot;jots&quot;</span><span> % </span><span class="string-literal">&quot;0.3.1-7-c0376ee-SNAPSHOT&quot;</span></code></pre>
         
         <h2 id="license" class="section"><a class="anchor-link left" href="#license"><i class="icofont-laika link">&#xef71;</i></a>License</h2>
         <p>The library is distributed under the <a href="https://github.com/vlovgr/jots/blob/main/license.txt">Apache License, Version 2.0</a>.</p>

@@ -213,7 +213,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
   &quot;&quot;&quot;</span></code></pre>
         
         <h3 id="key-requirements" class="section"><a class="anchor-link left" href="#key-requirements"><i class="icofont-laika link">&#xef71;</i></a>Key Requirements</h3>
-        <p>In the example above, we note creating <code>JwtVerification</code> instances returns an effect and not <code>JwtVerification</code> directly. The effect is checking whether the public or secret key is sufficiently strong or not according to the JWT specification. When the <a href="signing.html#key-requirements">key requirements</a> are not met, an exception will be raised.</p>
+        <p>In the example above, we note creating <code>JwtVerification</code> instances returns an effect and not <code>JwtVerification</code> directly. The effect checks whether the public or secret key is sufficiently strong or not according to the <a href="https://www.rfc-editor.org/rfc/rfc7518.html">JSON Web Algorithms (JWA)</a> specification. When the <a href="signing.html#key-requirements">key requirements</a> are not met, an exception will be raised.</p>
         <p>While it is <em>not</em> recommended, the key requirements check can be disabled using <code>JwtVerificationBuilder</code> by using the <code>withCheckKeyRequirements</code> function. It is also possible to use separate effects for creating <code>JwtVerification</code> and for verifying tokens. The following example shows how both can be done.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerificationBuilder</span><span>
@@ -286,7 +286,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
         <p>If the default verifications are not enough, resort to <a href="#custom-verification">custom verifications</a>.</p>
         
         <h3 id="json-web-key-set" class="section"><a class="anchor-link left" href="#json-web-key-set"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key Set</h3>
-        <p>There is a <code>Jwk</code> type representing a JSON Web Key (JWK) and a <code>JwkSet</code> type for JWK Set. A <code>JwkSet</code> can be used for verification as long as it contains at least one key that meet all of the following criteria. Keys which do not match the criteria will be filtered out, and if there are no keys available after filtering, an exception is raised.</p>
+        <p>There is a <code>Jwk</code> type representing a <a href="https://www.rfc-editor.org/rfc/rfc7517.html">JSON Web Key (JWK)</a> and a <code>JwkSet</code> type for <a href="https://www.rfc-editor.org/rfc/rfc7517.html#section-5">JWK Set</a>. A <code>JwkSet</code> can be used for verification as long as it contains at least one key that meet all of the following criteria. Keys which do not match the criteria will be filtered out, and if there are no keys available after filtering, an exception is raised.</p>
         <ol class="arabic">
           <li>The <code>kid</code> (Key ID) parameter must be specified for the key.</li>
           <li>If <code>key_ops</code> is specified, it must contain the <code>verify</code> operation.</li>

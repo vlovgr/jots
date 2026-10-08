@@ -224,7 +224,7 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
         </div>
         
         <h3 id="key-requirements" class="section"><a class="anchor-link left" href="#key-requirements"><i class="icofont-laika link">&#xef71;</i></a>Key Requirements</h3>
-        <p>In the example above, we note creating <code>JwtSigning</code> instances returns an effect and not <code>JwtSigning</code> directly. The effect is checking whether the private or secret key is sufficiently strong or not according to the JWT specification. When the key requirements in the following list are not met, an exception will be raised. The key requirements also apply for public and secret keys when creating <code>JwtVerification</code> instances for <a href="verification.html#key-requirements">verifying tokens</a>.</p>
+        <p>In the example above, we note creating <code>JwtSigning</code> instances returns an effect and not <code>JwtSigning</code> directly. The effect checks whether the private or secret key is sufficiently strong or not according to the <a href="https://www.rfc-editor.org/rfc/rfc7518.html">JSON Web Algorithms (JWA)</a> specification. When the key requirements in the following list are not met, an exception will be raised. The key requirements also apply for public and secret keys when creating <code>JwtVerification</code> instances for <a href="verification.html#key-requirements">verifying tokens</a>.</p>
         <table>
           <thead>
             <tr>
@@ -341,10 +341,10 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
         <p>The <code>SignedJwt</code> represent a parsed or generated token which has <em>not</em> been verified. Since we&#39;ve generated this token, we can be reasonably confident it also verifies successfully. However, in the general case, a <code>SignedJwt</code> should not be trusted before it has been verified. <code>VerifiedJwt</code> represents a verified token, covered on the <a href="verification.html">verification</a> page.</p>
         <p>Finally, let&#39;s generate the <code>String</code> representation of the token using <code>show</code>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signedJwt</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">show</span><span>).</span><span class="identifier">unsafeRunSync</span><span>()
-</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.Ro4GfGyJ2W7EsHvIEi2niei9muDq39afV9KT25ZpmsCVsqJtRFzlRnlgOxKNs_FWn95DblbsQvWLi7LFR9PG7w&quot;</span></code></pre>
+</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.gQgnRgFUm0G-1jYEjFuOFxoaOuaLnS9pYCB4HJEVHScpVNN3Qiritc5yMWpmIOHGlfKZ8_TzVNK7TdKnsKwcFA&quot;</span></code></pre>
         
         <h3 id="json-web-key" class="section"><a class="anchor-link left" href="#json-web-key"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key</h3>
-        <p>There is a <code>Jwk</code> type representing a JSON Web Key (JWK). A <code>Jwk</code> can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.</p>
+        <p>There is a <code>Jwk</code> type representing a <a href="https://www.rfc-editor.org/rfc/rfc7517.html">JSON Web Key (JWK)</a>. A <code>Jwk</code> can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.</p>
         <ol class="arabic">
           <li>If <code>key_ops</code> is specified, it must contain the <code>sign</code> operation.</li>
           <li>If <code>use</code> is specified for the key, it must be set to <code>sig</code> (signature).</li>
