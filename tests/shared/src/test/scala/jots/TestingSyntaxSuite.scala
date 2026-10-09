@@ -20,12 +20,6 @@ import jots.testing.syntax.*
 import weaver.FunSuite
 
 object TestingSyntaxSuite extends FunSuite {
-  test("TestingSyntax.fromSignedUnsafe") {
-    forEach(ExampleJwt.All)(example =>
-      expect.eql(example.signedJwt, VerifiedJwt.fromSignedUnsafe(example.signedJwt).toSigned)
-    )
-  }
-
   test("TestingSyntax.toVerifiedUnsafe") {
     forEach(ExampleJwt.All)(example =>
       expect.eql(example.signedJwt, example.signedJwt.toVerifiedUnsafe.toSigned)

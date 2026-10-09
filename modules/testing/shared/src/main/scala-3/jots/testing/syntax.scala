@@ -34,17 +34,6 @@ object syntax {
       VerifiedJwt.fromVerified(signedJwt)
   }
 
-  extension (verifiedJwt: VerifiedJwt.type) {
-
-    /**
-      * Returns a new [[VerifiedJwt]] from an _unverified_ [[SignedJwt]].
-      *
-      * Note this is generally unsafe and should only be done in tests.
-      */
-    def fromSignedUnsafe(jwt: SignedJwt): VerifiedJwt =
-      VerifiedJwt.fromVerified(jwt)
-  }
-
   extension (inline ctx: StringContext) {
     inline def privateKey(inline args: Any*): PrivateKey = ${ PrivateKeyLiteral('ctx, 'args) }
 

@@ -37,17 +37,17 @@ sealed abstract class AsymmetricAlgorithm {
 }
 
 object AsymmetricAlgorithm {
-  val Ed25519: AsymmetricAlgorithm = EddsaAlgorithms.Ed25519
-  val Ed448: AsymmetricAlgorithm = EddsaAlgorithms.Ed448
-  val SHA256withECDSAinP1363Format: AsymmetricAlgorithm = EcdsaAlgorithms.SHA256withECDSAinP1363Format
-  val SHA256withRSA: AsymmetricAlgorithm = RsaAlgorithms.SHA256withRSA
-  val SHA256withRSAandMGF1: AsymmetricAlgorithm = RsaPssAlgorithms.SHA256withRSAandMGF1
-  val SHA384withECDSAinP1363Format: AsymmetricAlgorithm = EcdsaAlgorithms.SHA384withECDSAinP1363Format
-  val SHA384withRSA: AsymmetricAlgorithm = RsaAlgorithms.SHA384withRSA
-  val SHA384withRSAandMGF1: AsymmetricAlgorithm = RsaPssAlgorithms.SHA384withRSAandMGF1
-  val SHA512withECDSAinP1363Format: AsymmetricAlgorithm = EcdsaAlgorithms.SHA512withECDSAinP1363Format
-  val SHA512withRSA: AsymmetricAlgorithm = RsaAlgorithms.SHA512withRSA
-  val SHA512withRSAandMGF1: AsymmetricAlgorithm = RsaPssAlgorithms.SHA512withRSAandMGF1
+  val Ed25519: EddsaAlgorithm = EddsaAlgorithms.Ed25519
+  val Ed448: EddsaAlgorithm = EddsaAlgorithms.Ed448
+  val SHA256withECDSAinP1363Format: EcdsaAlgorithm = EcdsaAlgorithms.SHA256withECDSAinP1363Format
+  val SHA256withRSA: RsaAlgorithm = RsaAlgorithms.SHA256withRSA
+  val SHA256withRSAandMGF1: RsaPssAlgorithm = RsaPssAlgorithms.SHA256withRSAandMGF1
+  val SHA384withECDSAinP1363Format: EcdsaAlgorithm = EcdsaAlgorithms.SHA384withECDSAinP1363Format
+  val SHA384withRSA: RsaAlgorithm = RsaAlgorithms.SHA384withRSA
+  val SHA384withRSAandMGF1: RsaPssAlgorithm = RsaPssAlgorithms.SHA384withRSAandMGF1
+  val SHA512withECDSAinP1363Format: EcdsaAlgorithm = EcdsaAlgorithms.SHA512withECDSAinP1363Format
+  val SHA512withRSA: RsaAlgorithm = RsaAlgorithms.SHA512withRSA
+  val SHA512withRSAandMGF1: RsaPssAlgorithm = RsaPssAlgorithms.SHA512withRSAandMGF1
 
   /**
     * The list of all recognized [[AsymmetricAlgorithm]]s.

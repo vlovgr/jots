@@ -207,7 +207,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
         signed <- JwtBuilder.default.signWith(signing)
         verification <- JwtVerificationBuilder
           .default[IO]
-          .jwkSetAll(JwkSet(withFields(publicKey, eddsa)))
+          .jwkSet(JwtAlgorithm.All, JwkSet(withFields(publicKey, eddsa)))
           .build
         _ <- signed.verifyWith(verification)
       } yield expect.eql(Some("EdDSA"), signed.header.toJsonObject("alg").flatMap(_.asString))

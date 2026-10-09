@@ -262,16 +262,16 @@ object JwtVerification {
       key.keyId.liftTo[F].flatMap { keyId =>
         (algorithm, key.keyType) match {
           case (algorithm: JwtEcdsaAlgorithm, JwkKeyTypes.EC) =>
-            val ecdsa = JwtVerificationBuilder.default[F].verifyWith[G].ecdsa(algorithm, _)
+            val ecdsa = JwtVerificationBuilder.default[F].verifyWith[G].ecdsa(algorithm, _: PublicKey)
             key.toPublicKey.liftTo[F].map(ecdsa).flatMap(build).tupleLeft(keyId)
           case (algorithm: JwtHmacAlgorithm, JwkKeyTypes.Oct) =>
-            val hmac = JwtVerificationBuilder.default[F].verifyWith[G].hmac(algorithm, _)
+            val hmac = JwtVerificationBuilder.default[F].verifyWith[G].hmac(algorithm, _: SecretKey)
             key.toSecretKey.liftTo[F].map(hmac).flatMap(build).tupleLeft(keyId)
           case (algorithm: JwtEddsaAlgorithm, JwkKeyTypes.OKP) =>
-            val eddsa = JwtVerificationBuilder.default[F].verifyWith[G].eddsa(algorithm, _)
+            val eddsa = JwtVerificationBuilder.default[F].verifyWith[G].eddsa(algorithm, _: PublicKey)
             key.toPublicKey.liftTo[F].map(eddsa).flatMap(build).tupleLeft(keyId)
           case (algorithm: JwtRsaAlgorithm, JwkKeyTypes.RSA) =>
-            val rsa = JwtVerificationBuilder.default[F].verifyWith[G].rsa(algorithm, _)
+            val rsa = JwtVerificationBuilder.default[F].verifyWith[G].rsa(algorithm, _: PublicKey)
             key.toPublicKey.liftTo[F].map(rsa).flatMap(build).tupleLeft(keyId)
           case (algorithm, keyType) =>
             F.raiseError(new UnsupportedKey(keyId.some, keyType, Some(algorithm)))
@@ -290,7 +290,8 @@ object JwtVerification {
             val ecdsaAlgorithms = algorithms.collect { case ecdsa: JwtEcdsaAlgorithm => ecdsa }
             NonEmptyList.fromList(ecdsaAlgorithms) match {
               case Some(ecdsaAlgorithms) =>
-                val ecdsa = JwtVerificationBuilder.default[F].verifyWith[G].ecdsaList(ecdsaAlgorithms, _)
+                val ecdsa =
+                  JwtVerificationBuilder.default[F].verifyWith[G].ecdsa(ecdsaAlgorithms, _: PublicKey)
                 key.toPublicKey.liftTo[F].map(ecdsa).flatMap(build).tupleLeft(keyId)
               case None =>
                 F.raiseError(new NoAcceptedAlgorithms(keyId, key.keyType))
@@ -299,7 +300,8 @@ object JwtVerification {
             val eddsaAlgorithms = algorithms.collect { case eddsa: JwtEddsaAlgorithm => eddsa }
             NonEmptyList.fromList(eddsaAlgorithms) match {
               case Some(eddsaAlgorithms) =>
-                val eddsa = JwtVerificationBuilder.default[F].verifyWith[G].eddsaList(eddsaAlgorithms, _)
+                val eddsa =
+                  JwtVerificationBuilder.default[F].verifyWith[G].eddsa(eddsaAlgorithms, _: PublicKey)
                 key.toPublicKey.liftTo[F].map(eddsa).flatMap(build).tupleLeft(keyId)
               case None =>
                 F.raiseError(new NoAcceptedAlgorithms(keyId, key.keyType))
@@ -308,7 +310,7 @@ object JwtVerification {
             val rsaAlgorithms = algorithms.collect { case rsa: JwtRsaAlgorithm => rsa }
             NonEmptyList.fromList(rsaAlgorithms) match {
               case Some(rsaAlgorithms) =>
-                val rsa = JwtVerificationBuilder.default[F].verifyWith[G].rsaList(rsaAlgorithms, _)
+                val rsa = JwtVerificationBuilder.default[F].verifyWith[G].rsa(rsaAlgorithms, _: PublicKey)
                 key.toPublicKey.liftTo[F].map(rsa).flatMap(build).tupleLeft(keyId)
               case None =>
                 F.raiseError(new NoAcceptedAlgorithms(keyId, key.keyType))
@@ -317,7 +319,7 @@ object JwtVerification {
             val hmacAlgorithms = algorithms.collect { case hmac: JwtHmacAlgorithm => hmac }
             NonEmptyList.fromList(hmacAlgorithms) match {
               case Some(hmacAlgorithms) =>
-                val hmac = JwtVerificationBuilder.default[F].verifyWith[G].hmacList(hmacAlgorithms, _)
+                val hmac = JwtVerificationBuilder.default[F].verifyWith[G].hmac(hmacAlgorithms, _: SecretKey)
                 key.toSecretKey.liftTo[F].map(hmac).flatMap(build).tupleLeft(keyId)
               case None =>
                 F.raiseError(new NoAcceptedAlgorithms(keyId, key.keyType))
@@ -459,7 +461,7 @@ object JwtVerification {
 
   private def verifyCriticalHeaders[F[_], G[_]](
     header: SignedJwtHeader,
-    criticalHeaders: Set[String]
+    criticalHeaders: List[String]
   )(implicit G: ApplicativeThrow[G]): G[Unit] =
     header.toJsonObject("crit") match {
       case Some(crit) =>

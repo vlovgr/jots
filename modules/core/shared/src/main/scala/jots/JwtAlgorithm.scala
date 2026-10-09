@@ -44,20 +44,20 @@ sealed abstract class JwtAlgorithm {
 }
 
 object JwtAlgorithm {
-  val Ed25519: JwtAlgorithm = JwtEddsaAlgorithms.Ed25519
-  val Ed448: JwtAlgorithm = JwtEddsaAlgorithms.Ed448
-  val ES256: JwtAlgorithm = JwtEcdsaAlgorithms.ES256
-  val ES384: JwtAlgorithm = JwtEcdsaAlgorithms.ES384
-  val ES512: JwtAlgorithm = JwtEcdsaAlgorithms.ES512
-  val HS256: JwtAlgorithm = JwtHmacAlgorithms.HS256
-  val HS384: JwtAlgorithm = JwtHmacAlgorithms.HS384
-  val HS512: JwtAlgorithm = JwtHmacAlgorithms.HS512
-  val PS256: JwtAlgorithm = JwtRsaAlgorithms.PS256
-  val PS384: JwtAlgorithm = JwtRsaAlgorithms.PS384
-  val PS512: JwtAlgorithm = JwtRsaAlgorithms.PS512
-  val RS256: JwtAlgorithm = JwtRsaAlgorithms.RS256
-  val RS384: JwtAlgorithm = JwtRsaAlgorithms.RS384
-  val RS512: JwtAlgorithm = JwtRsaAlgorithms.RS512
+  val Ed25519: JwtEddsaAlgorithm = JwtEddsaAlgorithms.Ed25519
+  val Ed448: JwtEddsaAlgorithm = JwtEddsaAlgorithms.Ed448
+  val ES256: JwtEcdsaAlgorithm = JwtEcdsaAlgorithms.ES256
+  val ES384: JwtEcdsaAlgorithm = JwtEcdsaAlgorithms.ES384
+  val ES512: JwtEcdsaAlgorithm = JwtEcdsaAlgorithms.ES512
+  val HS256: JwtHmacAlgorithm = JwtHmacAlgorithms.HS256
+  val HS384: JwtHmacAlgorithm = JwtHmacAlgorithms.HS384
+  val HS512: JwtHmacAlgorithm = JwtHmacAlgorithms.HS512
+  val PS256: JwtRsaAlgorithm = JwtRsaAlgorithms.PS256
+  val PS384: JwtRsaAlgorithm = JwtRsaAlgorithms.PS384
+  val PS512: JwtRsaAlgorithm = JwtRsaAlgorithms.PS512
+  val RS256: JwtRsaAlgorithm = JwtRsaAlgorithms.RS256
+  val RS384: JwtRsaAlgorithm = JwtRsaAlgorithms.RS384
+  val RS512: JwtRsaAlgorithm = JwtRsaAlgorithms.RS512
 
   /**
     * The list of all recognized [[JwtAlgorithm]]s.
@@ -165,17 +165,17 @@ sealed abstract class JwtAsymmetricAlgorithm extends JwtAlgorithm {
 }
 
 object JwtAsymmetricAlgorithm {
-  val Ed25519: JwtAsymmetricAlgorithm = JwtEddsaAlgorithms.Ed25519
-  val Ed448: JwtAsymmetricAlgorithm = JwtEddsaAlgorithms.Ed448
-  val ES256: JwtAsymmetricAlgorithm = JwtEcdsaAlgorithms.ES256
-  val ES384: JwtAsymmetricAlgorithm = JwtEcdsaAlgorithms.ES384
-  val ES512: JwtAsymmetricAlgorithm = JwtEcdsaAlgorithms.ES512
-  val PS256: JwtAsymmetricAlgorithm = JwtRsaAlgorithms.PS256
-  val PS384: JwtAsymmetricAlgorithm = JwtRsaAlgorithms.PS384
-  val PS512: JwtAsymmetricAlgorithm = JwtRsaAlgorithms.PS512
-  val RS256: JwtAsymmetricAlgorithm = JwtRsaAlgorithms.RS256
-  val RS384: JwtAsymmetricAlgorithm = JwtRsaAlgorithms.RS384
-  val RS512: JwtAsymmetricAlgorithm = JwtRsaAlgorithms.RS512
+  val Ed25519: JwtEddsaAlgorithm = JwtEddsaAlgorithms.Ed25519
+  val Ed448: JwtEddsaAlgorithm = JwtEddsaAlgorithms.Ed448
+  val ES256: JwtEcdsaAlgorithm = JwtEcdsaAlgorithms.ES256
+  val ES384: JwtEcdsaAlgorithm = JwtEcdsaAlgorithms.ES384
+  val ES512: JwtEcdsaAlgorithm = JwtEcdsaAlgorithms.ES512
+  val PS256: JwtRsaAlgorithm = JwtRsaAlgorithms.PS256
+  val PS384: JwtRsaAlgorithm = JwtRsaAlgorithms.PS384
+  val PS512: JwtRsaAlgorithm = JwtRsaAlgorithms.PS512
+  val RS256: JwtRsaAlgorithm = JwtRsaAlgorithms.RS256
+  val RS384: JwtRsaAlgorithm = JwtRsaAlgorithms.RS384
+  val RS512: JwtRsaAlgorithm = JwtRsaAlgorithms.RS512
 
   /**
     * The list of all recognized [[JwtAsymmetricAlgorithm]]s.

@@ -27,6 +27,7 @@ import jots.ExampleJwt
 import jots.JwtAlgorithm
 import jots.JwtBuilder
 import jots.JwtDecoder
+import jots.JwtEddsaAlgorithm
 import jots.JwtHeader
 import jots.JwtSignature
 import jots.JwtVerification
@@ -108,7 +109,7 @@ object JwtAuthMiddlewareSuite extends SimpleIOSuite {
         .toSigned(JwtSignature(ByteVector.fill(114)(1)))
 
     for {
-      verification <- JwtVerificationBuilder.default[IO].eddsaAll(example.publicKey).build
+      verification <- JwtVerificationBuilder.default[IO].eddsa(JwtEddsaAlgorithm.All, example.publicKey).build
       response <- respondTo(verification, requestWith(signedJwt))
     } yield expect.eql(Status.Unauthorized, response.status) &&
       expect.eql(invalidChallenge, challengeOf(response))

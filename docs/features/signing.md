@@ -88,7 +88,7 @@ JwtEncoder.encodeWith { (userJwt: UserJwt) =>
 }
 ```
 
-As seen in the examples above, a `JwtBuilder` consists of a `JwtHeader` and `JwtClaims`. `JwtBuilder.default` uses `JwtHeader.default` which includes `{"typ":"JWT"}`. There is `JwtBuilder.empty` and `JwtHeader.empty` if this is unwanted (plus the `withType` and `withoutType` functions on `JwtHeader` as options).
+As seen in the examples above, a `JwtBuilder` consists of a `JwtHeader` and `JwtClaims`. `JwtBuilder.default` uses `JwtHeader.default` which includes `{"typ":"JWT"}`. There is `JwtBuilder.empty` and `JwtHeader.empty` if this is unwanted (plus the `withType` and `remove` functions on `JwtHeader` as options).
 
 ## Signing Tokens
 

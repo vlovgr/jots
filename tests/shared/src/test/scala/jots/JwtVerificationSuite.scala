@@ -381,7 +381,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
         JwtClaims("aud" -> "some-audience".asJson),
         JwtHeader.default.withKeyId(JwkKeyId("key-1"))
       )
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.UnexpectedAudience) => () }
     } yield success
@@ -418,7 +418,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
       )
       verification <- JwtVerificationBuilder
         .default[IO]
-        .jwkSetAll(keySet)
+        .jwkSet(JwtAlgorithm.All, keySet)
         .withAcceptedAudiences(AcceptedAudiences.any)
         .build
       result <- signed.verifyWith(verification).attempt
@@ -469,7 +469,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
 
   test("JwtVerification.rejectMissingType") {
     for {
-      signed <- sign(JwtClaims.empty, JwtHeader.default.withoutType)
+      signed <- sign(JwtClaims.empty, JwtHeader.default.remove("typ"))
       verification <- JwtVerificationBuilder
         .default[IO]
         .hmac(algorithm, secretKey)
@@ -526,7 +526,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
 
   test("JwtVerification.acceptsMissingType") {
     for {
-      signed <- sign(JwtClaims.empty, JwtHeader.default.withoutType)
+      signed <- sign(JwtClaims.empty, JwtHeader.default.remove("typ"))
       verification <- JwtVerificationBuilder.default[IO].hmac(algorithm, secretKey).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
@@ -553,7 +553,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
       signed <- sign(JwtClaims.empty, JwtHeader.default.withKeyId(JwkKeyId("key-1")))
       verification <- JwtVerificationBuilder
         .default[IO]
-        .jwkSetAll(keySet)
+        .jwkSet(JwtAlgorithm.All, keySet)
         .withAcceptedTypes("at+jwt")
         .build
       result <- signed.verifyWith(verification).attempt
@@ -565,9 +565,21 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val keySet = JwkSet(octJwk("key-1"))
     for {
       signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-1")))
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
+    } yield success
+  }
+
+  test("JwtVerification.jwkSet.singleAlgorithm") {
+    val keySet = JwkSet(octJwk("key-1"))
+    for {
+      signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-1")))
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtHmacAlgorithm.HS256, keySet).build
+      result <- signed.verifyWith(verification).attempt
+      rejected <- JwtVerificationBuilder.default[IO].jwkSet(JwtHmacAlgorithm.HS512, keySet).build.attempt
+      _ <- matchOrFailFast[IO](result) { case Right(_) => () }
+      _ <- matchOrFailFast[IO](rejected) { case Left(_: JwtException.EmptyKeySet) => () }
     } yield success
   }
 
@@ -592,7 +604,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
       JwtBuilder(JwtHeader.default.withKeyId(JwkKeyId("shared")), JwtClaims("sub" -> "alice".asJson))
 
     for {
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       ecdsa <- JwtSigningBuilder
         .default[IO]
         .ecdsa(JwtEcdsaAlgorithm.ES256, ExampleEcdsaJwt.ES256Jwk.privateKey)
@@ -612,7 +624,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val keySet = JwkSet(octJwk("key-1"))
     for {
       signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-2")))
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.MissingKey) => () }
     } yield success
@@ -622,7 +634,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val keySet = JwkSet(octJwk("key-1"))
     for {
       signed <- sign(JwtClaims("sub" -> "alice".asJson))
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.MissingKeyId) => () }
     } yield success
@@ -631,7 +643,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
   test("JwtVerification.jwkSet.excludesKeyForEncryptionUse") {
     val keySet = JwkSet(octJwk("key-1", "use" -> "enc".asJson))
     for {
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build.attempt
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build.attempt
       _ <- matchOrFailFast[IO](verification) { case Left(_: JwtException.EmptyKeySet) => () }
     } yield success
   }
@@ -640,7 +652,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val keySet = JwkSet(octJwk("key-1", "use" -> "sig".asJson))
     for {
       signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-1")))
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
     } yield success
@@ -649,7 +661,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
   test("JwtVerification.jwkSet.excludesKeyWithoutVerifyKeyOp") {
     val keySet = JwkSet(octJwk("key-1", "key_ops" -> List("sign").asJson))
     for {
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build.attempt
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build.attempt
       _ <- matchOrFailFast[IO](verification) { case Left(_: JwtException.EmptyKeySet) => () }
     } yield success
   }
@@ -658,7 +670,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val keySet = JwkSet(octJwk("key-1", "key_ops" -> List("sign", "verify").asJson))
     for {
       signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-1")))
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
     } yield success
@@ -671,7 +683,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
     )
 
     for {
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       signedSig <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("sig-key")))
       resultSig <- signedSig.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](resultSig) { case Right(_) => () }
@@ -692,7 +704,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val keySet = JwkSet(missingKeyIdJwk, octJwk("key-1"))
     for {
       signed <- sign(JwtClaims("sub" -> "alice".asJson), JwtHeader.default.withKeyId(JwkKeyId("key-1")))
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
     } yield success
@@ -717,6 +729,22 @@ object JwtVerificationSuite extends SimpleIOSuite {
         .build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
+    } yield success
+  }
+
+  test("JwtVerification.criticalHeadersList") {
+    for {
+      signed <- sign(JwtClaims.empty, criticalHeader("jots-example"))
+      builder = JwtVerificationBuilder
+        .default[IO]
+        .hmac(algorithm, secretKey)
+        .withCriticalHeaders(List("jots-example"))
+      accepting <- builder.build
+      rejecting <- builder.withCriticalHeaders(List.empty).build
+      accepted <- signed.verifyWith(accepting).attempt
+      rejected <- signed.verifyWith(rejecting).attempt
+      _ <- matchOrFailFast[IO](accepted) { case Right(_) => () }
+      _ <- matchOrFailFast[IO](rejected) { case Left(_: JwtException.UnsupportedCriticalHeader) => () }
     } yield success
   }
 
@@ -759,9 +787,24 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val header = criticalHeader("jots-example").withKeyId(JwkKeyId("key-1"))
     for {
       signed <- sign(JwtClaims.empty, header)
-      verification <- JwtVerificationBuilder.default[IO].jwkSetAll(keySet).build
+      verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.UnsupportedCriticalHeader) => () }
+    } yield success
+  }
+
+  test("JwtVerification.jwkSet.acceptsUnderstoodCriticalHeader") {
+    val keySet = JwkSet(octJwk("key-1"))
+    val header = criticalHeader("jots-example").withKeyId(JwkKeyId("key-1"))
+    for {
+      signed <- sign(JwtClaims.empty, header)
+      verification <- JwtVerificationBuilder
+        .default[IO]
+        .jwkSet(JwtAlgorithm.All, keySet)
+        .withCriticalHeaders("jots-example")
+        .build
+      result <- signed.verifyWith(verification).attempt
+      _ <- matchOrFailFast[IO](result) { case Right(_) => () }
     } yield success
   }
 
@@ -869,7 +912,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
         .withCheckKeyRequirements(false)
         .build
       signed <- example.builder.signWith(signing)
-      verification <- JwtVerificationBuilder.default[IO].ecdsaAll(example.publicKey).build
+      verification <- JwtVerificationBuilder.default[IO].ecdsa(JwtEcdsaAlgorithm.All, example.publicKey).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.RejectedAlgorithm) => () }
     } yield success
@@ -891,7 +934,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val example = ExampleEddsaJwt.EdDSAPkcs8
 
     for {
-      verification <- JwtVerificationBuilder.default[IO].eddsaAll(example.publicKey).build
+      verification <- JwtVerificationBuilder.default[IO].eddsa(JwtEddsaAlgorithm.All, example.publicKey).build
       result <- example.signedJwt.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
     } yield success
@@ -902,7 +945,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val signed = tokenWithAlgorithm(JwtAlgorithm.Ed448, ByteVector.fill(114)(1))
 
     for {
-      verification <- JwtVerificationBuilder.default[IO].eddsaAll(example.publicKey).build
+      verification <- JwtVerificationBuilder.default[IO].eddsa(JwtEddsaAlgorithm.All, example.publicKey).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.RejectedAlgorithm) => () }
     } yield success
@@ -913,7 +956,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
     val signed = tokenWithAlgorithm(JwtAlgorithm.RS256, example.signedJwt.signature.toByteVector)
 
     for {
-      verification <- JwtVerificationBuilder.default[IO].rsaAll(example.publicKey).build
+      verification <- JwtVerificationBuilder.default[IO].rsa(JwtRsaAlgorithm.All, example.publicKey).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.RejectedAlgorithm) => () }
     } yield success

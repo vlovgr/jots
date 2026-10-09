@@ -72,8 +72,7 @@ import scala.util.control.NoStackTrace
   * no error occurred, a `CancellationException` is raised instead.
   *
   * The [[RefreshingJwtVerificationBuilder.refreshWith]] function accepts
-  * the function to use for refreshing [[JwtVerification]], while there
-  * is [[RefreshingJwtVerificationBuilder.jwkSet]] for convenience.
+  * the function to use for refreshing [[JwtVerification]].
   *
   * The [[RefreshingJwtVerificationBuilder]] provides customization of
   * the default settings. Notably, logging is no-op by default, so set
