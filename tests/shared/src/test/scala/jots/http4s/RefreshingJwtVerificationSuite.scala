@@ -642,7 +642,7 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
   ): RefreshingJwtVerificationBuilder[IO] =
     RefreshingJwtVerificationBuilder
       .refreshWith[IO](client, uri) { keys =>
-        JwtVerificationBuilder.default[IO].jwkSetAll(keys).build.map { verification =>
+        JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keys).build.map { verification =>
           if (keys === keySet)
             JwtVerification.verifyWith[IO] { jwt =>
               entered.complete(()).ifM(proceed.get, IO.unit) >> verification.verify(jwt)

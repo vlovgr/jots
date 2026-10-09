@@ -336,28 +336,14 @@ object JwtVerificationBuilder {
       clock: Clock[G],
       crypto: Crypto[G]
     ): JwtVerificationBuilder[F, G] =
-      ecdsaList(NonEmptyList.of(algorithm), publicKey)
-
-    /**
-      * Returns a new [[JwtVerificationBuilder]] instance which verifies
-      * tokens using all recognized ECDSA algorithms and a public key.
-      * Only the algorithm for the curve of the public key is accepted.
-      */
-    def ecdsaAll(
-      publicKey: PublicKey
-    )(implicit
-      F: ApplicativeThrow[F],
-      G: MonadThrow[G],
-      clock: Clock[G],
-      crypto: Crypto[G]
-    ): JwtVerificationBuilder[F, G] =
-      ecdsaList(JwtEcdsaAlgorithm.All, publicKey)
+      ecdsa(NonEmptyList.of(algorithm), publicKey)
 
     /**
       * Returns a new [[JwtVerificationBuilder]] instance which verifies
       * tokens using a list of ECDSA algorithms and a public key.
+      * Only the algorithm for the curve of the public key is accepted.
       */
-    def ecdsaList(
+    def ecdsa(
       algorithms: NonEmptyList[JwtEcdsaAlgorithm],
       publicKey: PublicKey
     )(implicit
@@ -381,28 +367,14 @@ object JwtVerificationBuilder {
       clock: Clock[G],
       crypto: Crypto[G]
     ): JwtVerificationBuilder[F, G] =
-      eddsaList(NonEmptyList.of(algorithm), publicKey)
-
-    /**
-      * Returns a new [[JwtVerificationBuilder]] instance which verifies
-      * tokens using all recognized EdDSA algorithms and a public key.
-      * Only the algorithm for the curve of the public key is accepted.
-      */
-    def eddsaAll(
-      publicKey: PublicKey
-    )(implicit
-      F: ApplicativeThrow[F],
-      G: MonadThrow[G],
-      clock: Clock[G],
-      crypto: Crypto[G]
-    ): JwtVerificationBuilder[F, G] =
-      eddsaList(JwtEddsaAlgorithm.All, publicKey)
+      eddsa(NonEmptyList.of(algorithm), publicKey)
 
     /**
       * Returns a new [[JwtVerificationBuilder]] instance which verifies
       * tokens using a list of EdDSA algorithms and a public key.
+      * Only the algorithm for the curve of the public key is accepted.
       */
-    def eddsaList(
+    def eddsa(
       algorithms: NonEmptyList[JwtEddsaAlgorithm],
       publicKey: PublicKey
     )(implicit
@@ -426,27 +398,13 @@ object JwtVerificationBuilder {
       clock: Clock[G],
       crypto: Crypto[G]
     ): JwtVerificationBuilder[F, G] =
-      hmacList(NonEmptyList.of(algorithm), secretKey)
-
-    /**
-      * Returns a new [[JwtVerificationBuilder]] instance which verifies
-      * tokens using all recognized HMAC algorithms and a secret key.
-      */
-    def hmacAll(
-      secretKey: SecretKey
-    )(implicit
-      F: ApplicativeThrow[F],
-      G: MonadThrow[G],
-      clock: Clock[G],
-      crypto: Crypto[G]
-    ): JwtVerificationBuilder[F, G] =
-      hmacList(JwtHmacAlgorithm.All, secretKey)
+      hmac(NonEmptyList.of(algorithm), secretKey)
 
     /**
       * Returns a new [[JwtVerificationBuilder]] instance which verifies
       * tokens using a list of HMAC algorithms and a secret key.
       */
-    def hmacList(
+    def hmac(
       algorithms: NonEmptyList[JwtHmacAlgorithm],
       secretKey: SecretKey
     )(implicit
@@ -456,6 +414,29 @@ object JwtVerificationBuilder {
       crypto: Crypto[G]
     ): JwtVerificationBuilder[F, G] =
       JwtHmacVerificationBuilder.default(algorithms, secretKey)
+
+    /**
+      * Returns a new [[JwtVerificationBuilder]] instance which verifies
+      * tokens using the specified algorithm and keys in a [[JwkSet]].
+      *
+      * Keys which cannot be used for signature verification are excluded
+      * from the key set; a token referencing such a key is rejected. A
+      * key is excluded when it has no key id (kid), since keys are
+      * selected by key id, or when its `use` or `key_ops` parameters
+      * indicate it is not meant for signature verification. Keys
+      * which are not supported, or have no accepted algorithm, are
+      * also excluded.
+      */
+    def jwkSet(
+      algorithm: JwtAlgorithm,
+      keySet: JwkSet
+    )(implicit
+      F: MonadThrow[F],
+      G: MonadThrow[G],
+      clock: Clock[G],
+      crypto: Crypto[G]
+    ): JwtVerificationBuilder[F, G] =
+      jwkSet(NonEmptyList.of(algorithm), keySet)
 
     /**
       * Returns a new [[JwtVerificationBuilder]] instance which verifies
@@ -482,28 +463,6 @@ object JwtVerificationBuilder {
 
     /**
       * Returns a new [[JwtVerificationBuilder]] instance which verifies
-      * tokens using all recognized algorithms and keys in a [[JwkSet]].
-      *
-      * Keys which cannot be used for signature verification are excluded
-      * from the key set; a token referencing such a key is rejected. A
-      * key is excluded when it has no key id (kid), since keys are
-      * selected by key id, or when its `use` or `key_ops` parameters
-      * indicate it is not meant for signature verification. Keys
-      * which are not supported, or have no accepted algorithm, are
-      * also excluded.
-      */
-    def jwkSetAll(
-      keySet: JwkSet
-    )(implicit
-      F: MonadThrow[F],
-      G: MonadThrow[G],
-      clock: Clock[G],
-      crypto: Crypto[G]
-    ): JwtVerificationBuilder[F, G] =
-      jwkSet(JwtAlgorithm.All, keySet)
-
-    /**
-      * Returns a new [[JwtVerificationBuilder]] instance which verifies
       * tokens using the specified RSA algorithm and public key.
       */
     def rsa(
@@ -515,28 +474,14 @@ object JwtVerificationBuilder {
       clock: Clock[G],
       crypto: Crypto[G]
     ): JwtVerificationBuilder[F, G] =
-      rsaList(NonEmptyList.of(algorithm), publicKey)
-
-    /**
-      * Returns a new [[JwtVerificationBuilder]] instance which verifies
-      * tokens using all recognized RSA algorithms and a public key.
-      * Only RSA-PSS algorithms are accepted for RSA-PSS public keys.
-      */
-    def rsaAll(
-      publicKey: PublicKey
-    )(implicit
-      F: ApplicativeThrow[F],
-      G: MonadThrow[G],
-      clock: Clock[G],
-      crypto: Crypto[G]
-    ): JwtVerificationBuilder[F, G] =
-      rsaList(JwtRsaAlgorithm.All, publicKey)
+      rsa(NonEmptyList.of(algorithm), publicKey)
 
     /**
       * Returns a new [[JwtVerificationBuilder]] instance which verifies
       * tokens using a list of RSA algorithms and a public key.
+      * Only RSA-PSS algorithms are accepted for RSA-PSS public keys.
       */
-    def rsaList(
+    def rsa(
       algorithms: NonEmptyList[JwtRsaAlgorithm],
       publicKey: PublicKey
     )(implicit
