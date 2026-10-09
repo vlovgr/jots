@@ -34,19 +34,6 @@ object syntax {
       VerifiedJwt.fromVerified(signedJwt)
   }
 
-  implicit final class JotsTestingVerifiedJwtCompanionSyntax(
-    private val verifiedJwt: VerifiedJwt.type
-  ) extends AnyVal {
-
-    /**
-      * Returns a new [[VerifiedJwt]] from an _unverified_ [[SignedJwt]].
-      *
-      * Note this is generally unsafe and should only be done in tests.
-      */
-    def fromSignedUnsafe(jwt: SignedJwt): VerifiedJwt =
-      VerifiedJwt.fromVerified(jwt)
-  }
-
   implicit final class JotsTestingStringContextSyntax(private val ctx: StringContext) extends AnyVal {
     def privateKey(args: Any*): PrivateKey = macro PrivateKeyLiteral.make
 

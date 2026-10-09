@@ -78,6 +78,4 @@ It is possible to extend the default verifications for [custom verifications](ve
 import jots.testing.syntax.*
 
 signedJwt.toVerifiedUnsafe
-
-VerifiedJwt.fromSignedUnsafe(signedJwt)
 ```
