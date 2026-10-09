@@ -30,7 +30,9 @@ import jots.JwtException.UnsuitableSigningKey
 import jots.JwtException.UnsupportedKey
 import jots.crypto.Crypto
 import jots.crypto.PrivateKey
+import jots.crypto.RsaAlgorithm
 import jots.crypto.SecretKey
+import jots.crypto.internal.KeyAlgorithm
 import jots.internal.KeyLength
 import jots.internal.KeyRequirement
 
@@ -148,6 +150,14 @@ object JwtSigning {
   )(implicit F: ApplicativeThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] = {
     import builder.*
 
+    val ensureKeyAlgorithm: F[Unit] =
+      algorithm.asymmetricAlgorithm match {
+        case _: RsaAlgorithm if KeyAlgorithm.isRsaPss(privateKey) =>
+          F.raiseError(new InvalidPrivateKey(s"RSASSA-PSS keys cannot be used with [${algorithm.name}]"))
+        case _ =>
+          F.unit
+      }
+
     val ensureKeyRequirements: F[Unit] =
       F.whenA(checkKeyRequirements) {
         KeyLength.fromPrivateKey(privateKey) match {
@@ -158,7 +168,7 @@ object JwtSigning {
         }
       }
 
-    ensureKeyRequirements.as {
+    (ensureKeyAlgorithm *> ensureKeyRequirements).as {
       new JwtSigning[G] {
         override def sign(jwt: JwtBuilder): G[SignedJwt] =
           signAsymmetric(jwt.mapHeader(_.withAlgorithm(algorithm)))
