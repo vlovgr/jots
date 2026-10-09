@@ -469,7 +469,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
 
   test("JwtVerification.rejectMissingType") {
     for {
-      signed <- sign(JwtClaims.empty, JwtHeader.default.withoutType)
+      signed <- sign(JwtClaims.empty, JwtHeader.default.remove("typ"))
       verification <- JwtVerificationBuilder
         .default[IO]
         .hmac(algorithm, secretKey)
@@ -526,7 +526,7 @@ object JwtVerificationSuite extends SimpleIOSuite {
 
   test("JwtVerification.acceptsMissingType") {
     for {
-      signed <- sign(JwtClaims.empty, JwtHeader.default.withoutType)
+      signed <- sign(JwtClaims.empty, JwtHeader.default.remove("typ"))
       verification <- JwtVerificationBuilder.default[IO].hmac(algorithm, secretKey).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }

@@ -16,6 +16,7 @@
 
 package jots.testing
 
+import io.circe.syntax.*
 import jots.JwkKeyId
 import jots.JwtHeader
 import org.scalacheck.Arbitrary
@@ -39,10 +40,10 @@ private[jots] trait JwtHeaderInstances {
         Gen.option(arbitrary[String])
       )
       header = JwtHeader.empty
-        .withAlgorithmOption(algorithm)
-        .withContentTypeOption(contentType)
-        .withKeyIdOption(keyId)
-        .withTypeOption(typ)
+        .addOption("alg", algorithm.map(_.name.asJson))
+        .addOption("cty", contentType.map(_.asJson))
+        .addOption("kid", keyId.map(_.asJson))
+        .addOption("typ", typ.map(_.asJson))
     } yield header
 
   implicit lazy val jwtHeaderArbitrary: Arbitrary[JwtHeader] =

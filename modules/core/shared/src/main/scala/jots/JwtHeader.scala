@@ -41,36 +41,10 @@ sealed abstract class JwtHeader {
   def withAlgorithm(algorithm: JwtAlgorithm): JwtHeader
 
   /**
-    * Returns a new [[JwtHeader]] with the specified algorithm's
-    * name set for the `alg` key, or with the `alg` key removed
-    * when `None` is provided.
-    *
-    * Note the algorithm is normally set by [[JwtSigning]] when
-    * signing and not set manually.
-    */
-  def withAlgorithmOption(algorithm: Option[JwtAlgorithm]): JwtHeader
-
-  /**
-    * Returns a new [[JwtHeader]] with the `alg` key removed.
-    */
-  def withoutAlgorithm: JwtHeader
-
-  /**
     * Returns a new [[JwtHeader]] with the specified content type
     * set for the `cty` key.
     */
   def withContentType(contentType: String): JwtHeader
-
-  /**
-    * Returns a new [[JwtHeader]] with the `cty` key set to the
-    * specified content type, or removed if `None`.
-    */
-  def withContentTypeOption(contentType: Option[String]): JwtHeader
-
-  /**
-    * Returns a new [[JwtHeader]] with the `cty` key removed.
-    */
-  def withoutContentType: JwtHeader
 
   /**
     * Returns a new [[JwtHeader]] with the specified header names
@@ -85,49 +59,16 @@ sealed abstract class JwtHeader {
   def withCriticalHeaders(criticalHeaders: NonEmptyList[String]): JwtHeader
 
   /**
-    * Returns a new [[JwtHeader]] with the `crit` key removed.
-    */
-  def withoutCriticalHeaders: JwtHeader
-
-  /**
     * Returns a new [[JwtHeader]] with the specified key id
     * set for the `kid` key.
     */
   def withKeyId(keyId: JwkKeyId): JwtHeader
 
   /**
-    * Returns a new [[JwtHeader]] with the `kid` key set to the
-    * specified key id, or removed if `None`.
-    */
-  def withKeyIdOption(keyId: Option[JwkKeyId]): JwtHeader
-
-  /**
-    * Returns a new [[JwtHeader]] with the `kid` key removed.
-    */
-  def withoutKeyId: JwtHeader
-
-  /**
     * Returns a new [[JwtHeader]] with the specified type
     * set for the `typ` key.
     */
   def withType(`type`: String): JwtHeader
-
-  /**
-    * Returns a new [[JwtHeader]] with the `typ` key set to the
-    * specified type, or removed if `None`.
-    */
-  def withTypeOption(`type`: Option[String]): JwtHeader
-
-  /**
-    * Returns a new [[JwtHeader]] with the default type `JWT`
-    * set for the `typ` key.
-    */
-  def withDefaultType: JwtHeader
-
-  /**
-    * Returns a new [[JwtHeader]] with the `typ` key removed.
-    */
-  def withoutType: JwtHeader
 
   /**
     * Returns a new [[JwtHeader]] with the specified value
@@ -195,20 +136,8 @@ object JwtHeader {
     override def withAlgorithm(algorithm: JwtAlgorithm): JwtHeader =
       add("alg", algorithm.name.asJson)
 
-    override def withAlgorithmOption(algorithm: Option[JwtAlgorithm]): JwtHeader =
-      algorithm.fold(withoutAlgorithm)(withAlgorithm)
-
-    override def withoutAlgorithm: JwtHeader =
-      remove("alg")
-
     override def withContentType(contentType: String): JwtHeader =
       add("cty", contentType.asJson)
-
-    override def withContentTypeOption(contentType: Option[String]): JwtHeader =
-      contentType.fold(withoutContentType)(withContentType)
-
-    override def withoutContentType: JwtHeader =
-      remove("cty")
 
     override def withCriticalHeaders(criticalHeader: String, criticalHeaders: String*): JwtHeader =
       withCriticalHeaders(NonEmptyList.of(criticalHeader, criticalHeaders: _*))
@@ -216,29 +145,11 @@ object JwtHeader {
     override def withCriticalHeaders(criticalHeaders: NonEmptyList[String]): JwtHeader =
       add("crit", criticalHeaders.asJson)
 
-    override def withoutCriticalHeaders: JwtHeader =
-      remove("crit")
-
     override def withKeyId(keyId: JwkKeyId): JwtHeader =
       add("kid", keyId.asJson)
 
-    override def withKeyIdOption(keyId: Option[JwkKeyId]): JwtHeader =
-      keyId.fold(withoutKeyId)(withKeyId)
-
-    override def withoutKeyId: JwtHeader =
-      remove("kid")
-
     override def withType(`type`: String): JwtHeader =
       add("typ", `type`.asJson)
-
-    override def withTypeOption(`type`: Option[String]): JwtHeader =
-      `type`.fold(withoutType)(withType)
-
-    override def withDefaultType: JwtHeader =
-      withType("JWT")
-
-    override def withoutType: JwtHeader =
-      remove("typ")
 
     override def add(name: String, value: Json): JwtHeader =
       mapJsonObject(_.add(name, value))
@@ -286,7 +197,7 @@ object JwtHeader {
     * A [[JwtHeader]] with the default type: `{"typ":"JWT"}`.
     */
   val default: JwtHeader =
-    empty.withDefaultType
+    empty.withType("JWT")
 
   /**
     * Returns a new [[JwtHeader]] with the specified key-value pairs.
