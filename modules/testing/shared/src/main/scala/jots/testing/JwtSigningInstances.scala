@@ -18,6 +18,7 @@ package jots.testing
 
 import cats.Functor
 import jots.JwtSigning
+import jots.JwtSigningBuilder
 import jots.crypto.Crypto
 import org.scalacheck.Arbitrary
 import org.scalacheck.Gen
@@ -37,10 +38,11 @@ private[jots] trait JwtSigningInstances {
     for {
       algorithm <- jwtEcdsaAlgorithmGen
       privateKey <- ecdsaPrivateKeyGen(algorithm)
-      signing <- JwtSigning
+      signing <- JwtSigningBuilder
         .default[Try]
         .signWith[F]
         .ecdsa(algorithm, privateKey)
+        .build
         .fold(throw _, Gen.const)
     } yield signing
 
@@ -51,10 +53,11 @@ private[jots] trait JwtSigningInstances {
     for {
       algorithm <- jwtEddsaAlgorithmGen
       privateKey <- eddsaPrivateKeyGen(algorithm)
-      signing <- JwtSigning
+      signing <- JwtSigningBuilder
         .default[Try]
         .signWith[F]
         .eddsa(algorithm, privateKey)
+        .build
         .fold(throw _, Gen.const)
     } yield signing
 
@@ -65,10 +68,11 @@ private[jots] trait JwtSigningInstances {
     for {
       algorithm <- jwtHmacAlgorithmGen
       secretKey <- secretKeyMinLengthGen(algorithm.minKeyLength)
-      signing <- JwtSigning
+      signing <- JwtSigningBuilder
         .default[Try]
         .signWith[F]
         .hmac(algorithm, secretKey)
+        .build
         .fold(throw _, Gen.const)
     } yield signing
 
@@ -79,10 +83,11 @@ private[jots] trait JwtSigningInstances {
     for {
       algorithm <- jwtRsaAlgorithmGen
       privateKey <- rsaPrivateKeyGen
-      signing <- JwtSigning
+      signing <- JwtSigningBuilder
         .default[Try]
         .signWith[F]
         .rsa(algorithm, privateKey)
+        .build
         .fold(throw _, Gen.const)
     } yield signing
 

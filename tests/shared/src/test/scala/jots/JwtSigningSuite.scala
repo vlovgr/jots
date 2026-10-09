@@ -76,7 +76,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
       } yield (algorithm, privateKey)
 
     forall(gen) { case (algorithm, privateKey) =>
-      JwtSigning.default[IO].rsa(algorithm, privateKey).attempt.map {
+      JwtSigningBuilder.default[IO].rsa(algorithm, privateKey).build.attempt.map {
         case Left(_: InvalidRsaKeyLength) => success
         case _ => failure("unexpected case")
       }
@@ -95,7 +95,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
         )
       )
 
-    JwtSigning.default[IO].rsa(JwtRsaAlgorithm.RS256, privateKey).attempt.map {
+    JwtSigningBuilder.default[IO].rsa(JwtRsaAlgorithm.RS256, privateKey).build.attempt.map {
       case Left(_: InvalidPrivateKey) => success
       case _ => failure("unexpected case")
     }
@@ -103,7 +103,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
 
   test("JwtSigning.asymmetric.rejectMismatchedEcdsaCurve") {
     forall(ecdsaP384PrivateKeyGen) { privateKey =>
-      JwtSigning.default[IO].ecdsa(JwtEcdsaAlgorithm.ES256, privateKey).attempt.map {
+      JwtSigningBuilder.default[IO].ecdsa(JwtEcdsaAlgorithm.ES256, privateKey).build.attempt.map {
         case Left(_: InvalidEcKeyLength) => success
         case _ => failure("unexpected case")
       }
@@ -122,7 +122,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
 
     (privateKeys, algorithms).tupled
       .traverse { case (privateKey, algorithm) =>
-        JwtSigning.default[IO].rsa(algorithm, privateKey).attempt.map {
+        JwtSigningBuilder.default[IO].rsa(algorithm, privateKey).build.attempt.map {
           case Left(_: InvalidPrivateKey) => success
           case _ => failure("unexpected case")
         }
@@ -141,9 +141,10 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
 
     forall(gen) { case (algorithm, builder, secretKey) =>
       for {
-        signing <- JwtSigning
+        signing <- JwtSigningBuilder
           .default[IO]
           .hmac(algorithm, secretKey)
+          .build
         verification <- JwtVerificationBuilder
           .default[IO]
           .hmac(algorithm, secretKey)
@@ -167,7 +168,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
       } yield (algorithm, secretKey)
 
     forall(gen) { case (algorithm, secretKey) =>
-      JwtSigning.default[IO].hmac(algorithm, secretKey).attempt.map {
+      JwtSigningBuilder.default[IO].hmac(algorithm, secretKey).build.attempt.map {
         case Left(_: InvalidSecretKeyLength) => success
         case _ => failure("unexpected case")
       }
@@ -183,7 +184,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
 
     forall(gen) { case (algorithm, builder, privateKey, publicKey) =>
       for {
-        signing <- JwtSigning.default[IO].jwk(algorithm, privateKey)
+        signing <- JwtSigningBuilder.default[IO].jwk(algorithm, privateKey).build
         verification <- JwtVerificationBuilder
           .default[IO]
           .jwkSet(NonEmptyList.of(algorithm), JwkSet(publicKey))
@@ -202,9 +203,12 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
     forall(eddsaSigningKeyGen) { case (algorithm, privateKey, publicKey) =>
       val eddsa = "alg" -> "EdDSA".asJson
       for {
-        signing <- JwtSigning.default[IO].jwk(algorithm, withFields(privateKey, eddsa))
+        signing <- JwtSigningBuilder.default[IO].jwk(algorithm, withFields(privateKey, eddsa)).build
         signed <- JwtBuilder.default.signWith(signing)
-        verification <- JwtVerification.default[IO].jwkSetAll(JwkSet(withFields(publicKey, eddsa)))
+        verification <- JwtVerificationBuilder
+          .default[IO]
+          .jwkSetAll(JwkSet(withFields(publicKey, eddsa)))
+          .build
         _ <- signed.verifyWith(verification)
       } yield expect.eql(Some("EdDSA"), signed.header.toJsonObject("alg").flatMap(_.asString))
     }
@@ -212,7 +216,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
 
   test("JwtSigning.jwk.setsKeyId") {
     for {
-      signing <- JwtSigning.default[IO].jwk(HS256, octJwk(secretKey))
+      signing <- JwtSigningBuilder.default[IO].jwk(HS256, octJwk(secretKey)).build
       signed <- JwtBuilder(JwtHeader.default, JwtClaims.empty).signWith(signing)
     } yield expect.eql(Some(keyId.value), signed.header.toJsonObject("kid").flatMap(_.asString))
   }
@@ -224,7 +228,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
         "k" -> secretKey.toByteVector.toBase64UrlNoPad.asJson
       )
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Right(_) => success
       case _ => failure("unexpected case")
     }
@@ -233,7 +237,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.rejectInvalidKeyId") {
     val key = octJwk(secretKey, "kid" -> 1.asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Left(_: InvalidKeyId) => success
       case _ => failure("unexpected case")
     }
@@ -242,7 +246,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.rejectKeyForEncryptionUse") {
     val key = octJwk(secretKey, "use" -> "enc".asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Left(e: UnsuitableSigningKey) =>
         expect.eql(
           "the key with id [key-1] is not suitable for signing: " +
@@ -256,7 +260,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.acceptsKeyForSignatureUse") {
     val key = octJwk(secretKey, "use" -> "sig".asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Right(_) => success
       case _ => failure("unexpected case")
     }
@@ -265,7 +269,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.rejectKeyWithoutSignKeyOperation") {
     val key = octJwk(secretKey, "key_ops" -> List("verify").asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Left(e: UnsuitableSigningKey) =>
         expect.eql(
           "the key with id [key-1] is not suitable for signing: " +
@@ -279,7 +283,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.acceptsKeyWithSignKeyOperation") {
     val key = octJwk(secretKey, "key_ops" -> List("sign", "verify").asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Right(_) => success
       case _ => failure("unexpected case")
     }
@@ -288,7 +292,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.rejectInvalidKeyOperations") {
     val key = octJwk(secretKey, "key_ops" -> "sign".asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Left(e: UnsuitableSigningKey) =>
         expect.eql(
           "the key with id [key-1] is not suitable for signing: " +
@@ -302,7 +306,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.acceptsMatchingAlgorithm") {
     val key = octJwk(secretKey, "alg" -> HS256.name.asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Right(_) => success
       case _ => failure("unexpected case")
     }
@@ -311,7 +315,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.rejectMismatchedAlgorithm") {
     val key = octJwk(secretKey, "alg" -> JwtHmacAlgorithm.HS384.name.asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Left(e: RejectedKeyAlgorithm) =>
         expect.eql(
           "the key with id [key-1] and algorithm (alg) [HS384] was rejected, expected [HS256]",
@@ -324,7 +328,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.rejectInvalidAlgorithm") {
     val key = octJwk(secretKey, "alg" -> 256.asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Left(e: InvalidKeyAlgorithm) =>
         expect.eql("the key with id [key-1] has invalid algorithm (alg) [256]", e.message)
       case _ => failure("unexpected case")
@@ -333,7 +337,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
 
   test("JwtSigning.jwk.rejectMismatchedKeyType") {
     forall(jwkEcdsaPrivateKeyGen) { key =>
-      JwtSigning.default[IO].jwk(HS256, withKeyId(key)).attempt.map {
+      JwtSigningBuilder.default[IO].jwk(HS256, withKeyId(key)).build.attempt.map {
         case Left(_: UnsupportedKey) => success
         case _ => failure("unexpected case")
       }
@@ -343,7 +347,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
   test("JwtSigning.jwk.rejectUnsupportedKeyType") {
     val key = octJwk(secretKey, "kty" -> "unknown".asJson)
 
-    JwtSigning.default[IO].jwk(HS256, key).attempt.map {
+    JwtSigningBuilder.default[IO].jwk(HS256, key).build.attempt.map {
       case Left(_: UnsupportedKey) => success
       case _ => failure("unexpected case")
     }
@@ -353,7 +357,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
     val gen = Gen.oneOf(ecdsaSigningKeyGen, eddsaSigningKeyGen, rsaSigningKeyGen)
 
     forall(gen) { case (algorithm, _, publicKey) =>
-      JwtSigning.default[IO].jwk(algorithm, publicKey).attempt.map {
+      JwtSigningBuilder.default[IO].jwk(algorithm, publicKey).build.attempt.map {
         case Left(_: InvalidPrivateKey) => success
         case _ => failure("unexpected case")
       }

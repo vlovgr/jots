@@ -16,7 +16,6 @@
 
 package jots.http4s
 
-import cats.data.NonEmptyList
 import cats.effect.Deferred
 import cats.effect.Outcome
 import cats.effect.Ref
@@ -29,13 +28,10 @@ import io.circe.DecodingFailure
 import io.circe.Json
 import java.util.concurrent.CancellationException
 import jots.JwkSet
-import jots.JwtAlgorithm
 import jots.JwtException
 import jots.JwtVerification
-import jots.JwtVerificationBuilder
 import jots.SignedJwt
 import jots.VerifiedJwt
-import jots.crypto.Crypto
 import jots.internal.SkippedKeys
 import org.http4s.EntityDecoder
 import org.http4s.MediaType
@@ -75,9 +71,9 @@ import scala.util.control.NoStackTrace
   * extra refresh is requested. If no initial key set is available and
   * no error occurred, a `CancellationException` is raised instead.
   *
-  * The [[RefreshingJwtVerification.refreshWith]] function accepts the
-  * function to use for refreshing [[JwtVerification]], while there is
-  * [[RefreshingJwtVerification.jwkSet]] for convenience.
+  * The [[RefreshingJwtVerificationBuilder.refreshWith]] function accepts
+  * the function to use for refreshing [[JwtVerification]], while there
+  * is [[RefreshingJwtVerificationBuilder.jwkSet]] for convenience.
   *
   * The [[RefreshingJwtVerificationBuilder]] provides customization of
   * the default settings. Notably, logging is no-op by default, so set
@@ -97,116 +93,6 @@ trait RefreshingJwtVerification[F[_]] extends JwtVerification[F] {
 
 object RefreshingJwtVerification {
   def apply[F[_]](implicit F: RefreshingJwtVerification[F]): RefreshingJwtVerification[F] = F
-
-  /**
-    * Returns a new [[RefreshingJwtVerification]] instance which
-    * verifies tokens using a list of algorithms.
-    *
-    * The keys will be fetched by issuing a request to the `Uri`
-    * with the specified `Client`. Note there is a default retry
-    * policy in place and keys are refreshed every 60 minutes.
-    *
-    * Use [[RefreshingJwtVerificationBuilder.jwkSet]] if there
-    * is a need to customize the default options.
-    */
-  def jwkSet[F[_]](
-    algorithms: NonEmptyList[JwtAlgorithm],
-    client: Client[F],
-    uri: Uri
-  )(implicit
-    F: Temporal[F],
-    crypto: Crypto[F]
-  ): Resource[F, RefreshingJwtVerification[F]] =
-    RefreshingJwtVerificationBuilder.jwkSet(algorithms, client, uri).build
-
-  /**
-    * Returns a new [[RefreshingJwtVerification]] instance which
-    * verifies tokens using a list of algorithms, and where the
-    * verification is customized using the specified function.
-    *
-    * The function can be used to, for example, set the accepted
-    * audiences and issuers using the [[jots.JwtVerificationBuilder]].
-    *
-    * The keys will be fetched by issuing a request to the `Uri`
-    * with the specified `Client`. Note there is a default retry
-    * policy in place and keys are refreshed every 60 minutes.
-    *
-    * Use [[RefreshingJwtVerificationBuilder.jwkSetWith]] if
-    * there is a need to customize the default options.
-    */
-  def jwkSetWith[F[_]](
-    algorithms: NonEmptyList[JwtAlgorithm],
-    client: Client[F],
-    uri: Uri
-  )(
-    configure: JwtVerificationBuilder[F, F] => JwtVerificationBuilder[F, F]
-  )(implicit
-    F: Temporal[F],
-    crypto: Crypto[F]
-  ): Resource[F, RefreshingJwtVerification[F]] =
-    RefreshingJwtVerificationBuilder.jwkSetWith(algorithms, client, uri)(configure).build
-
-  /**
-    * Returns a new [[RefreshingJwtVerification]] instance which
-    * verifies tokens using all recognized asymmetric algorithms.
-    *
-    * The keys will be fetched by issuing a request to the `Uri`
-    * with the specified `Client`. Note there is a default retry
-    * policy in place and keys are refreshed every 60 minutes.
-    *
-    * Use [[RefreshingJwtVerificationBuilder.jwkSetAll]] if
-    * there is a need to customize the default options.
-    */
-  def jwkSetAll[F[_]](
-    client: Client[F],
-    uri: Uri
-  )(implicit
-    F: Temporal[F],
-    crypto: Crypto[F]
-  ): Resource[F, RefreshingJwtVerification[F]] =
-    RefreshingJwtVerificationBuilder.jwkSetAll(client, uri).build
-
-  /**
-    * Returns a new [[RefreshingJwtVerification]] instance which
-    * verifies tokens using all recognized asymmetric algorithms,
-    * and where the verification is customized using a function.
-    *
-    * The function can be used to, for example, set the accepted
-    * audiences and issuers using the [[jots.JwtVerificationBuilder]].
-    *
-    * The keys will be fetched by issuing a request to the `Uri`
-    * with the specified `Client`. Note there is a default retry
-    * policy in place and keys are refreshed every 60 minutes.
-    *
-    * Use [[RefreshingJwtVerificationBuilder.jwkSetAllWith]] if
-    * there is a need to customize the default options.
-    */
-  def jwkSetAllWith[F[_]](
-    client: Client[F],
-    uri: Uri
-  )(
-    configure: JwtVerificationBuilder[F, F] => JwtVerificationBuilder[F, F]
-  )(implicit
-    F: Temporal[F],
-    crypto: Crypto[F]
-  ): Resource[F, RefreshingJwtVerification[F]] =
-    RefreshingJwtVerificationBuilder.jwkSetAllWith(client, uri)(configure).build
-
-  /**
-    * Returns a new [[RefreshingJwtVerification]] instance which
-    * verifies tokens using the provided verification function.
-    *
-    * The keys will be fetched by issuing a request to the `Uri`
-    * with the specified `Client`. Note there is a default retry
-    * policy in place and keys are refreshed every 60 minutes.
-    *
-    * Use [[RefreshingJwtVerificationBuilder.refreshWith]] if
-    * there is a need to customize the default options.
-    */
-  def refreshWith[F[_]](client: Client[F], uri: Uri)(
-    verification: JwkSet => F[JwtVerification[F]]
-  )(implicit F: Temporal[F]): Resource[F, RefreshingJwtVerification[F]] =
-    RefreshingJwtVerificationBuilder.refreshWith(client, uri)(verification).build
 
   /**
     * Exception raised when the keys were not refreshed within the max

@@ -35,7 +35,7 @@ final case class ExampleEddsaJwt(
   override val algorithm: JwtEddsaAlgorithm
 ) extends ExampleAsymmetricJwt {
   override val verification: IO[JwtVerification[IO]] =
-    JwtVerification.default[IO].eddsa(algorithm, publicKey)
+    JwtVerificationBuilder.default[IO].eddsa(algorithm, publicKey).build
 }
 
 object ExampleEddsaJwt {

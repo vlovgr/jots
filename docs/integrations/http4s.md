@@ -43,7 +43,7 @@ import io.circe.Decoder
 import jots.crypto.SecretKey
 import jots.JwtDecoder
 import jots.JwtHmacAlgorithm
-import jots.JwtVerification
+import jots.JwtVerificationBuilder
 import org.http4s.AuthedRoutes
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io.*
@@ -61,7 +61,7 @@ object UserJwt {
 val routes: IO[HttpRoutes[IO]] =
   for {
     secretKey <- SecretKey("gbxZ8rjekZmYQxh24wsKcaUqPuBe7jg6").liftTo[IO]
-    verification <- JwtVerification.default[IO].hmac(JwtHmacAlgorithm.HS256, secretKey)
+    verification <- JwtVerificationBuilder.default[IO].hmac(JwtHmacAlgorithm.HS256, secretKey).build
     authMiddleware = JwtAuthMiddleware[IO, UserJwt](verification)
     authedRoutes = AuthedRoutes.of[UserJwt, IO] {
       case GET -> Root / "identity" as user => Ok(user.id)
@@ -88,11 +88,13 @@ val refreshingJwtVerification: Resource[IO, RefreshingJwtVerification[IO]] =
   for {
     client <- EmberClientBuilder.default[IO].build
     uri = uri"https://example.auth0.com/.well-known/jwks.json"
-    refreshing <- RefreshingJwtVerification.jwkSetAllWith(client, uri) { verification =>
-      verification
-        .withAcceptedAudiences("https://api.example.com")
-        .withAcceptedIssuers("https://example.auth0.com/")
-    }
+    refreshing <- RefreshingJwtVerificationBuilder
+      .jwkSetAllWith(client, uri) { verification =>
+        verification
+          .withAcceptedAudiences("https://api.example.com")
+          .withAcceptedIssuers("https://example.auth0.com/")
+      }
+      .build
   } yield refreshing
 ```
 
@@ -104,23 +106,24 @@ If we want to restrict the allowed algorithms, we can use `jwkSetWith` instead o
 
 ```scala mdoc:silent
 import jots.JwtRsaAlgorithm
-import jots.JwtVerificationBuilder
 import scala.concurrent.duration.*
 
 val refreshingJwtVerificationCustom: Resource[IO, RefreshingJwtVerification[IO]] =
   for {
     client <- EmberClientBuilder.default[IO].build
     uri = uri"https://example.auth0.com/.well-known/jwks.json"
-    refreshing <- RefreshingJwtVerification.refreshWith(client, uri) { jwkSet =>
-      JwtVerificationBuilder
-        .default[IO]
-        .jwkSet(JwtRsaAlgorithm.All, jwkSet)
-        .withAcceptedAudiences("https://api.example.com")
-        .withAcceptedIssuers("https://example.auth0.com/")
-        .withRequireExpiration(true)
-        .withClockSkew(30.seconds)
-        .build
-    }
+    refreshing <- RefreshingJwtVerificationBuilder
+      .refreshWith(client, uri) { jwkSet =>
+        JwtVerificationBuilder
+          .default[IO]
+          .jwkSet(JwtRsaAlgorithm.All, jwkSet)
+          .withAcceptedAudiences("https://api.example.com")
+          .withAcceptedIssuers("https://example.auth0.com/")
+          .withRequireExpiration(true)
+          .withClockSkew(30.seconds)
+          .build
+      }
+      .build
   } yield refreshing
 ```
 
@@ -184,5 +187,3 @@ val refreshingJwtVerificationBuilderCustom: Resource[IO, RefreshingJwtVerificati
       .build
   } yield refreshing
 ```
-
-Note there is also `jwkSet`, `jwkSetAll`, `jwkSetAllWith` and `refreshWith` like for `RefreshingJwtVerification`.
