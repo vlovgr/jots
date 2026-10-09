@@ -43,6 +43,43 @@ object JwtAlgorithmSuite extends SimpleIOSuite with Checkers with Discipline {
   checkAll("JwtRsaAlgorithm.hash", HashTests[JwtRsaAlgorithm].hash)
   test("JwtRsaAlgorithm.show")(showTest[JwtRsaAlgorithm])
 
+  pureTest("JwtAlgorithm.familyTypes") {
+    val ecdsa: List[JwtEcdsaAlgorithm] = List(JwtAlgorithm.ES256, JwtAlgorithm.ES384, JwtAlgorithm.ES512)
+    val eddsa: List[JwtEddsaAlgorithm] = List(JwtAlgorithm.Ed25519, JwtAlgorithm.Ed448)
+    val hmac: List[JwtHmacAlgorithm] = List(JwtAlgorithm.HS256, JwtAlgorithm.HS384, JwtAlgorithm.HS512)
+    val rsa: List[JwtRsaAlgorithm] = List(
+      JwtAlgorithm.PS256,
+      JwtAlgorithm.PS384,
+      JwtAlgorithm.PS512,
+      JwtAlgorithm.RS256,
+      JwtAlgorithm.RS384,
+      JwtAlgorithm.RS512
+    )
+
+    expect.eql(JwtEcdsaAlgorithm.All.toList, ecdsa) &&
+    expect.eql(JwtEddsaAlgorithm.All.toList, eddsa) &&
+    expect.eql(JwtHmacAlgorithm.All.toList, hmac) &&
+    expect.eql(JwtRsaAlgorithm.All.toList, rsa)
+  }
+
+  pureTest("JwtAsymmetricAlgorithm.familyTypes") {
+    val ecdsa: List[JwtEcdsaAlgorithm] =
+      List(JwtAsymmetricAlgorithm.ES256, JwtAsymmetricAlgorithm.ES384, JwtAsymmetricAlgorithm.ES512)
+    val eddsa: List[JwtEddsaAlgorithm] = List(JwtAsymmetricAlgorithm.Ed25519, JwtAsymmetricAlgorithm.Ed448)
+    val rsa: List[JwtRsaAlgorithm] = List(
+      JwtAsymmetricAlgorithm.PS256,
+      JwtAsymmetricAlgorithm.PS384,
+      JwtAsymmetricAlgorithm.PS512,
+      JwtAsymmetricAlgorithm.RS256,
+      JwtAsymmetricAlgorithm.RS384,
+      JwtAsymmetricAlgorithm.RS512
+    )
+
+    expect.eql(JwtEcdsaAlgorithm.All.toList, ecdsa) &&
+    expect.eql(JwtEddsaAlgorithm.All.toList, eddsa) &&
+    expect.eql(JwtRsaAlgorithm.All.toList, rsa)
+  }
+
   private def showTest[A <: JwtAlgorithm: Arbitrary: Show] =
     forall { (algorithm: A) =>
       expect.eql(Show[A].show(algorithm), algorithm.show) &&

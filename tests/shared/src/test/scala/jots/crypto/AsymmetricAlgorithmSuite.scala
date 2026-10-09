@@ -40,6 +40,31 @@ object AsymmetricAlgorithmSuite extends SimpleIOSuite with Checkers with Discipl
   checkAll("RsaPssAlgorithm.hash", HashTests[RsaPssAlgorithm].hash)
   test("RsaPssAlgorithm.show")(showTest[RsaPssAlgorithm])
 
+  pureTest("AsymmetricAlgorithm.familyTypes") {
+    val ecdsa: List[EcdsaAlgorithm] = List(
+      AsymmetricAlgorithm.SHA256withECDSAinP1363Format,
+      AsymmetricAlgorithm.SHA384withECDSAinP1363Format,
+      AsymmetricAlgorithm.SHA512withECDSAinP1363Format
+    )
+    val eddsa: List[EddsaAlgorithm] = List(AsymmetricAlgorithm.Ed25519, AsymmetricAlgorithm.Ed448)
+    val rsa: List[RsaAlgorithm] =
+      List(
+        AsymmetricAlgorithm.SHA256withRSA,
+        AsymmetricAlgorithm.SHA384withRSA,
+        AsymmetricAlgorithm.SHA512withRSA
+      )
+    val rsaPss: List[RsaPssAlgorithm] = List(
+      AsymmetricAlgorithm.SHA256withRSAandMGF1,
+      AsymmetricAlgorithm.SHA384withRSAandMGF1,
+      AsymmetricAlgorithm.SHA512withRSAandMGF1
+    )
+
+    expect.eql(EcdsaAlgorithm.All.toList, ecdsa) &&
+    expect.eql(EddsaAlgorithm.All.toList, eddsa) &&
+    expect.eql(RsaAlgorithm.All.toList, rsa) &&
+    expect.eql(RsaPssAlgorithm.All.toList, rsaPss)
+  }
+
   private def showTest[A <: AsymmetricAlgorithm: Arbitrary: Show] =
     forall { (algorithm: A) =>
       expect.eql(Show[A].show(algorithm), algorithm.show) &&
