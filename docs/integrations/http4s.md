@@ -81,6 +81,7 @@ There is `RefreshingJwtVerification` with support for periodically fetching a `J
 
 ```scala mdoc:silent
 import cats.effect.Resource
+import jots.JwtAsymmetricAlgorithm
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.syntax.all.*
 
@@ -89,10 +90,13 @@ val refreshingJwtVerification: Resource[IO, RefreshingJwtVerification[IO]] =
     client <- EmberClientBuilder.default[IO].build
     uri = uri"https://example.auth0.com/.well-known/jwks.json"
     refreshing <- RefreshingJwtVerificationBuilder
-      .jwkSetAllWith(client, uri) { verification =>
-        verification
+      .refreshWith(client, uri) { jwkSet =>
+        JwtVerificationBuilder
+          .default[IO]
+          .jwkSet(JwtAsymmetricAlgorithm.All, jwkSet)
           .withAcceptedAudiences("https://api.example.com")
           .withAcceptedIssuers("https://example.auth0.com/")
+          .build
       }
       .build
   } yield refreshing
@@ -102,30 +106,7 @@ val refreshingJwtVerification: Resource[IO, RefreshingJwtVerification[IO]] =
 Identity providers commonly sign tokens for many applications using the same keys. Make sure to set the accepted audiences, and preferably also the accepted issuers. Tokens with an audience (`aud`) are rejected unless the audience has been accepted.
 @:@
 
-If we want to restrict the allowed algorithms, we can use `jwkSetWith` instead of `jwkSetAllWith`. There is also `jwkSet` and `jwkSetAll` if we do not need to customize the verification. If we want additional custom verification, there is `refreshWith` which accepts a function with which to create the underlying `JwtVerification` from a `JwkSet`. Following is an example of using `refreshWith` to provide a custom verification function.
-
-```scala mdoc:silent
-import jots.JwtRsaAlgorithm
-import scala.concurrent.duration.*
-
-val refreshingJwtVerificationCustom: Resource[IO, RefreshingJwtVerification[IO]] =
-  for {
-    client <- EmberClientBuilder.default[IO].build
-    uri = uri"https://example.auth0.com/.well-known/jwks.json"
-    refreshing <- RefreshingJwtVerificationBuilder
-      .refreshWith(client, uri) { jwkSet =>
-        JwtVerificationBuilder
-          .default[IO]
-          .jwkSet(JwtRsaAlgorithm.All, jwkSet)
-          .withAcceptedAudiences("https://api.example.com")
-          .withAcceptedIssuers("https://example.auth0.com/")
-          .withRequireExpiration(true)
-          .withClockSkew(30.seconds)
-          .build
-      }
-      .build
-  } yield refreshing
-```
+The function passed to `refreshWith` creates the `JwtVerification` for each retrieved `JwkSet`, so the allowed algorithms (e.g. `JwtRsaAlgorithm.All`) and verifications are customized as with any `JwtVerificationBuilder`.
 
 `RefreshingJwtVerification` extends `JwtVerification`, so it works everywhere `JwtVerification` is required. We also have the `keys` function to retrieve the current `JwkSet`. Note all functions semantically block until an initial key set is available (or an error occurred fetching the initial key set).
 
@@ -168,7 +149,9 @@ The `RefreshingJwtVerificationBuilder` can be used to customize the following de
 Following is an example of how to customize the default settings.
 
 ```scala mdoc:silent
+import jots.JwtRsaAlgorithm
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import scala.concurrent.duration.*
 
 val refreshingJwtVerificationBuilderCustom: Resource[IO, RefreshingJwtVerification[IO]] =
   for {
@@ -176,10 +159,13 @@ val refreshingJwtVerificationBuilderCustom: Resource[IO, RefreshingJwtVerificati
     client <- EmberClientBuilder.default[IO].build
     uri = uri"https://example.auth0.com/.well-known/jwks.json"
     refreshing <- RefreshingJwtVerificationBuilder
-      .jwkSetWith(JwtRsaAlgorithm.All, client, uri) { verification =>
-        verification
+      .refreshWith(client, uri) { jwkSet =>
+        JwtVerificationBuilder
+          .default[IO]
+          .jwkSet(JwtRsaAlgorithm.All, jwkSet)
           .withAcceptedAudiences("https://api.example.com")
           .withAcceptedIssuers("https://example.auth0.com/")
+          .build
       }
       .withRefreshInterval(30.minutes)
       .withMinRefreshIntervalOnMissingKey(10.minutes)
