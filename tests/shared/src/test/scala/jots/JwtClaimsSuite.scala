@@ -80,7 +80,7 @@ object JwtClaimsSuite extends SimpleIOSuite with Checkers with Discipline {
     ) &&
     expect.eql(
       Some(audiences.asJson),
-      JwtClaims.empty.withAudienceList(NonEmptyList.fromListUnsafe(audiences)).toJsonObject("aud")
+      JwtClaims.empty.withAudience(NonEmptyList.fromListUnsafe(audiences)).toJsonObject("aud")
     )
   }
 }

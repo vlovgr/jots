@@ -47,7 +47,7 @@ sealed abstract class JwtClaims {
     * Note a single audience is set as a `String`, while multiple
     * audiences are set as an array of `String`s.
     */
-  def withAudienceList(audiences: NonEmptyList[String]): JwtClaims
+  def withAudience(audiences: NonEmptyList[String]): JwtClaims
 
   /**
     * Returns a new [[JwtClaims]] with the specified expiration
@@ -149,9 +149,9 @@ object JwtClaims {
     override val toJsonObject: JsonObject
   ) extends JwtClaims {
     override def withAudience(audience: String, audiences: String*): JwtClaims =
-      withAudienceList(NonEmptyList.of(audience, audiences: _*))
+      withAudience(NonEmptyList.of(audience, audiences: _*))
 
-    override def withAudienceList(audiences: NonEmptyList[String]): JwtClaims =
+    override def withAudience(audiences: NonEmptyList[String]): JwtClaims =
       audiences match {
         case NonEmptyList(audience, Nil) => add("aud", audience.asJson)
         case audiences => add("aud", audiences.asJson)

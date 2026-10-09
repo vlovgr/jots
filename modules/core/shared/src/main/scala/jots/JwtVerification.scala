@@ -461,7 +461,7 @@ object JwtVerification {
 
   private def verifyCriticalHeaders[F[_], G[_]](
     header: SignedJwtHeader,
-    criticalHeaders: Set[String]
+    criticalHeaders: List[String]
   )(implicit G: ApplicativeThrow[G]): G[Unit] =
     header.toJsonObject("crit") match {
       case Some(crit) =>

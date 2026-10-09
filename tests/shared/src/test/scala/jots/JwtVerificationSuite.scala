@@ -732,6 +732,22 @@ object JwtVerificationSuite extends SimpleIOSuite {
     } yield success
   }
 
+  test("JwtVerification.criticalHeadersList") {
+    for {
+      signed <- sign(JwtClaims.empty, criticalHeader("jots-example"))
+      builder = JwtVerificationBuilder
+        .default[IO]
+        .hmac(algorithm, secretKey)
+        .withCriticalHeaders(List("jots-example"))
+      accepting <- builder.build
+      rejecting <- builder.withCriticalHeaders(List.empty).build
+      accepted <- signed.verifyWith(accepting).attempt
+      rejected <- signed.verifyWith(rejecting).attempt
+      _ <- matchOrFailFast[IO](accepted) { case Right(_) => () }
+      _ <- matchOrFailFast[IO](rejected) { case Left(_: JwtException.UnsupportedCriticalHeader) => () }
+    } yield success
+  }
+
   test("JwtVerification.rejectMissingCriticalHeader") {
     val header = JwtHeader.default.withCriticalHeaders("jots-example")
     for {
@@ -774,6 +790,21 @@ object JwtVerificationSuite extends SimpleIOSuite {
       verification <- JwtVerificationBuilder.default[IO].jwkSet(JwtAlgorithm.All, keySet).build
       result <- signed.verifyWith(verification).attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.UnsupportedCriticalHeader) => () }
+    } yield success
+  }
+
+  test("JwtVerification.jwkSet.acceptsUnderstoodCriticalHeader") {
+    val keySet = JwkSet(octJwk("key-1"))
+    val header = criticalHeader("jots-example").withKeyId(JwkKeyId("key-1"))
+    for {
+      signed <- sign(JwtClaims.empty, header)
+      verification <- JwtVerificationBuilder
+        .default[IO]
+        .jwkSet(JwtAlgorithm.All, keySet)
+        .withCriticalHeaders("jots-example")
+        .build
+      result <- signed.verifyWith(verification).attempt
+      _ <- matchOrFailFast[IO](result) { case Right(_) => () }
     } yield success
   }
 

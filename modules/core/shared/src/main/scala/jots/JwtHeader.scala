@@ -82,7 +82,7 @@ sealed abstract class JwtHeader {
     * Returns a new [[JwtHeader]] with the specified header names
     * set for the `crit` key, marking them as critical.
     */
-  def withCriticalHeadersList(criticalHeaders: NonEmptyList[String]): JwtHeader
+  def withCriticalHeaders(criticalHeaders: NonEmptyList[String]): JwtHeader
 
   /**
     * Returns a new [[JwtHeader]] with the `crit` key removed.
@@ -211,9 +211,9 @@ object JwtHeader {
       remove("cty")
 
     override def withCriticalHeaders(criticalHeader: String, criticalHeaders: String*): JwtHeader =
-      withCriticalHeadersList(NonEmptyList.of(criticalHeader, criticalHeaders: _*))
+      withCriticalHeaders(NonEmptyList.of(criticalHeader, criticalHeaders: _*))
 
-    override def withCriticalHeadersList(criticalHeaders: NonEmptyList[String]): JwtHeader =
+    override def withCriticalHeaders(criticalHeaders: NonEmptyList[String]): JwtHeader =
       add("crit", criticalHeaders.asJson)
 
     override def withoutCriticalHeaders: JwtHeader =

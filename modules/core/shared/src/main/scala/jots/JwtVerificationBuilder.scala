@@ -40,8 +40,8 @@ import scala.concurrent.duration.FiniteDuration
   * - The expiration (exp), when present, is verified to be in the future.
   * - The not-before (nbf), when present, is verified to not be in the future.
   * - If the token contains a `crit` header, then the token is rejected. The
-  *   [[JwtVerificationBuilder#withCriticalHeaders]] function can be used to
-  *   specify the set of accepted critical headers.
+  *   `withCriticalHeaders` function can be used to specify the set of
+  *   accepted critical headers.
   *
   * The expiration (exp) and not-before (nbf) claims are only verified
   * when present. Their presence can additionally be required, in which
@@ -77,12 +77,6 @@ sealed abstract class JwtVerificationBuilder[F[_], G[_]] {
     withAcceptedAudiences(AcceptedAudiences(audience, audiences: _*))
 
   /**
-    * Sets the specified audiences as the only accepted audiences.
-    */
-  def withAcceptedAudiencesList(audiences: NonEmptyList[String]): JwtVerificationBuilder[F, G] =
-    withAcceptedAudiences(AcceptedAudiences.fromList(audiences))
-
-  /**
     * Returns the accepted issuers (iss).
     *
     * Default: [[AcceptedIssuers.any]], which means all issuers are accepted.
@@ -99,12 +93,6 @@ sealed abstract class JwtVerificationBuilder[F[_], G[_]] {
     */
   def withAcceptedIssuers(issuer: String, issuers: String*): JwtVerificationBuilder[F, G] =
     withAcceptedIssuers(AcceptedIssuers(issuer, issuers: _*))
-
-  /**
-    * Sets the specified issuers as the only accepted issuers.
-    */
-  def withAcceptedIssuersList(issuers: NonEmptyList[String]): JwtVerificationBuilder[F, G] =
-    withAcceptedIssuers(AcceptedIssuers.fromList(issuers))
 
   /**
     * Returns the accepted subjects (sub).
@@ -125,12 +113,6 @@ sealed abstract class JwtVerificationBuilder[F[_], G[_]] {
     withAcceptedSubjects(AcceptedSubjects(subject, subjects: _*))
 
   /**
-    * Sets the specified subjects as the only accepted subjects.
-    */
-  def withAcceptedSubjectsList(subjects: NonEmptyList[String]): JwtVerificationBuilder[F, G] =
-    withAcceptedSubjects(AcceptedSubjects.fromList(subjects))
-
-  /**
     * Returns the accepted types (typ).
     *
     * Default: [[AcceptedTypes.any]], which means all types are accepted.
@@ -147,12 +129,6 @@ sealed abstract class JwtVerificationBuilder[F[_], G[_]] {
     */
   def withAcceptedTypes(`type`: String, types: String*): JwtVerificationBuilder[F, G] =
     withAcceptedTypes(AcceptedTypes(`type`, types: _*))
-
-  /**
-    * Sets the specified types as the only accepted types.
-    */
-  def withAcceptedTypesList(types: NonEmptyList[String]): JwtVerificationBuilder[F, G] =
-    withAcceptedTypes(AcceptedTypes.fromList(types))
 
   /**
     * Returns `true` if the expiration (exp) should be verified when present; `false` otherwise.
@@ -277,29 +253,29 @@ sealed abstract class JwtVerificationBuilder[F[_], G[_]] {
   def withClockSkew(clockSkew: FiniteDuration): JwtVerificationBuilder[F, G]
 
   /**
-    * Returns the set of critical headers (crit) which should be accepted.
+    * Returns the critical headers (crit) which should be accepted.
     *
     * When a token with a `crit` header is being verified:
     *
-    * - every listed header name must be in this set, and also
+    * - every listed header name must be one of these headers, and also
     * - every listed header name must be present in the header.
     *
     * Intepreting the semantics of the headers are left to the application.
     *
-    * Default: `Set.empty` meaning any token with a `crit` header is rejected.
+    * Default: `List.empty` meaning any token with a `crit` header is rejected.
     */
-  def criticalHeaders: Set[String]
+  def criticalHeaders: List[String]
+
+  /**
+    * Sets the specified header names as the only accepted critical headers.
+    */
+  def withCriticalHeaders(criticalHeaders: List[String]): JwtVerificationBuilder[F, G]
 
   /**
     * Sets the specified header names as the only accepted critical headers.
     */
   def withCriticalHeaders(criticalHeader: String, criticalHeaders: String*): JwtVerificationBuilder[F, G] =
-    withCriticalHeadersSet((criticalHeader +: criticalHeaders).toSet)
-
-  /**
-    * Sets the specified header names as the only accepted critical headers.
-    */
-  def withCriticalHeadersSet(criticalHeaders: Set[String]): JwtVerificationBuilder[F, G]
+    withCriticalHeaders(criticalHeader :: criticalHeaders.toList)
 
   /**
     * Returns a new [[JwtVerification]] instance using the builder settings.
@@ -516,7 +492,7 @@ private[jots] final case class JwtHmacVerificationBuilder[
   override val requireIssuedAt: Boolean,
   override val requireNotBefore: Boolean,
   override val clockSkew: FiniteDuration,
-  override val criticalHeaders: Set[String],
+  override val criticalHeaders: List[String],
   algorithms: NonEmptyList[JwtHmacAlgorithm],
   secretKey: SecretKey
 ) extends JwtVerificationBuilder[F, G] {
@@ -562,7 +538,7 @@ private[jots] final case class JwtHmacVerificationBuilder[
   override def withClockSkew(clockSkew: FiniteDuration): JwtVerificationBuilder[F, G] =
     copy(clockSkew = clockSkew)
 
-  override def withCriticalHeadersSet(criticalHeaders: Set[String]): JwtVerificationBuilder[F, G] =
+  override def withCriticalHeaders(criticalHeaders: List[String]): JwtVerificationBuilder[F, G] =
     copy(criticalHeaders = criticalHeaders)
 
   override def build: F[JwtVerification[G]] =
@@ -590,7 +566,7 @@ private[jots] object JwtHmacVerificationBuilder {
       requireIssuedAt = false,
       requireNotBefore = false,
       clockSkew = Duration.Zero,
-      criticalHeaders = Set.empty,
+      criticalHeaders = List.empty,
       algorithms = algorithms,
       secretKey = secretKey
     )
@@ -612,7 +588,7 @@ private[jots] final case class JwtAsymmetricVerificationBuilder[
   override val requireIssuedAt: Boolean,
   override val requireNotBefore: Boolean,
   override val clockSkew: FiniteDuration,
-  override val criticalHeaders: Set[String],
+  override val criticalHeaders: List[String],
   algorithms: NonEmptyList[JwtAsymmetricAlgorithm],
   publicKey: PublicKey
 ) extends JwtVerificationBuilder[F, G] {
@@ -652,7 +628,7 @@ private[jots] final case class JwtAsymmetricVerificationBuilder[
   override def withClockSkew(clockSkew: FiniteDuration): JwtVerificationBuilder[F, G] =
     copy(clockSkew = clockSkew)
 
-  override def withCriticalHeadersSet(criticalHeaders: Set[String]): JwtVerificationBuilder[F, G] =
+  override def withCriticalHeaders(criticalHeaders: List[String]): JwtVerificationBuilder[F, G] =
     copy(criticalHeaders = criticalHeaders)
 
   override def build: F[JwtVerification[G]] =
@@ -680,7 +656,7 @@ private[jots] object JwtAsymmetricVerificationBuilder {
       requireIssuedAt = false,
       requireNotBefore = false,
       clockSkew = Duration.Zero,
-      criticalHeaders = Set.empty,
+      criticalHeaders = List.empty,
       algorithms = algorithms,
       publicKey = publicKey
     )
@@ -702,7 +678,7 @@ private[jots] final case class JwtJwkSetVerificationBuilder[
   override val requireIssuedAt: Boolean,
   override val requireNotBefore: Boolean,
   override val clockSkew: FiniteDuration,
-  override val criticalHeaders: Set[String],
+  override val criticalHeaders: List[String],
   algorithms: NonEmptyList[JwtAlgorithm],
   keySet: JwkSet
 ) extends JwtVerificationBuilder[F, G] {
@@ -729,7 +705,7 @@ private[jots] final case class JwtJwkSetVerificationBuilder[
       .withRequireIssuedAt(requireIssuedAt)
       .withRequireNotBefore(requireNotBefore)
       .withClockSkew(clockSkew)
-      .withCriticalHeadersSet(criticalHeaders)
+      .withCriticalHeaders(criticalHeaders)
       .build
 
   override def withAcceptedAudiences(audiences: AcceptedAudiences): JwtVerificationBuilder[F, G] =
@@ -768,7 +744,7 @@ private[jots] final case class JwtJwkSetVerificationBuilder[
   override def withClockSkew(clockSkew: FiniteDuration): JwtVerificationBuilder[F, G] =
     copy(clockSkew = clockSkew)
 
-  override def withCriticalHeadersSet(criticalHeaders: Set[String]): JwtVerificationBuilder[F, G] =
+  override def withCriticalHeaders(criticalHeaders: List[String]): JwtVerificationBuilder[F, G] =
     copy(criticalHeaders = criticalHeaders)
 
   override def build: F[JwtVerification[G]] =
@@ -796,7 +772,7 @@ private[jots] object JwtJwkSetVerificationBuilder {
       requireIssuedAt = false,
       requireNotBefore = false,
       clockSkew = Duration.Zero,
-      criticalHeaders = Set.empty,
+      criticalHeaders = List.empty,
       algorithms = algorithms,
       keySet = keySet
     )
