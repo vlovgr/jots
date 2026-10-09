@@ -203,6 +203,7 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtEcdsaAlgorithm</span><span>.</span><span class="type-name">ES256</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtSigning</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtSigningBuilder</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">PrivateKey</span><span>
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">jwtSigning</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">JwtSigning</span><span>[</span><span class="type-name">SyncIO</span><span>]] =
@@ -216,7 +217,7 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
         -----END PRIVATE KEY-----
       &quot;&quot;&quot;</span><span>
     ).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
-    </span><span class="identifier">signing</span><span> &lt;- </span><span class="type-name">JwtSigning</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">ecdsa</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">privateKey</span><span>)
+    </span><span class="identifier">signing</span><span> &lt;- </span><span class="type-name">JwtSigningBuilder</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">ecdsa</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">privateKey</span><span>).</span><span class="identifier">build</span><span>
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">signing</span></code></pre>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
@@ -306,9 +307,8 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
             </tr>
           </tbody>
         </table>
-        <p>While it is <em>not</em> recommended, the key requirements check can be disabled using <code>JwtSigningBuilder</code> by using the <code>withCheckKeyRequirements</code> function. It is also possible to use separate effects for creating <code>JwtSigning</code> and for signing tokens. The following example shows how both can be done.</p>
+        <p>While it is <em>not</em> recommended, the key requirements check can be disabled using the <code>withCheckKeyRequirements</code> function. It is also possible to use separate effects for creating <code>JwtSigning</code> and for signing tokens. The following example shows how both can be done.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
-</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtSigningBuilder</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">Try</span><span>
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">jwtSigningTry</span><span>: </span><span class="type-name">Try</span><span>[</span><span class="type-name">JwtSigning</span><span>[</span><span class="type-name">IO</span><span>]] =
@@ -341,7 +341,7 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
         <p>The <code>SignedJwt</code> represent a parsed or generated token which has <em>not</em> been verified. Since we&#39;ve generated this token, we can be reasonably confident it also verifies successfully. However, in the general case, a <code>SignedJwt</code> should not be trusted before it has been verified. <code>VerifiedJwt</code> represents a verified token, covered on the <a href="verification.html">verification</a> page.</p>
         <p>Finally, let&#39;s generate the <code>String</code> representation of the token using <code>show</code>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signedJwt</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">show</span><span>).</span><span class="identifier">unsafeRunSync</span><span>()
-</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.DBtllC-GMuqR_p2i4oHoraqx6KzKchvc7gQNacYm24YQD0UWT1DWVjmOQxFGHaDZjzY68iJtS7nO4CfMNqH39w&quot;</span></code></pre>
+</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.t3HeMrFMydaKXqOpXaLMEA1VJ_CBMW6J6MlbwGf5PA-RQJOZj5Evogk05K2e0Ej_3GpEHkUMbQxeEg90WsLqEA&quot;</span></code></pre>
         
         <h3 id="json-web-key" class="section"><a class="anchor-link left" href="#json-web-key"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key</h3>
         <p>There is a <code>Jwk</code> type representing a <a href="https://www.rfc-editor.org/rfc/rfc7517.html">JSON Web Key (JWK)</a>. A <code>Jwk</code> can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.</p>
@@ -367,7 +367,7 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
       </span><span class="string-literal">&quot;y&quot;</span><span> -&gt; </span><span class="string-literal">&quot;U4Y4v5C3emBPjCSxRpce2wSQvb091uCM3tVFzqwne5c&quot;</span><span>.</span><span class="identifier">asJson</span><span>,
       </span><span class="string-literal">&quot;alg&quot;</span><span> -&gt; </span><span class="string-literal">&quot;ES256&quot;</span><span>.</span><span class="identifier">asJson</span><span>
     ).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
-    </span><span class="identifier">signing</span><span> &lt;- </span><span class="type-name">JwtSigning</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">jwk</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">jwk</span><span>)
+    </span><span class="identifier">signing</span><span> &lt;- </span><span class="type-name">JwtSigningBuilder</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">jwk</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">jwk</span><span>).</span><span class="identifier">build</span><span>
     </span><span class="identifier">jwt</span><span> &lt;- </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">asJwt</span><span>.</span><span class="identifier">signWith</span><span>(</span><span class="identifier">signing</span><span>)
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">jwt</span></code></pre>
         <p>If the <code>Jwk</code> has a <code>kid</code> (Key ID) set, this will also be set in the header of the token.</p>

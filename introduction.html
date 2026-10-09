@@ -148,13 +148,13 @@
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">SyncIO</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtHmacAlgorithm</span><span>.</span><span class="type-name">HS256</span><span>
-</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtSigning</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtSigningBuilder</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">SecretKey</span><span>
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">signedJwt</span><span> =
   </span><span class="keyword">for</span><span> {
     </span><span class="identifier">secretKey</span><span> &lt;- </span><span class="type-name">SecretKey</span><span>(</span><span class="string-literal">&quot;he2DDxdpmVMUG8UiVobZhfqnz1FNJZgP2Twpq&quot;</span><span>).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
-    </span><span class="identifier">signing</span><span> &lt;- </span><span class="type-name">JwtSigning</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">hmac</span><span>(</span><span class="type-name">HS256</span><span>, </span><span class="identifier">secretKey</span><span>)
+    </span><span class="identifier">signing</span><span> &lt;- </span><span class="type-name">JwtSigningBuilder</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">hmac</span><span>(</span><span class="type-name">HS256</span><span>, </span><span class="identifier">secretKey</span><span>).</span><span class="identifier">build</span><span>
     </span><span class="identifier">signedJwt</span><span> &lt;- </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">asJwt</span><span>.</span><span class="identifier">signWith</span><span>(</span><span class="identifier">signing</span><span>)
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">signedJwt</span><span>
 </span><span class="comment">// signedJwt: SyncIO[SignedJwt] = SyncIO(...)
@@ -181,12 +181,12 @@
   </span><span class="type-name">JwtDecoder</span><span>.</span><span class="identifier">decodeClaims</span></code></pre>
         <p>Here, <code>JwtDecoder.decodeClaims</code> uses the <code>Decoder</code> above to decode <code>UserJwt</code> from the claims of a <code>VerifiedJwt</code>. The <code>VerifiedJwt</code> is a <code>SignedJwt</code> for which the signature has been verified. Verification typically includes verifying header and claims in addition to the signature.</p>
         <p>Following, we use the default <code>JwtVerification</code> and <code>decodeAs</code> to parse, verify and decode a signed token. The default verifications include extra checks in addition to verifying the signature. See the page on <a href="features/verification.html">verification</a> for more details on the <a href="features/verification.html#default-verifications">default checks</a>, how they can be changed, and how to enable more checks.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerification</span><span>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerificationBuilder</span><span>
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">userJwtDecoded</span><span> =
   </span><span class="keyword">for</span><span> {
     </span><span class="identifier">secretKey</span><span> &lt;- </span><span class="type-name">SecretKey</span><span>(</span><span class="string-literal">&quot;he2DDxdpmVMUG8UiVobZhfqnz1FNJZgP2Twpq&quot;</span><span>).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
-    </span><span class="identifier">verification</span><span> &lt;- </span><span class="type-name">JwtVerification</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">hmac</span><span>(</span><span class="type-name">HS256</span><span>, </span><span class="identifier">secretKey</span><span>)
+    </span><span class="identifier">verification</span><span> &lt;- </span><span class="type-name">JwtVerificationBuilder</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">hmac</span><span>(</span><span class="type-name">HS256</span><span>, </span><span class="identifier">secretKey</span><span>).</span><span class="identifier">build</span><span>
     </span><span class="identifier">userJwt</span><span> &lt;- </span><span class="identifier">verification</span><span>.</span><span class="identifier">decodeAs</span><span>[</span><span class="type-name">UserJwt</span><span>](</span><span class="identifier">signedJwtString</span><span>)
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">userJwt</span><span>
 </span><span class="comment">// userJwtDecoded: SyncIO[UserJwt] = SyncIO(...)

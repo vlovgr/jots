@@ -183,6 +183,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtEcdsaAlgorithm</span><span>.</span><span class="type-name">ES256</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerification</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerificationBuilder</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">PublicKey</span><span>
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">jwtVerification</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">SyncIO</span><span>]] =
@@ -195,7 +196,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
         -----END PUBLIC KEY-----
       &quot;&quot;&quot;</span><span>
     ).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
-    </span><span class="identifier">verification</span><span> &lt;- </span><span class="type-name">JwtVerification</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">ecdsa</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">publicKey</span><span>)
+    </span><span class="identifier">verification</span><span> &lt;- </span><span class="type-name">JwtVerificationBuilder</span><span>.</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>].</span><span class="identifier">ecdsa</span><span>(</span><span class="type-name">ES256</span><span>, </span><span class="identifier">publicKey</span><span>).</span><span class="identifier">build</span><span>
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">verification</span></code></pre>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
@@ -214,9 +215,8 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
         
         <h3 id="key-requirements" class="section"><a class="anchor-link left" href="#key-requirements"><i class="icofont-laika link">&#xef71;</i></a>Key Requirements</h3>
         <p>In the example above, we note creating <code>JwtVerification</code> instances returns an effect and not <code>JwtVerification</code> directly. The effect checks whether the public or secret key is sufficiently strong or not according to the <a href="https://www.rfc-editor.org/rfc/rfc7518.html">JSON Web Algorithms (JWA)</a> specification. When the <a href="signing.html#key-requirements">key requirements</a> are not met, an exception will be raised.</p>
-        <p>While it is <em>not</em> recommended, the key requirements check can be disabled using <code>JwtVerificationBuilder</code> by using the <code>withCheckKeyRequirements</code> function. It is also possible to use separate effects for creating <code>JwtVerification</code> and for verifying tokens. The following example shows how both can be done.</p>
+        <p>While it is <em>not</em> recommended, the key requirements check can be disabled using the <code>withCheckKeyRequirements</code> function. It is also possible to use separate effects for creating <code>JwtVerification</code> and for verifying tokens. The following example shows how both can be done.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
-</span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerificationBuilder</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">Try</span><span>
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">jwtVerificationTry</span><span>: </span><span class="type-name">Try</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">IO</span><span>]] =
@@ -314,9 +314,10 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
       </span><span class="string-literal">&quot;y&quot;</span><span> -&gt; </span><span class="string-literal">&quot;kGe5DgSIycKp8w9aJmoHhB1sB3QTugfnRWm5nU_TzsY&quot;</span><span>.</span><span class="identifier">asJson</span><span>
     ).</span><span class="identifier">liftTo</span><span>[</span><span class="type-name">SyncIO</span><span>]
     </span><span class="identifier">jwkSet</span><span> = </span><span class="type-name">JwkSet</span><span>(</span><span class="identifier">jwk</span><span>)
-    </span><span class="identifier">verification</span><span> &lt;- </span><span class="type-name">JwtVerification</span><span>
+    </span><span class="identifier">verification</span><span> &lt;- </span><span class="type-name">JwtVerificationBuilder</span><span>
       .</span><span class="identifier">default</span><span>[</span><span class="type-name">SyncIO</span><span>]
       .</span><span class="identifier">jwkSet</span><span>(</span><span class="type-name">JwtEcdsaAlgorithm</span><span>.</span><span class="type-name">All</span><span>, </span><span class="identifier">jwkSet</span><span>)
+      .</span><span class="identifier">build</span><span>
     </span><span class="identifier">userJwt</span><span> &lt;- </span><span class="identifier">verification</span><span>.</span><span class="identifier">decodeAs</span><span>[</span><span class="type-name">UserJwt</span><span>](</span><span class="identifier">jwt</span><span>)
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">userJwt</span></code></pre>
         <p>Note verification works because the token header has a matching <code>kid</code> (Key ID).</p>
