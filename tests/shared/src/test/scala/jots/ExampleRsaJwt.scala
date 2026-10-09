@@ -869,6 +869,63 @@ object ExampleRsaJwt {
       JwtRsaAlgorithm.PS256
     )
 
+  lazy val PS256Pkcs1PssRestrictedWithoutParameters: ExampleRsaJwt =
+    ExampleRsaJwt(
+      JwtHeader(
+        "alg" -> "PS256".asJson,
+        "typ" -> "JWT".asJson
+      ),
+      JwtClaims(
+        "sub" -> "1234567890".asJson,
+        "name" -> "John Doe".asJson,
+        "admin" -> true.asJson,
+        "iat" -> 1516239022.asJson
+      ),
+      signedJwt"eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.U9_GVc3DZrBQn_c2mS3UhUtFfRBWspYR47il0gst7-B65_-KG1pdRDNui6D_d89ARfGfGLF64iWsVX1bN9YCP0ZAUgYVjMQZsG1pPZzrGkT4p2ps6bAmVU30MJcwMjDUaii0h9dRaQTa1DawhZQ3Exk4wZHeksPVnvKEJHMjAgFTK3ZwKRhfsFXwjrtuU-dHgJJqLuU2LqQGnQl3jPCom4SSlMdyzzd8KSISZwVg3_BU1y6eWDk5E4KAGo0a5ncUKs0W5InXSAlJu6PiqrcntQGt6rCGiWG2_DrGbvmkaZkO1YKzMWCIZOeBJUZPgkrvYr0XadrGQLCfPMte1Une9w",
+      privateKey"""
+        -----BEGIN PRIVATE KEY-----
+        MIIEugIBADALBgkqhkiG9w0BAQoEggSmMIIEogIBAAKCAQEAkmWC6e+0a+rQhnLl
+        QewQIgCDyegE+UKJgiXayPD0bGgtSgEofeDb5ljy2tz9yEd2vrfQVwuKwTngxGr6
+        E+yR28TMhVyPmfa32beslwJQergyJQ4mKs8SCt1m5hDMmjR3iefGQa3ak28jHplQ
+        Qt7YzrraeBNQnfy9IdDHGx7LioQh2cPEB9nSoYsJC7hPGrFgph91ROKbXnSuNed0
+        LGrz/OzGiHWl9KPblp6puynbgaVLwWUJb2vEzDwYSr6jvR772sX1/JM+MTtPTXjS
+        mHJwgU9M5NVBQ4I+8KLkMhubmvRDT3GaSMggABGCMs5YkJbv+IX3COu2HfkzKg0R
+        brG7IwIDAQABAoIBACuJ+zRd8PfDfz7tPterQGUMaCWNVqVXL5RAc+AdIWR4WzfO
+        Pl+pl1zbiWakIOoGrv8rpc+thBfRgdKIylVQn1SQJA9ppt+wa59Zq//BVXQaAffZ
+        TGqg6QnILQkxZ9hY0FB4WRNBhGciv3wjNqacpjhdhAoAHJLQDuPWttCPCRPpotZh
+        8f91GUPJ8Ue7l9KCdHaoi19paPF4ED/lL5XIqeR9aDFIpeEVBIdosWLz4GkSa3u1
+        Y4IO3e/U3zAUt2aXKnsvsEbghLzqlmQIdUvz6fyeLWSUgCQSHtrEb0MUKLBHxB8P
+        HT1hGOGNmo6QBO5MES9BeYisp5Vp4SFkvkOurvECgYEAzbk/w1zx7u7kiSoI61lN
+        BEDd001mAgKPsuGgHjitfYlnuaf7sIV/glXFdh9a7TDDgRKLK/1+961PPFodIrux
+        +UiK89kZyYQCBB5SGxJyRu3J1K2l4+973EqWPTVb73vf989E3QzVFgb85XULGN1e
+        jN694AkPAIexj9s5V0ea48sCgYEAtiyQB1JGRqPHmNPsDK/hYuicsTCfplZTUDQR
+        VZ/IV5VtsEjKdN3JUfVMFveqeoMEiadQSzp+VDlNJW1DYKAlX/ODh5oAMS/kcTnb
+        juuGl6kjYfuBGk9HsJ14DQHuZNy7bFaxk0OCoeouDUlfVHlt9JkOn6V7l1aBw1a8
+        TNSiCwkCgYBgYmemb3iGWnTGcuRE58z2rjF/22ZskKikxaMQJbva8jKfwD1iwdkw
+        xmDCbARc1pjycy6zSIxhHFjgTNQTvt6ujbdUciXrzSZoqZAMUQMriiMiuszbUwuz
+        9VoYiVRuipovb3OzIV0AefuowcKWPrkaxQ0u1u+pbunZHXvrEYhXKwKBgHU5KZi8
+        dWIhI1+RBnSHfFWD7sgJzMFhDQ0v4/Of9G9/ROzJehVHXbMyT7r7tSROSE43bnBp
+        /D4//QdXTqLPih06+ej4zKTZ93pwS3qkzZ+rg4waJVIDr9LTERv1oSwf6S5mfq+P
+        InED2oxMKV6XIIzjLEjIWEXisW870cDyli7ZAoGAXan1KJIY+kN7sW6ZihBc6kNZ
+        wmOEF0Lu4W4vkWZLhHPNJMU6DCL68n5V4Kc1xxtib5TUbq1mKuyoa+1vvbXcqQ0l
+        Mx24LmYaEP14GoFCuJ80V7YCBzUFq8o0WjBixQtnCzGxQVg3aec8UhQFyuOv6TJW
+        lMD1OHHfCI4usICgohg=
+        -----END PRIVATE KEY-----
+      """,
+      publicKey"""
+        -----BEGIN PUBLIC KEY-----
+        MIIBIDALBgkqhkiG9w0BAQoDggEPADCCAQoCggEBAJJlgunvtGvq0IZy5UHsECIA
+        g8noBPlCiYIl2sjw9GxoLUoBKH3g2+ZY8trc/chHdr630FcLisE54MRq+hPskdvE
+        zIVcj5n2t9m3rJcCUHq4MiUOJirPEgrdZuYQzJo0d4nnxkGt2pNvIx6ZUELe2M66
+        2ngTUJ38vSHQxxsey4qEIdnDxAfZ0qGLCQu4TxqxYKYfdUTim150rjXndCxq8/zs
+        xoh1pfSj25aeqbsp24GlS8FlCW9rxMw8GEq+o70e+9rF9fyTPjE7T0140phycIFP
+        TOTVQUOCPvCi5DIbm5r0Q09xmkjIIAARgjLOWJCW7/iF9wjrth35MyoNEW6xuyMC
+        AwEAAQ==
+        -----END PUBLIC KEY-----
+      """,
+      JwtRsaAlgorithm.PS256
+    )
+
   lazy val PS256Pkcs8: ExampleRsaJwt =
     ExampleRsaJwt(
       JwtHeader(
@@ -1452,6 +1509,7 @@ object ExampleRsaJwt {
       PS256Jwk,
       PS256Pkcs1,
       PS256Pkcs1PssRestricted,
+      PS256Pkcs1PssRestrictedWithoutParameters,
       PS256Pkcs8,
       PS256Pkcs8AndX509Certificate,
       PS384Jwk,
