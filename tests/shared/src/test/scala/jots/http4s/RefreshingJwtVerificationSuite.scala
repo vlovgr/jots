@@ -33,8 +33,9 @@ import jots.JwtClaims
 import jots.JwtException
 import jots.JwtHeader
 import jots.JwtHmacAlgorithm
-import jots.JwtSigning
+import jots.JwtSigningBuilder
 import jots.JwtVerification
+import jots.JwtVerificationBuilder
 import jots.SignedJwt
 import jots.crypto.SecretKey
 import jots.testing.*
@@ -59,8 +60,9 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
   test("RefreshingJwtVerification.keys") {
     forall { (keySet: JwkSet) =>
       TestClient(keysResponse(keySet)).flatMap { testClient =>
-        RefreshingJwtVerification
+        RefreshingJwtVerificationBuilder
           .refreshWith[IO](testClient.client, uri)(_ => IO.pure(rejectAll))
+          .build
           .use(_.keys)
           .map(keys => expect.eql(keySet, keys))
       }
@@ -109,8 +111,9 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
       signed <- sign("key-1")
       testClient <- TestClient(keysResponse(keySet))
       algorithms = NonEmptyList.of(JwtAlgorithm.HS256)
-      result <- RefreshingJwtVerification
+      result <- RefreshingJwtVerificationBuilder
         .jwkSet[IO](algorithms, testClient.client, uri)
+        .build
         .use(_.verify(signed).attempt)
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
     } yield success
@@ -156,8 +159,9 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
       other <- signWithAudience("key-1", "other-audience")
       testClient <- TestClient(keysResponse(keySet))
       algorithms = NonEmptyList.of(JwtAlgorithm.HS256)
-      result <- RefreshingJwtVerification
+      result <- RefreshingJwtVerificationBuilder
         .jwkSetWith[IO](algorithms, testClient.client, uri)(_.withAcceptedAudiences("accepted-audience"))
+        .build
         .use(verification =>
           (verification.verify(accepted).attempt, verification.verify(other).attempt).tupled
         )
@@ -171,8 +175,9 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
     for {
       signed <- signEcdsa(claims)
       testClient <- TestClient(keysResponse(ecdsaKeySet))
-      result <- RefreshingJwtVerification
+      result <- RefreshingJwtVerificationBuilder
         .jwkSetAll[IO](testClient.client, uri)
+        .build
         .use(_.verify(signed).attempt)
       _ <- matchOrFailFast[IO](result) { case Right(_) => () }
     } yield success
@@ -182,8 +187,9 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
     for {
       signed <- signEcdsa(claims.add("aud", "some-audience".asJson))
       testClient <- TestClient(keysResponse(ecdsaKeySet))
-      result <- RefreshingJwtVerification
+      result <- RefreshingJwtVerificationBuilder
         .jwkSetAll[IO](testClient.client, uri)
+        .build
         .use(_.verify(signed).attempt)
       _ <- matchOrFailFast[IO](result) { case Left(_: JwtException.UnexpectedAudience) => () }
     } yield success
@@ -194,8 +200,9 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
       accepted <- signEcdsa(claims.add("aud", "accepted-audience".asJson))
       other <- signEcdsa(claims.add("aud", "other-audience".asJson))
       testClient <- TestClient(keysResponse(ecdsaKeySet))
-      result <- RefreshingJwtVerification
+      result <- RefreshingJwtVerificationBuilder
         .jwkSetAllWith[IO](testClient.client, uri)(_.withAcceptedAudiences("accepted-audience"))
+        .build
         .use(verification =>
           (verification.verify(accepted).attempt, verification.verify(other).attempt).tupled
         )
@@ -224,12 +231,13 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
       signed <- sign("key-1")
       testClient <- TestClient(keysResponse(keySet))
       refreshed <- Ref[IO].of(Vector.empty[JwkSet])
-      result <- RefreshingJwtVerification
+      result <- RefreshingJwtVerificationBuilder
         .refreshWith[IO](testClient.client, uri) { keys =>
           refreshed
             .update(_ :+ keys)
             .as(JwtVerification.verifyWith[IO](_ => IO.raiseError(error)))
         }
+        .build
         .use(verification => (verification.keys, verification.verify(signed).attempt).tupled)
       (keys, verified) = result
       refreshedKeys <- refreshed.get
@@ -260,8 +268,9 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
   test("RefreshingJwtVerification.refreshInterval") {
     for {
       testClient <- TestClient(keysResponse(keySet), keysResponse(otherKeySet))
-      keys <- RefreshingJwtVerification
+      keys <- RefreshingJwtVerificationBuilder
         .jwkSet[IO](hmacAlgorithms, testClient.client, uri)
+        .build
         .use(verification => IO.sleep(refreshInterval * 10) *> verification.keys)
       requests <- testClient.requests
     } yield expect.eql(keySet, keys) && expect.eql(1, requests.size)
@@ -283,7 +292,10 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
   test("RefreshingJwtVerification.retryByDefault") {
     for {
       testClient <- TestClient(errorResponse, keysResponse(keySet))
-      keys <- RefreshingJwtVerification.jwkSet[IO](hmacAlgorithms, testClient.client, uri).use(_.keys)
+      keys <- RefreshingJwtVerificationBuilder
+        .jwkSet[IO](hmacAlgorithms, testClient.client, uri)
+        .build
+        .use(_.keys)
       requests <- testClient.requests
     } yield expect.eql(keySet, keys) && expect.eql(2, requests.size)
   }
@@ -292,8 +304,9 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
     for {
       testClient <- TestClient(keysResponse(keySet))
       insecureUri = uri"http://example.com/.well-known/jwks.json"
-      result <- RefreshingJwtVerification
+      result <- RefreshingJwtVerificationBuilder
         .jwkSet[IO](hmacAlgorithms, testClient.client, insecureUri)
+        .build
         .use(_.keys)
         .attempt
       _ <- matchOrFailFast[IO](result) { case Left(_: IllegalArgumentException) => () }
@@ -308,8 +321,9 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
     ).traverse { loopbackUri =>
       for {
         testClient <- TestClient(keysResponse(keySet))
-        keys <- RefreshingJwtVerification
+        keys <- RefreshingJwtVerificationBuilder
           .jwkSet[IO](hmacAlgorithms, testClient.client, loopbackUri)
+          .build
           .use(_.keys)
       } yield expect.eql(keySet, keys)
     }.map(_.combineAll)
@@ -721,7 +735,7 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
   ): RefreshingJwtVerificationBuilder[IO] =
     RefreshingJwtVerificationBuilder
       .refreshWith[IO](client, uri) { keys =>
-        JwtVerification.default[IO].jwkSetAll(keys).map { verification =>
+        JwtVerificationBuilder.default[IO].jwkSetAll(keys).build.map { verification =>
           if (keys === keySet)
             JwtVerification.verifyWith[IO] { jwt =>
               entered.complete(()).ifM(proceed.get, IO.unit) >> verification.verify(jwt)
@@ -769,15 +783,17 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
     signWith(header, claims, secretKey)
 
   private def signWith(header: JwtHeader, claims: JwtClaims, secretKey: SecretKey): IO[SignedJwt] =
-    JwtSigning
+    JwtSigningBuilder
       .default[IO]
       .hmac(JwtHmacAlgorithm.HS256, secretKey)
+      .build
       .flatMap(JwtBuilder(header, claims).signWith)
 
   private def signEcdsa(claims: JwtClaims): IO[SignedJwt] =
-    JwtSigning
+    JwtSigningBuilder
       .default[IO]
       .jwk(JwtAlgorithm.ES256, ecdsaJwk)
+      .build
       .flatMap(JwtBuilder.default.withClaims(claims).signWith)
 
   private def signWithAudience(keyId: String, audience: String): IO[SignedJwt] =

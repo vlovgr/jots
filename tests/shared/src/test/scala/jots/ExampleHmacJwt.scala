@@ -33,7 +33,7 @@ final case class ExampleHmacJwt(
   algorithm: JwtHmacAlgorithm
 ) extends ExampleJwt {
   override val verification: IO[JwtVerification[IO]] =
-    JwtVerification.default[IO].hmac(algorithm, secretKey)
+    JwtVerificationBuilder.default[IO].hmac(algorithm, secretKey).build
 }
 
 object ExampleHmacJwt {

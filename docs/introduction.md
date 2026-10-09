@@ -54,13 +54,13 @@ Finally, we need to sign the `JwtBuilder` to create a `SignedJwt`. For this we n
 import cats.effect.SyncIO
 import cats.syntax.all.*
 import jots.JwtHmacAlgorithm.HS256
-import jots.JwtSigning
+import jots.JwtSigningBuilder
 import jots.crypto.SecretKey
 
 val signedJwt =
   for {
     secretKey <- SecretKey("he2DDxdpmVMUG8UiVobZhfqnz1FNJZgP2Twpq").liftTo[SyncIO]
-    signing <- JwtSigning.default[SyncIO].hmac(HS256, secretKey)
+    signing <- JwtSigningBuilder.default[SyncIO].hmac(HS256, secretKey).build
     signedJwt <- userJwt.asJwt.signWith(signing)
   } yield signedJwt
 
@@ -99,12 +99,12 @@ Here, `JwtDecoder.decodeClaims` uses the `Decoder` above to decode `UserJwt` fro
 Following, we use the default `JwtVerification` and `decodeAs` to parse, verify and decode a signed token. The default verifications include extra checks in addition to verifying the signature. See the page on [verification](features/verification.md) for more details on the [default checks](features/verification.md#default-verifications), how they can be changed, and how to enable more checks.
 
 ```scala mdoc:to-string
-import jots.JwtVerification
+import jots.JwtVerificationBuilder
 
 val userJwtDecoded =
   for {
     secretKey <- SecretKey("he2DDxdpmVMUG8UiVobZhfqnz1FNJZgP2Twpq").liftTo[SyncIO]
-    verification <- JwtVerification.default[SyncIO].hmac(HS256, secretKey)
+    verification <- JwtVerificationBuilder.default[SyncIO].hmac(HS256, secretKey).build
     userJwt <- verification.decodeAs[UserJwt](signedJwtString)
   } yield userJwt
 

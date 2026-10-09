@@ -67,6 +67,7 @@ import cats.effect.SyncIO
 import cats.syntax.all.*
 import jots.JwtEcdsaAlgorithm.ES256
 import jots.JwtVerification
+import jots.JwtVerificationBuilder
 import jots.crypto.PublicKey
 
 val jwtVerification: SyncIO[JwtVerification[SyncIO]] =
@@ -79,7 +80,7 @@ val jwtVerification: SyncIO[JwtVerification[SyncIO]] =
         -----END PUBLIC KEY-----
       """
     ).liftTo[SyncIO]
-    verification <- JwtVerification.default[SyncIO].ecdsa(ES256, publicKey)
+    verification <- JwtVerificationBuilder.default[SyncIO].ecdsa(ES256, publicKey).build
   } yield verification
 ```
 
@@ -105,11 +106,10 @@ val publicKey: PublicKey =
 
 In the example above, we note creating `JwtVerification` instances returns an effect and not `JwtVerification` directly. The effect checks whether the public or secret key is sufficiently strong or not according to the [JSON Web Algorithms (JWA)](https://www.rfc-editor.org/rfc/rfc7518.html) specification. When the [key requirements](signing.md#key-requirements) are not met, an exception will be raised.
 
-While it is _not_ recommended, the key requirements check can be disabled using `JwtVerificationBuilder` by using the `withCheckKeyRequirements` function. It is also possible to use separate effects for creating `JwtVerification` and for verifying tokens. The following example shows how both can be done.
+While it is _not_ recommended, the key requirements check can be disabled using the `withCheckKeyRequirements` function. It is also possible to use separate effects for creating `JwtVerification` and for verifying tokens. The following example shows how both can be done.
 
 ```scala mdoc:silent
 import cats.effect.IO
-import jots.JwtVerificationBuilder
 import scala.util.Try
 
 val jwtVerificationTry: Try[JwtVerification[IO]] =
@@ -226,9 +226,10 @@ val userJwtJwk: SyncIO[UserJwt] =
       "y" -> "kGe5DgSIycKp8w9aJmoHhB1sB3QTugfnRWm5nU_TzsY".asJson
     ).liftTo[SyncIO]
     jwkSet = JwkSet(jwk)
-    verification <- JwtVerification
+    verification <- JwtVerificationBuilder
       .default[SyncIO]
       .jwkSet(JwtEcdsaAlgorithm.All, jwkSet)
+      .build
     userJwt <- verification.decodeAs[UserJwt](jwt)
   } yield userJwt
 ```

@@ -35,7 +35,7 @@ final case class ExampleRsaJwt(
   override val algorithm: JwtRsaAlgorithm
 ) extends ExampleAsymmetricJwt {
   override val verification: IO[JwtVerification[IO]] =
-    JwtVerification.default[IO].rsa(algorithm, publicKey)
+    JwtVerificationBuilder.default[IO].rsa(algorithm, publicKey).build
 }
 
 object ExampleRsaJwt {

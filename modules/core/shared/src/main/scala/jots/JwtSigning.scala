@@ -29,9 +29,7 @@ import jots.JwtException.RejectedKeyAlgorithm
 import jots.JwtException.UnsuitableSigningKey
 import jots.JwtException.UnsupportedKey
 import jots.crypto.Crypto
-import jots.crypto.PrivateKey
 import jots.crypto.RsaAlgorithm
-import jots.crypto.SecretKey
 import jots.crypto.internal.KeyAlgorithm
 import jots.internal.KeyLength
 import jots.internal.KeyRequirement
@@ -71,12 +69,6 @@ object JwtSigning {
   def apply[F[_]](implicit F: JwtSigning[F]): JwtSigning[F] = F
 
   /**
-    * Create [[JwtSigning]] instances with the specified type.
-    */
-  def default[F[_]]: JwtSigningDefault[F, F] =
-    new JwtSigningDefault[F, F] {}
-
-  /**
     * Return a [[JwtSigning]] instance that signs
     * with the specified function.
     */
@@ -85,65 +77,6 @@ object JwtSigning {
       override def sign(jwt: JwtBuilder): F[SignedJwt] =
         f(jwt)
     }
-
-  sealed abstract class JwtSigningDefault[F[_], G[_]] {
-
-    /**
-      * Returns a new [[JwtSigning]] instance which signs tokens
-      * using the specified ECDSA algorithm and private key.
-      */
-    def ecdsa(
-      algorithm: JwtEcdsaAlgorithm,
-      privateKey: PrivateKey
-    )(implicit F: ApplicativeThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] =
-      JwtSigningBuilder.default[F].signWith[G].ecdsa(algorithm, privateKey).build
-
-    /**
-      * Returns a new [[JwtSigning]] instance which signs tokens
-      * using the specified EdDSA algorithm and private key.
-      */
-    def eddsa(
-      algorithm: JwtEddsaAlgorithm,
-      privateKey: PrivateKey
-    )(implicit F: ApplicativeThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] =
-      JwtSigningBuilder.default[F].signWith[G].eddsa(algorithm, privateKey).build
-
-    /**
-      * Returns a new [[JwtSigning]] instance which signs tokens
-      * using the specified HMAC algorithm and secret key.
-      */
-    def hmac(
-      algorithm: JwtHmacAlgorithm,
-      secretKey: SecretKey
-    )(implicit F: ApplicativeThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] =
-      JwtSigningBuilder.default[F].signWith[G].hmac(algorithm, secretKey).build
-
-    /**
-      * Returns a new [[JwtSigning]] instance which signs tokens
-      * using the specified algorithm and [[Jwk]].
-      */
-    def jwk(
-      algorithm: JwtAlgorithm,
-      key: Jwk
-    )(implicit F: MonadThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] =
-      JwtSigningBuilder.default[F].signWith[G].jwk(algorithm, key).build
-
-    /**
-      * Returns a new [[JwtSigning]] instance which signs tokens
-      * using the specified RSA algorithm and private key.
-      */
-    def rsa(
-      algorithm: JwtRsaAlgorithm,
-      privateKey: PrivateKey
-    )(implicit F: ApplicativeThrow[F], G: Functor[G], crypto: Crypto[G]): F[JwtSigning[G]] =
-      JwtSigningBuilder.default[F].signWith[G].rsa(algorithm, privateKey).build
-
-    /**
-      * Create [[JwtSigning]] instances that sign with the specified type.
-      */
-    def signWith[H[_]]: JwtSigningDefault[F, H] =
-      new JwtSigningDefault[F, H] {}
-  }
 
   private[jots] def fromAsymmetricBuilder[F[_], G[_]](
     builder: JwtAsymmetricSigningBuilder[F, G]

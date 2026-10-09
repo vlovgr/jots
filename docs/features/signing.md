@@ -99,6 +99,7 @@ import cats.effect.SyncIO
 import cats.syntax.all.*
 import jots.JwtEcdsaAlgorithm.ES256
 import jots.JwtSigning
+import jots.JwtSigningBuilder
 import jots.crypto.PrivateKey
 
 val jwtSigning: SyncIO[JwtSigning[SyncIO]] =
@@ -112,7 +113,7 @@ val jwtSigning: SyncIO[JwtSigning[SyncIO]] =
         -----END PRIVATE KEY-----
       """
     ).liftTo[SyncIO]
-    signing <- JwtSigning.default[SyncIO].ecdsa(ES256, privateKey)
+    signing <- JwtSigningBuilder.default[SyncIO].ecdsa(ES256, privateKey).build
   } yield signing
 ```
 
@@ -141,11 +142,10 @@ In the example above, we note creating `JwtSigning` instances returns an effect 
 | `RS384`   | At least 2048 bits (256 bytes)    | At least 3072 bits (384 bytes) |
 | `RS512`   | At least 2048 bits (256 bytes)    | At least 4096 bits (512 bytes) |
 
-While it is _not_ recommended, the key requirements check can be disabled using `JwtSigningBuilder` by using the `withCheckKeyRequirements` function. It is also possible to use separate effects for creating `JwtSigning` and for signing tokens. The following example shows how both can be done.
+While it is _not_ recommended, the key requirements check can be disabled using the `withCheckKeyRequirements` function. It is also possible to use separate effects for creating `JwtSigning` and for signing tokens. The following example shows how both can be done.
 
 ```scala mdoc:silent
 import cats.effect.IO
-import jots.JwtSigningBuilder
 import scala.util.Try
 
 val jwtSigningTry: Try[JwtSigning[IO]] =
@@ -217,7 +217,7 @@ val signedJwtJwk: SyncIO[SignedJwt] =
       "y" -> "U4Y4v5C3emBPjCSxRpce2wSQvb091uCM3tVFzqwne5c".asJson,
       "alg" -> "ES256".asJson
     ).liftTo[SyncIO]
-    signing <- JwtSigning.default[SyncIO].jwk(ES256, jwk)
+    signing <- JwtSigningBuilder.default[SyncIO].jwk(ES256, jwk).build
     jwt <- userJwt.asJwt.signWith(signing)
   } yield jwt
 ```
