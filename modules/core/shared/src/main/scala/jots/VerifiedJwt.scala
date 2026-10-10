@@ -105,6 +105,9 @@ object VerifiedJwt {
     * instances after verifying the signature (and claims). The one
     * exception to this is the testing module, which allows creating
     * a [[VerifiedJwt]] from any [[SignedJwt]].
+    *
+    * Note the testing module depends on this function, so it must
+    * keep binary compatibility, even though it is package-private.
     */
   private[jots] def fromVerified(jwt: SignedJwt): VerifiedJwt =
     VerifiedJwtImpl(jwt)

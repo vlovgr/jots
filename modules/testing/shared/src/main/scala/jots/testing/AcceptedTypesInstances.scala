@@ -42,10 +42,7 @@ private[jots] trait AcceptedTypesInstances {
     Arbitrary(acceptedTypesGen)
 
   implicit lazy val acceptedTypesCogen: Cogen[AcceptedTypes] =
-    Cogen[Option[List[String]]].contramap {
-      case AcceptedTypes.AnyType => None
-      case AcceptedTypes.OneOf(types) => Some(types.toList)
-    }
+    Cogen[String].contramap(_.show)
 
   lazy val acceptedTypesFunGen: Gen[AcceptedTypes => AcceptedTypes] =
     Gen.function1(acceptedTypesGen)
