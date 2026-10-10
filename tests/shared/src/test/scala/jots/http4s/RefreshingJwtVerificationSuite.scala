@@ -284,6 +284,16 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
     } yield success
   }
 
+  test("RefreshingJwtVerification.redactInvalidKeySet") {
+    for {
+      testClient <- TestClient(jsonResponse("""{"d":"secret"}"""))
+      result <- builder(testClient.client).build.use(_.keys.attempt)
+      _ <- matchOrFailFast[IO](result) {
+        case Left(failure: DecodeFailure) if !failure.getMessage.contains("secret") => ()
+      }
+    } yield success
+  }
+
   test("RefreshingJwtVerification.skipsUndecodableKeys") {
     val keySetJson = s"""{"keys":[${octJwk("key-1").toJson.noSpaces},{"kid":"key-2"}]}"""
     for {
