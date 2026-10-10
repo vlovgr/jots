@@ -26,19 +26,23 @@ import org.http4s.Header
 import org.http4s.MediaType
 import org.http4s.ParseFailure
 import org.http4s.circe.jsonEncoderOf
-import org.http4s.circe.jsonOfWithMedia
+import org.http4s.circe.jsonOfWithSensitiveMedia
 import org.http4s.headers.Authorization
 import org.http4s.headers.`Content-Type`
 
 package object http4s {
   implicit def jwkEntityDecoder[F[_]: Concurrent]: EntityDecoder[F, Jwk] =
-    jsonOfWithMedia(MediaType.application.json, MediaType.application.`jwk+json`)
+    jsonOfWithSensitiveMedia(_ => "<redacted>", MediaType.application.json, MediaType.application.`jwk+json`)
 
   implicit def jwkEntityEncoder[F[_]]: EntityEncoder[F, Jwk] =
     jsonEncoderOf[F, Jwk].withContentType(`Content-Type`(MediaType.application.`jwk+json`))
 
   implicit def jwkSetEntityDecoder[F[_]: Concurrent]: EntityDecoder[F, JwkSet] =
-    jsonOfWithMedia(MediaType.application.json, MediaType.application.`jwk-set+json`)
+    jsonOfWithSensitiveMedia(
+      _ => "<redacted>",
+      MediaType.application.json,
+      MediaType.application.`jwk-set+json`
+    )
 
   implicit def jwkSetEntityEncoder[F[_]]: EntityEncoder[F, JwkSet] =
     jsonEncoderOf[F, JwkSet].withContentType(`Content-Type`(MediaType.application.`jwk-set+json`))

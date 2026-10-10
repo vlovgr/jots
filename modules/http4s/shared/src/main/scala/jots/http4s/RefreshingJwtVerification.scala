@@ -36,7 +36,7 @@ import jots.internal.SkippedKeys
 import org.http4s.EntityDecoder
 import org.http4s.MediaType
 import org.http4s.Uri
-import org.http4s.circe.jsonOfWithMedia
+import org.http4s.circe.jsonOfWithSensitiveMedia
 import org.http4s.client.Client
 import org.http4s.client.middleware.Retry
 import org.typelevel.ci.CIString
@@ -116,7 +116,11 @@ object RefreshingJwtVerification {
       implicit val decoder: Decoder[(JwkSet, List[(Json, DecodingFailure)])] =
         JwkSet.decoderSkipInvalidKeys
 
-      jsonOfWithMedia(MediaType.application.json, MediaType.application.`jwk-set+json`)
+      jsonOfWithSensitiveMedia(
+        _ => "<redacted>",
+        MediaType.application.json,
+        MediaType.application.`jwk-set+json`
+      )
     }
 
     def fetchState: F[State[F]] =
