@@ -22,6 +22,7 @@ import cats.effect.IO
 import cats.effect.Ref
 import cats.effect.Resource
 import cats.syntax.all.*
+import io.circe.Json
 import io.circe.syntax.*
 import java.util.concurrent.CancellationException
 import jots.Jwk
@@ -292,6 +293,19 @@ object RefreshingJwtVerificationSuite extends SimpleIOSuite with Checkers {
         case Left(failure: DecodeFailure) if !failure.getMessage.contains("secret") => ()
       }
     } yield success
+  }
+
+  pureTest("RefreshingJwtVerification.decoderSkipInvalidKeys") {
+    val key = Json.obj("kid" -> "key-1".asJson)
+    val result =
+      RefreshingJwtVerification.decoderSkipInvalidKeys.decodeJson(Json.obj("keys" -> Json.arr(key)))
+    expect(result.exists { case (keys, skipped) => keys.isEmpty && skipped.map(_._1) == List(key) })
+  }
+
+  pureTest("RefreshingJwtVerification.decoderSkipInvalidKeys.rejectNested") {
+    val nested = (1 to 1000).foldLeft(Json.arr())((json, _) => Json.arr(json))
+    val json = Json.obj("keys" -> Json.arr(), "nested" -> nested)
+    expect(RefreshingJwtVerification.decoderSkipInvalidKeys.decodeJson(json).isLeft)
   }
 
   test("RefreshingJwtVerification.skipsUndecodableKeys") {

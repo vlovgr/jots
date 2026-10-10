@@ -20,7 +20,6 @@ import cats.Show
 import cats.kernel.laws.discipline.HashTests
 import cats.syntax.all.*
 import io.circe.Json
-import io.circe.syntax.*
 import jots.testing.*
 import org.scalacheck.Gen
 import weaver.SimpleIOSuite
@@ -64,12 +63,6 @@ object JwkSetSuite extends SimpleIOSuite with Checkers with Discipline {
 
   pureTest("JwkSet.fromString.rejectUndecodableKeys") {
     expect(JwkSet.fromString("""{"keys":[{"kid":"key-1"}]}""").isLeft)
-  }
-
-  pureTest("JwkSet.decoderSkipInvalidKeys") {
-    val key = Json.obj("kid" -> "key-1".asJson)
-    val result = JwkSet.decoderSkipInvalidKeys.decodeJson(Json.obj("keys" -> Json.arr(key)))
-    expect(result.exists { case (keys, skipped) => keys.isEmpty && skipped.map(_._1) == List(key) })
   }
 
   pureTest("JwkSet.decoder.rejectNested") {
