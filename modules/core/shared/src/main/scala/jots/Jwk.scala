@@ -36,9 +36,9 @@ import jots.JwtException.MissingKeyType
 import jots.crypto.PrivateKey
 import jots.crypto.PublicKey
 import jots.crypto.SecretKey
-import jots.crypto.internal.asn1.Asn1
-import jots.crypto.internal.asn1.Oid
 import jots.internal.JsonDepth
+import jots.internal.asn1.Asn1
+import jots.internal.asn1.Oid
 import scodec.bits.Bases.Alphabets.Base64UrlNoPad
 import scodec.bits.ByteVector
 

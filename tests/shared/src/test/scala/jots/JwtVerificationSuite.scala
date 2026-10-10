@@ -25,8 +25,8 @@ import io.circe.syntax.*
 import java.nio.charset.StandardCharsets.UTF_8
 import jots.crypto.PublicKey
 import jots.crypto.SecretKey
-import jots.crypto.internal.asn1.Asn1
-import jots.crypto.internal.asn1.Oid
+import jots.internal.asn1.Asn1
+import jots.internal.asn1.Oid
 import jots.testing.syntax.*
 import scala.concurrent.duration.*
 import scodec.bits.ByteVector

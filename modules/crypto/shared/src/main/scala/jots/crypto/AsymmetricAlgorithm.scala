@@ -112,7 +112,7 @@ object EcdsaAlgorithm {
     Show.show(_.show)
 }
 
-private[jots] object EcdsaAlgorithms {
+private[crypto] object EcdsaAlgorithms {
   case object SHA256withECDSAinP1363Format extends EcdsaAlgorithm {
     override val hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
     override val fieldSize: Int = 32
@@ -160,7 +160,7 @@ object EddsaAlgorithm {
     Show.show(_.show)
 }
 
-private[jots] object EddsaAlgorithms {
+private[crypto] object EddsaAlgorithms {
   case object Ed25519 extends EddsaAlgorithm {
     override val name: String = "Ed25519"
     override val show: String = name
@@ -207,7 +207,7 @@ object RsaAlgorithm {
     Show.show(_.show)
 }
 
-private[jots] object RsaAlgorithms {
+private[crypto] object RsaAlgorithms {
   case object SHA256withRSA extends RsaAlgorithm {
     override val hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
     override val name: String = "SHA256withRSA"
@@ -268,7 +268,7 @@ object RsaPssAlgorithm {
     Show.show(_.show)
 }
 
-private[jots] object RsaPssAlgorithms {
+private[crypto] object RsaPssAlgorithms {
   case object SHA256withRSAandMGF1 extends RsaPssAlgorithm {
     override val hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
     override val saltLength: Int = 32

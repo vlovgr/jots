@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package jots.crypto.internal
+package jots.internal
 
 import jots.crypto.PrivateKey
 import jots.crypto.PublicKey
-import jots.crypto.internal.asn1.Asn1
-import jots.crypto.internal.asn1.Oid
+import jots.internal.asn1.Asn1
+import jots.internal.asn1.Oid
 
 /**
   * Used to determine the algorithm of an asymmetric key.
   */
-private[crypto] object KeyAlgorithm {
+private[jots] object KeyAlgorithm {
 
   /**
     * Returns `true` if the specified private key is

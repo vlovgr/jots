@@ -18,12 +18,11 @@ package jots.crypto.internal.asn1
 
 import scodec.bits.ByteVector
 
-private[jots] final case class Tlv(
+private[crypto] final case class Tlv(
   tag: Tag,
   contents: ByteVector,
   end: Long
 ) {
-  def isBitString: Boolean = tag == Tag.BitString
   def isContext0: Boolean = tag == Tag.Context0
   def isInt: Boolean = tag == Tag.Int
   def isOctetString: Boolean = tag == Tag.OctetString

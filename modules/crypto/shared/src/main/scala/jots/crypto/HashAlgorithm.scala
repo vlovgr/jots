@@ -72,7 +72,7 @@ object HashAlgorithm {
     Show.show(_.show)
 }
 
-private[jots] object HashAlgorithms {
+private[crypto] object HashAlgorithms {
   case object SHA224 extends HashAlgorithm {
     override val name: String = "SHA-224"
     override val show: String = name

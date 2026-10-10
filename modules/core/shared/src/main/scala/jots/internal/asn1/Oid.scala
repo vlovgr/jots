@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package jots.crypto.internal.asn1
+package jots.internal.asn1
 
 import scodec.bits.ByteVector
 
-private[crypto] sealed abstract class Oid(val contents: ByteVector)
+private[jots] sealed abstract class Oid(val contents: ByteVector)
 
-private[crypto] object Oid {
+private[jots] object Oid {
   case object Ec extends Oid(ByteVector(0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01))
+  case object Ed25519 extends Oid(ByteVector(0x2b, 0x65, 0x70))
+  case object Ed448 extends Oid(ByteVector(0x2b, 0x65, 0x71))
+  case object P256 extends Oid(ByteVector(0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07))
+  case object P384 extends Oid(ByteVector(0x2b, 0x81, 0x04, 0x00, 0x22))
+  case object P521 extends Oid(ByteVector(0x2b, 0x81, 0x04, 0x00, 0x23))
   case object Rsa extends Oid(ByteVector(0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01))
   case object RsaPss extends Oid(ByteVector(0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0a))
 }
