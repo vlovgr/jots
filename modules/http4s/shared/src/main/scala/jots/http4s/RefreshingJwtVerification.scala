@@ -27,6 +27,7 @@ import io.circe.Decoder
 import io.circe.DecodingFailure
 import io.circe.Json
 import java.util.concurrent.CancellationException
+import jots.Jwk
 import jots.JwkSet
 import jots.JwtException
 import jots.JwtVerification
@@ -40,6 +41,7 @@ import org.http4s.circe.jsonOfWithSensitiveMedia
 import org.http4s.client.Client
 import org.http4s.client.middleware.Retry
 import org.typelevel.ci.CIString
+import scala.annotation.tailrec
 import scala.concurrent.duration.FiniteDuration
 import scala.util.control.NoStackTrace
 
@@ -114,7 +116,7 @@ object RefreshingJwtVerification {
 
     implicit val keysDecoder: EntityDecoder[F, (JwkSet, List[(Json, DecodingFailure)])] = {
       implicit val decoder: Decoder[(JwkSet, List[(Json, DecodingFailure)])] =
-        JwkSet.decoderSkipInvalidKeys
+        decoderSkipInvalidKeys
 
       jsonOfWithSensitiveMedia(
         _ => "<redacted>",
@@ -295,6 +297,43 @@ object RefreshingJwtVerification {
           }
         }
     }
+  }
+
+  private[http4s] val decoderSkipInvalidKeys: Decoder[(JwkSet, List[(Json, DecodingFailure)])] = {
+    val decoder =
+      Decoder[List[Json]].at("keys").map { keys =>
+        val (skipped, decoded) = keys.partitionMap(key => key.as[Jwk].leftMap((key, _)))
+        (JwkSet.fromList(decoded), skipped)
+      }
+
+    Decoder.instance { cursor =>
+      if (exceedsMaxDepth(cursor.value))
+        Left(DecodingFailure(s"the nesting depth exceeds the maximum of $maxDepth", cursor.history))
+      else decoder(cursor)
+    }
+  }
+
+  private val maxDepth: Int = 32
+
+  /*
+   * Deeply nested `Json` can overflow the stack when it is
+   * printed, hashed or compared, so reject it before decoding.
+   */
+  private def exceedsMaxDepth(json: Json): Boolean = {
+    @tailrec
+    def loop(stack: List[(Json, Int)]): Boolean =
+      stack match {
+        case (value, depth) :: rest =>
+          value.asArray.map(_.toList).orElse(value.asObject.map(_.values.toList)) match {
+            case Some(_) if depth > maxDepth => true
+            case Some(values) => loop(values.map((_, depth + 1)) ::: rest)
+            case None => loop(rest)
+          }
+        case Nil =>
+          false
+      }
+
+    loop(List((json, 1)))
   }
 
   private final case class State[F[_]](

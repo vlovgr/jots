@@ -22,6 +22,9 @@ import jots.JwtException
 /**
   * Keys in a [[jots.JwkSet]] which were skipped, together with the
   * reason, since they could not be used for signature verification.
+  *
+  * Note the http4s module depends on this trait, so it must keep
+  * binary compatibility, even though it is package-private.
   */
 private[jots] trait SkippedKeys {
   def skippedKeys: List[(Jwk, JwtException)]
