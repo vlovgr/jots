@@ -18,9 +18,9 @@ package jots.internal
 
 import jots.crypto.PrivateKey
 import jots.crypto.PublicKey
-import jots.crypto.internal.asn1.Asn1
-import jots.crypto.internal.asn1.Oid
-import jots.crypto.internal.asn1.Tlv
+import jots.internal.asn1.Asn1
+import jots.internal.asn1.Oid
+import jots.internal.asn1.Tlv
 import scodec.bits.ByteVector
 
 /**

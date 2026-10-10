@@ -33,8 +33,8 @@ import jots.JwtException.UnsupportedKey
 import jots.JwtHmacAlgorithm.HS256
 import jots.crypto.PrivateKey
 import jots.crypto.SecretKey
-import jots.crypto.internal.asn1.Asn1
-import jots.crypto.internal.asn1.Oid
+import jots.internal.asn1.Asn1
+import jots.internal.asn1.Oid
 import jots.testing.*
 import jots.testing.syntax.*
 import org.scalacheck.Gen
@@ -89,7 +89,7 @@ object JwtSigningSuite extends SimpleIOSuite with Checkers {
     val privateKey =
       PrivateKey.fromPkcs8(
         Asn1.seq(
-          Asn1.intZero,
+          Asn1.uint(ByteVector(0)),
           Asn1.seq(Asn1.oid(Oid.Rsa), Asn1.Null),
           Asn1.octetString(ByteVector.empty)
         )

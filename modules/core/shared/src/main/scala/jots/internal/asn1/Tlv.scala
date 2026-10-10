@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package jots.crypto.internal.asn1
+package jots.internal.asn1
 
 import scodec.bits.ByteVector
 
-private[crypto] sealed abstract class Oid(val contents: ByteVector)
-
-private[crypto] object Oid {
-  case object Ec extends Oid(ByteVector(0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01))
-  case object Rsa extends Oid(ByteVector(0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01))
-  case object RsaPss extends Oid(ByteVector(0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0a))
+private[jots] final case class Tlv(
+  tag: Tag,
+  contents: ByteVector,
+  end: Long
+) {
+  def isBitString: Boolean = tag == Tag.BitString
+  def isInt: Boolean = tag == Tag.Int
+  def isOctetString: Boolean = tag == Tag.OctetString
+  def isOid: Boolean = tag == Tag.Oid
+  def isSeq: Boolean = tag == Tag.Seq
 }

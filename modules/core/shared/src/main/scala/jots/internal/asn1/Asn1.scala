@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-package jots.crypto.internal.asn1
+package jots.internal.asn1
 
 import scala.annotation.tailrec
 import scodec.bits.ByteVector
 
-private[crypto] object Asn1 {
+private[jots] object Asn1 {
   def bitString(contents: ByteVector): ByteVector =
     Tag.BitString.tlv(contents)
 
-  @tailrec
-  def findTlv(
-    contents: ByteVector,
-    start: Long,
-    p: Tlv => Boolean
-  ): Option[ByteVector] =
-    if (start >= contents.size) None
-    else
-      readTlv(contents, start) match {
-        case Some(tlv) if p(tlv) => Some(tlv.contents)
-        case Some(tlv) => findTlv(contents, tlv.end, p)
-        case None => None
-      }
+  def context0(contents: ByteVector): ByteVector =
+    Tag.Context0.tlv(contents)
 
-  val intZero: ByteVector =
-    Tag.Int.tlv(ByteVector(0))
+  def context1(contents: ByteVector): ByteVector =
+    Tag.Context1.tlv(contents)
 
   val Null: ByteVector =
     Tag.Null.tlv(ByteVector.empty)
@@ -48,6 +37,13 @@ private[crypto] object Asn1 {
 
   def oid(oid: Oid): ByteVector =
     Tag.Oid.tlv(oid.contents)
+
+  def padLeft(contents: ByteVector, length: Int): Option[ByteVector] = {
+    val trimmed = contents.dropWhile(_ == 0)
+    Option.when(trimmed.size <= length.toLong) {
+      ByteVector.fill(length.toLong - trimmed.size)(0) ++ trimmed
+    }
+  }
 
   def readTlv(contents: ByteVector, offset: Long): Option[Tlv] =
     if (offset < 0L || offset >= contents.size) None
@@ -85,16 +81,15 @@ private[crypto] object Asn1 {
   def seq(contents: ByteVector*): ByteVector =
     Tag.Seq.tlv(ByteVector.concat(contents))
 
-  @tailrec
-  def skipTlv(
-    contents: ByteVector,
-    start: Long,
-    count: Int
-  ): Option[Long] =
-    if (count <= 0) Some(start)
-    else
-      readTlv(contents, start) match {
-        case Some(tlv) => skipTlv(contents, tlv.end, count - 1)
-        case None => None
-      }
+  def uint(contents: ByteVector): ByteVector = {
+    val stripped =
+      contents.dropWhile(_ == 0)
+
+    val padded =
+      if (stripped.isEmpty) ByteVector(0)
+      else if ((stripped.head & 0x80) != 0) ByteVector(0) ++ stripped
+      else stripped
+
+    Tag.Int.tlv(padded)
+  }
 }

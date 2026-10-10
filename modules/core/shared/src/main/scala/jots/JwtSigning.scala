@@ -30,7 +30,7 @@ import jots.JwtException.UnsuitableSigningKey
 import jots.JwtException.UnsupportedKey
 import jots.crypto.Crypto
 import jots.crypto.RsaAlgorithm
-import jots.crypto.internal.KeyAlgorithm
+import jots.internal.KeyAlgorithm
 import jots.internal.KeyLength
 import jots.internal.KeyRequirement
 
