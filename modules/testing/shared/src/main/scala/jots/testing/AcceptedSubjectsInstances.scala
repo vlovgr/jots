@@ -42,10 +42,7 @@ private[jots] trait AcceptedSubjectsInstances {
     Arbitrary(acceptedSubjectsGen)
 
   implicit lazy val acceptedSubjectsCogen: Cogen[AcceptedSubjects] =
-    Cogen[Option[List[String]]].contramap {
-      case AcceptedSubjects.AnySubject => None
-      case AcceptedSubjects.OneOf(subjects) => Some(subjects.toList)
-    }
+    Cogen[String].contramap(_.show)
 
   lazy val acceptedSubjectsFunGen: Gen[AcceptedSubjects => AcceptedSubjects] =
     Gen.function1(acceptedSubjectsGen)

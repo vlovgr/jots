@@ -43,11 +43,7 @@ private[jots] trait AcceptedAudiencesInstances {
     Arbitrary(acceptedAudiencesGen)
 
   implicit lazy val acceptedAudiencesCogen: Cogen[AcceptedAudiences] =
-    Cogen[Either[Boolean, List[String]]].contramap {
-      case AcceptedAudiences.NoAudience => Left(false)
-      case AcceptedAudiences.AnyAudience => Left(true)
-      case AcceptedAudiences.OneOf(audiences) => Right(audiences.toList)
-    }
+    Cogen[String].contramap(_.show)
 
   lazy val acceptedAudiencesFunGen: Gen[AcceptedAudiences => AcceptedAudiences] =
     Gen.function1(acceptedAudiencesGen)

@@ -18,9 +18,8 @@ package jots.testing
 
 import cats.Show
 import jots.JwtEcdsaAlgorithm
-import jots.JwtEcdsaAlgorithms
 import jots.JwtEddsaAlgorithm
-import jots.JwtEddsaAlgorithms
+import jots.crypto.EddsaAlgorithm
 import jots.crypto.PrivateKey
 import jots.crypto.PublicKey
 import jots.testing.ScodecInstances.*
@@ -190,9 +189,10 @@ private[jots] trait AsymmetricKeyInstances {
 
   def ecdsaKeyPairGen(algorithm: JwtEcdsaAlgorithm): Gen[(PrivateKey, PublicKey)] =
     algorithm match {
-      case JwtEcdsaAlgorithms.ES256 => ecdsaP256KeyPairGen
-      case JwtEcdsaAlgorithms.ES384 => ecdsaP384KeyPairGen
-      case JwtEcdsaAlgorithms.ES512 => ecdsaP521KeyPairGen
+      case JwtEcdsaAlgorithm.ES256 => ecdsaP256KeyPairGen
+      case JwtEcdsaAlgorithm.ES384 => ecdsaP384KeyPairGen
+      case JwtEcdsaAlgorithm.ES512 => ecdsaP521KeyPairGen
+      case _ => Gen.fail
     }
 
   lazy val ecdsaP256PrivateKeyGen: Gen[PrivateKey] =
@@ -296,10 +296,10 @@ private[jots] trait AsymmetricKeyInstances {
     )
 
   def eddsaKeyPairGen(algorithm: JwtEddsaAlgorithm): Gen[(PrivateKey, PublicKey)] =
-    algorithm match {
-      case JwtEddsaAlgorithms.EdDSA(algorithm) => eddsaKeyPairGen(algorithm)
-      case JwtEddsaAlgorithms.Ed25519 => ed25519KeyPairGen
-      case JwtEddsaAlgorithms.Ed448 => ed448KeyPairGen
+    algorithm.asymmetricAlgorithm match {
+      case EddsaAlgorithm.Ed25519 => ed25519KeyPairGen
+      case EddsaAlgorithm.Ed448 => ed448KeyPairGen
+      case _ => Gen.fail
     }
 
   lazy val ed25519PrivateKeyGen: Gen[PrivateKey] =
