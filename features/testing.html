@@ -134,19 +134,19 @@
 
 </span><span class="comment">// Generate an arbitrary token prior to signing
 </span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">JwtBuilder</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res0: Option[JwtBuilder] = Some(JwtBuilder(JwtHeader(alg -&gt; &quot;Ed448&quot;,kid -&gt; &quot;䇟ထ઒遌쇓⯁瑿뗘碨䥲掽䊦㥮멻偕뻏⇡﮴驗혵▖ꠇꢁ⭉ᔍ澠돑啈靜莭귍蛹凞載&quot;,typ -&gt; &quot;JWT&quot;),JwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
+</span><span class="comment">// res0: Option[JwtBuilder] = Some(JwtBuilder(JwtHeader(alg -&gt; &quot;HS256&quot;,cty -&gt; &quot;ਦ닛펌䮝䟣蔫澫ᬀ仒ਨᚤ甚晁ꭹ䀣శ␯啥쨅矌ᮦ㝏൨侾༈内உ‶䖼ឡ䥍ㅈ㮈猈柙ꯤ甖㣡졹뱎嚝浐淉㪐朞帄䍘爊礳妈鄚ﴞ걙ﷀ藉૔跸䲳筅௑吗粒虩ꅑꯔꅏ㗗騞䰘⦣䆻헜톻ⱱ㷣价䈳㝿㍤ℤ먄ﭥ䫷遯閿퓐属⍖ᓸﶰ湶&quot;,kid -&gt; &quot;㚴చ忣락ુ癠佬䒍㢪ᓴꃨ豇譓荥윾㲜ﲅ䒍蚧鷰ᄟ蹥兮犹⃄嬉⡚丟ͦ븎ḳ⢹涑螠癖Ồ噉〈鏽뺆㍜&quot;,typ -&gt; &quot;⤠ꈇ硧૦궶夶絧ᕮ㡉퉨軅Ȏ鰔곞⽰췚괠ࡇ⬖䝒呗据奃䛠퓳弴ເ⮑ḻា&quot;),JwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
 </span><span>
 </span><span class="comment">// Generate an arbitary token with valid signature
 </span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">SignedJwt</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res1: Option[SignedJwt] = Some(SignedJwt(SignedJwtHeader(kid -&gt; &quot;략ࢵ樣么Ꞅ쨯ⴣ墂쉍᎚慖獀ᔍ箫틓̓ᶧꡈ鮎ᶖ磐눜囉赭惜䥜蓎錇㯀汄쥽홂朖㨀ᓧ㡈ⴊ麙䁕ኬ곅蓢矮氡畓艓繞咤齗䮙㫘ꎀ垞⍃柿᫈傁&quot;,typ -&gt; &quot;JWT&quot;,alg -&gt; &quot;ES512&quot;),SignedJwtClaims(sub,exp,nbf,iat,jti)))
+</span><span class="comment">// res1: Option[SignedJwt] = Some(SignedJwt(SignedJwtHeader(cty -&gt; &quot;絧弡䨗ᓅ촩欄碜졯㈦纚⸷嗳셝{륩羙&quot;,kid -&gt; &quot;묤縟巟䬹&quot;,typ -&gt; &quot;ꎍ爐侈赊όᄗ读㱳狘쎻ᖰ穈ᤆ鼷Ŵ䱤挚冦垛撚ྦྷ叆贶陑첁顰\u007f㒘튞挜킐﮳ἐﹾដ䁨隻燞먳媨抠꜅諹塱桻褅ڪ㸣眑礹掅鸉䃞蔪큢놔溧ۭ紫䯕瞂꧈쑪旛ᾈ뺙롈ﭤꎴḟᐞ䅚Ⲯ꒞婢⫇歋ｸݟ釲녲൸헖⟘⼍탹฼瘸영줘&quot;,alg -&gt; &quot;RS512&quot;),SignedJwtClaims(iss,sub,aud,exp,iat,jti)))
 </span><span>
 </span><span class="comment">// Generate an arbitrary token with a verified signature
 </span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">VerifiedJwt</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res2: Option[VerifiedJwt] = Some(VerifiedJwt(SignedJwtHeader(alg -&gt; &quot;Ed448&quot;,cty -&gt; &quot;⮄츔攬&quot;,kid -&gt; &quot;噪儓䞚Ĳ砏뼚歞聹줙쌓ꤿ妡䳐洼噰ᤉﲫ쮅㯼셢⭎๕ῇ欅괜沱椐줔묉돜䡨汓罾嵈㝠杙䃷䀶≿㿔噘੢ꐝ꺌꺇ຍ剰Ō뵬ⷾ&quot;,typ -&gt; &quot;펩辶䁒ﶏ㎘効奪项复㤾䀋픦繭鳰稧ꦰ磂悩鋥᫹紆텘⁺᷿笧㭇ﻣӹ⨋ᦣ攍蛼㍄戗ꃶᘚ菴퉺ᮂ蚆皧噥撍鰷嶝㐚뫘疒⠃䶔밌覈뵩ｉ붉筪쨜೯賣꨷捁⠼&quot;),SignedJwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
+</span><span class="comment">// res2: Option[VerifiedJwt] = Some(VerifiedJwt(SignedJwtHeader(alg -&gt; &quot;ES512&quot;,kid -&gt; &quot;吲㨽㭕灆&quot;,typ -&gt; &quot;蘘᠒Ͻ臏傓婢妸钨뒁榘&quot;),SignedJwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
 </span><span>
 </span><span class="comment">// Generate an arbitary signing instance using ECDSA
 </span><span class="identifier">ecdsaJwtSigningGen</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res3: Option[JwtSigning[[A &gt;: Nothing &lt;: Any] =&gt; IO[A]]] = Some(jots.JwtSigning$$anon$2@687421c2)
+</span><span class="comment">// res3: Option[JwtSigning[[A &gt;: Nothing &lt;: Any] =&gt; IO[A]]] = Some(jots.JwtSigning$$anon$2@6b1c9672)
 </span><span>
 </span><span class="comment">// Generate a matching RSA private and public key
 </span><span class="identifier">rsaKeyPairGen</span><span>.</span><span class="identifier">sample</span><span>
