@@ -372,16 +372,18 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
         <p>It is not possible to disable signature verification for the default <code>JwtVerification</code> instances, meaning <code>VerifiedJwt</code> guarantees the token has a valid signature as long as these rules are upheld.</p>
         
         <h3 id="custom-example" class="section"><a class="anchor-link left" href="#custom-example"><i class="icofont-laika link">&#xef71;</i></a>Custom Example</h3>
-        <p>Following is an example of a custom verification that requires the <code>nonce</code> header key to be present.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">jwtNonceVerification</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">SyncIO</span><span>]] =
+        <p>Following is an example of a custom verification that requires the <code>nonce</code> header key to be present. Tokens without a nonce are rejected with a custom <code>JwtException</code>, so that, for example, the <a href="../integrations/http4s.html#auth-middleware">http4s middleware</a> rejects the token and responds with a <code>401 Unauthorized</code> response.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtException</span><span>
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MissingNonce</span><span>() </span><span class="keyword">extends</span><span> </span><span class="type-name">JwtException</span><span>(</span><span class="string-literal">&quot;token is missing nonce&quot;</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">jwtNonceVerification</span><span>: </span><span class="type-name">SyncIO</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">SyncIO</span><span>]] =
   </span><span class="identifier">jwtVerification</span><span>.</span><span class="identifier">map</span><span> { </span><span class="identifier">verification</span><span> =&gt;
     </span><span class="type-name">JwtVerification</span><span>.</span><span class="identifier">verifyWith</span><span> { </span><span class="identifier">jwt</span><span> =&gt;
       </span><span class="keyword">for</span><span> {
         </span><span class="identifier">verifiedJwt</span><span> &lt;- </span><span class="identifier">verification</span><span>.</span><span class="identifier">verify</span><span>(</span><span class="identifier">jwt</span><span>)
         </span><span class="identifier">nonce</span><span> = </span><span class="identifier">verifiedJwt</span><span>.</span><span class="identifier">header</span><span>.</span><span class="identifier">toJsonObject</span><span>(</span><span class="string-literal">&quot;nonce&quot;</span><span>)
-        </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> (</span><span class="identifier">nonce</span><span>.</span><span class="identifier">nonEmpty</span><span>) </span><span class="type-name">SyncIO</span><span>.</span><span class="identifier">unit</span><span> </span><span class="keyword">else</span><span> </span><span class="type-name">SyncIO</span><span>.</span><span class="identifier">raiseError</span><span>(
-          </span><span class="keyword">new</span><span> </span><span class="type-name">IllegalArgumentException</span><span>(</span><span class="string-literal">&quot;token is missing nonce&quot;</span><span>)
-        )
+        </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> (</span><span class="identifier">nonce</span><span>.</span><span class="identifier">nonEmpty</span><span>) </span><span class="type-name">SyncIO</span><span>.</span><span class="identifier">unit</span><span> </span><span class="keyword">else</span><span> </span><span class="type-name">SyncIO</span><span>.</span><span class="identifier">raiseError</span><span>(</span><span class="type-name">MissingNonce</span><span>())
       } </span><span class="keyword">yield</span><span> </span><span class="identifier">verifiedJwt</span><span>
     }
   }</span></code></pre>
@@ -394,7 +396,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
         <p>and then finally run the effect to show the verification is failing as expected.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">userJwtNonce</span><span>.</span><span class="identifier">attempt</span><span>.</span><span class="identifier">unsafeRunSync</span><span>()
 </span><span class="comment">// res2: Either[Throwable, UserJwt] = Left(
-//   java.lang.IllegalArgumentException: token is missing nonce
+//   repl.MdocSession$MdocApp$MissingNonce: token is missing nonce
 // )</span></code></pre>
 
         
