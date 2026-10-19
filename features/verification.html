@@ -6,22 +6,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Typelevel Laika + Helium Theme" />
-  <title>Verifying Tokens</title>
+  <title>Verifying Tokens · Jots</title>
   
   <meta name="author" content="Viktor Rudebeck"/>
   
   
-  <meta name="description" content="docs"/>
+  <meta name="description" content="Functional JWTs for Scala"/>
   
   
   
+  <link rel="icon"  type="image/svg+xml" href="../img/logo.svg"/>
   
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
-  
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
   
   <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
     <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../css/site.css" />
   <script src="../helium/site/laika-helium.js"></script>
     <script type="module">
 
@@ -32,11 +31,11 @@ mermaid.initialize({
   theme: "base",
   themeVariables: {
     'darkMode': dark,
-    'primaryColor': dark ? '#125d75' : '#eef5f6', 
-    'primaryTextColor': dark ? '#a7d4de' : '#007c99',
-    'primaryBorderColor': dark ? '#a7d4de' : '#a7d4de',
-    'lineColor': dark ? '#a7d4de' : '#007c99',
-    'background': dark ? '#064458' : '#ffffff',
+    'primaryColor': dark ? '#f3f2f7' : '#f3f2f7', 
+    'primaryTextColor': dark ? '#1c1838' : '#1c1838',
+    'primaryBorderColor': dark ? '#d4cfeb' : '#d4cfeb',
+    'lineColor': dark ? '#1c1838' : '#1c1838',
+    'background': dark ? '#ffffff' : '#ffffff',
   }
 });
 
@@ -48,7 +47,7 @@ mermaid.initialize({
 
   <body>
 
-    <header id="top-bar" class="light-default dark-default">
+    <header id="top-bar" class="light-inverted dark-inverted">
 
   <div class="row">
     <a id="nav-icon">
@@ -58,11 +57,28 @@ mermaid.initialize({
     
   </div>
 
-  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+  <a class="icon-link svg-link home-link" href="../"><span><svg xmlns="http://www.w3.org/2000/svg" width="433" height="500" viewBox="0 0 433.013 500" role="img" aria-labelledby="jots-logo-title">
+  <title id="jots-logo-title">Jots</title>
+  <polygon points="216.506,0 433.013,125 433.013,375 216.506,500 0,375 0,125" fill="#B4A5F2"/>
+  <g transform="translate(8.66 1.6) scale(0.96)">
+    <ellipse cx="216.5" cy="427" rx="94" ry="11" fill="#7C66D8"/>
+    <path d="M218.5,139C224.5,139 228.5,144 229.5,150C231.5,160 234.5,170 238.5,180C243.5,192 244.5,205 240.5,216C238.5,224 240.5,236 246.5,250C262.5,270 276.5,284 278.5,306C280.5,336 282.5,364 276.5,384C270.5,406 258.5,422 242.5,425L150,425C132,425 116,419 108,408C102,402 94,398 85,397C77,396 75,388 83,385C92,380 101,378 108,376C102,368 96,358 90,348C86,340 92,334 100,338C112,346 122,356 128,368C134,378 142,384 152.5,382C170.5,370 178.5,346 178.5,318C178.5,290 184.5,262 192.5,240C196.5,228 194.5,214 191.5,204C187.5,190 194.5,176 204.5,166C209.5,160 211.5,150 212.5,144C213.5,140 215.5,139 218.5,139Z" fill="#7C66D8" transform="translate(-9 0)"/>
+    <path d="M218.5,139C224.5,139 228.5,144 229.5,150C231.5,160 234.5,170 238.5,180C243.5,192 244.5,205 240.5,216C238.5,224 240.5,236 246.5,250C262.5,270 276.5,284 278.5,306C280.5,336 282.5,364 276.5,384C270.5,406 258.5,422 242.5,425L150,425C132,425 116,419 108,408C102,402 94,398 85,397C77,396 75,388 83,385C92,380 101,378 108,376C102,368 96,358 90,348C86,340 92,334 100,338C112,346 122,356 128,368C134,378 142,384 152.5,382C170.5,370 178.5,346 178.5,318C178.5,290 184.5,262 192.5,240C196.5,228 194.5,214 191.5,204C187.5,190 194.5,176 204.5,166C209.5,160 211.5,150 212.5,144C213.5,140 215.5,139 218.5,139Z" fill="#1C1838"/>
+    <path d="M252.5,316C278.5,302 314.5,322 334.5,368C312.5,350 280.5,336 252.5,316Z" fill="#1C1838"/>
+    <path d="M252.5,316C266.5,346 302.5,374 334.5,368C310.5,354 278.5,338 252.5,316Z" fill="#7C66D8"/>
+    <circle cx="222.5" cy="178" r="8.5" fill="#B4A5F2"/>
+    <circle cx="223.5" cy="178" r="6.2" fill="#1C1838"/>
+    <circle cx="225.5" cy="176" r="2" fill="#B4A5F2"/>
+    <path d="M254.5,92C254.6,97.1 250.5,102.1 248.3,107.3C246.2,112.5 245.3,119.9 241.4,123.2C237.4,126.5 230.1,126.1 224.5,127.2C218.9,128.3 212.8,131.1 207.9,129.8C202.9,128.5 199.3,122.7 194.7,119.3C190.1,115.9 182.5,114 180.2,109.5C177.9,104.9 180.5,97.7 180.8,92C181.1,86.3 179.6,80 181.9,75.3C184.2,70.7 190.2,68 194.5,64.4C198.8,60.7 202.7,54.7 207.7,53.5C212.7,52.2 219,55.5 224.5,56.8C230.1,58.1 237,58.1 240.9,61.4C244.8,64.7 245.7,71.7 248,76.8C250.3,81.9 254.4,86.9 254.5,92Z" fill="#AD2E37"/>
+    <path d="M242,92A25.5,25.5 0 1 0 191,92A25.5,25.5 0 1 0 242,92ZM239,92A22.5,22.5 0 1 0 194,92A22.5,22.5 0 1 0 239,92Z" fill="#1C1838" fill-opacity="0.35" fill-rule="evenodd"/>
+    <path d="M203.38,95.12L211.38,103.12A3,3 0 0 0 215.62,98.88L207.62,90.88A3,3 0 0 0 203.38,95.12ZM215.75,102.98L230.75,85.98A3,3 0 0 0 226.25,82.02L211.25,99.02A3,3 0 0 0 215.75,102.98Z" fill="#B4A5F2"/>
+  </g>
+</svg>
+</span>Jots</a>
 
   <div class="row links">
     
-    <a class="icon-link svg-link" href="https://www.javadoc.io/doc/se.vlovgr/jots-docs_3/0.4.0/"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <a class="icon-link svg-link" href="../api/jots.html"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
   <g class="svg-shape">
     <path d="M75,47.5c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm-50,-0c13.246,-0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,-0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm2.705,16.735l7.239,0l0.622,-4.904l-21.833,0l-0,4.904l7.589,0l0,22.067l6.383,0l-0,-22.067Zm58.076,7.265c-0,-8.757 -3.698,-14.166 -10.781,-14.166c-7.083,-0 -10.781,5.604 -10.781,14.166c0,8.757 3.698,14.166 10.781,14.166c7.083,0 10.781,-5.604 10.781,-14.166Zm-6.539,0c0,6.538 -1.128,9.496 -4.242,9.496c-2.997,0 -4.242,-2.88 -4.242,-9.496c-0,-6.616 1.206,-9.496 4.242,-9.496c3.036,-0 4.242,2.88 4.242,9.496Zm-29.242,-67c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm0.512,9.834c-7.122,-0 -12.609,5.098 -12.609,14.127c-0,9.263 5.215,14.205 12.532,14.205c4.164,0 7.083,-1.634 9.068,-3.658l-2.88,-3.697c-1.518,1.206 -3.153,2.413 -5.838,2.413c-3.697,-0 -6.266,-2.763 -6.266,-9.263c-0,-6.616 2.724,-9.379 6.149,-9.379c2.102,-0 3.892,0.778 5.371,1.984l3.113,-3.775c-2.257,-1.868 -4.748,-2.957 -8.64,-2.957Z"/>
   </g>
@@ -82,7 +98,7 @@ mermaid.initialize({
 
   <div class="row">
     
-    <a class="icon-link svg-link" href="https://www.javadoc.io/doc/se.vlovgr/jots-docs_3/0.4.0/"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <a class="icon-link svg-link" href="../api/jots.html"><span class="api" title="API"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
   <g class="svg-shape">
     <path d="M75,47.5c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm-50,-0c13.246,-0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,-0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm2.705,16.735l7.239,0l0.622,-4.904l-21.833,0l-0,4.904l7.589,0l0,22.067l6.383,0l-0,-22.067Zm58.076,7.265c-0,-8.757 -3.698,-14.166 -10.781,-14.166c-7.083,-0 -10.781,5.604 -10.781,14.166c0,8.757 3.698,14.166 10.781,14.166c7.083,0 10.781,-5.604 10.781,-14.166Zm-6.539,0c0,6.538 -1.128,9.496 -4.242,9.496c-2.997,0 -4.242,-2.88 -4.242,-9.496c-0,-6.616 1.206,-9.496 4.242,-9.496c3.036,-0 4.242,2.88 4.242,9.496Zm-29.242,-67c13.246,0 24,10.754 24,24c0,13.246 -10.754,24 -24,24c-13.246,0 -24,-10.754 -24,-24c0,-13.246 10.754,-24 24,-24Zm0.512,9.834c-7.122,-0 -12.609,5.098 -12.609,14.127c-0,9.263 5.215,14.205 12.532,14.205c4.164,0 7.083,-1.634 9.068,-3.658l-2.88,-3.697c-1.518,1.206 -3.153,2.413 -5.838,2.413c-3.697,-0 -6.266,-2.763 -6.266,-9.263c-0,-6.616 2.724,-9.379 6.149,-9.379c2.102,-0 3.892,0.778 5.371,1.984l3.113,-3.775c-2.257,-1.868 -4.748,-2.957 -8.64,-2.957Z"/>
   </g>
@@ -97,7 +113,7 @@ mermaid.initialize({
   </div>
 
   <ul class="nav-list">
-    <li class="level1 nav-leaf"><a href="../">Homepage</a></li>
+    <li class="level1 nav-leaf"><a href="../overview.html">Overview</a></li>
     <li class="level1 nav-leaf"><a href="../introduction.html">Introduction</a></li>
     <li class="level1 nav-header">features</li>
     <li class="level2 nav-leaf"><a href="signing.html">Token Signing</a></li>
