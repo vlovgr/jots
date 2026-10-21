@@ -156,7 +156,7 @@
   </span><span class="type-name">Encoder</span><span>.</span><span class="identifier">forProduct3</span><span>(</span><span class="string-literal">&quot;userId&quot;</span><span>, </span><span class="string-literal">&quot;exp&quot;</span><span>, </span><span class="string-literal">&quot;iat&quot;</span><span>)(</span><span class="identifier">claims</span><span> =&gt;
     (</span><span class="identifier">claims</span><span>.</span><span class="identifier">userId</span><span>, </span><span class="identifier">claims</span><span>.</span><span class="identifier">expiresAt</span><span>, </span><span class="identifier">claims</span><span>.</span><span class="identifier">issuedAt</span><span>)
   )</span></code></pre>
-        <p>Similarly, we define a <code>JwtEncoder</code> which encodes <code>UserJwt</code> as <code>JwtBuilder</code>.</p>
+        <p>Similarly, we define a <a class="api" href="api/jots/JwtEncoder.html">JwtEncoder</a> which encodes <code>UserJwt</code> as <a class="api" href="api/jots/JwtBuilder.html">JwtBuilder</a>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtEncoder</span><span>
 
 </span><span class="keyword">given</span><span> </span><span class="type-name">JwtEncoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
@@ -173,7 +173,7 @@
 </span><span>
 </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">asJwt</span><span>
 </span><span class="comment">// res0: JwtBuilder = JwtBuilder(JwtHeader(typ -&gt; &quot;JWT&quot;),JwtClaims(userId,exp,iat))</span></code></pre>
-        <p>Finally, we need to sign the <code>JwtBuilder</code> to create a <code>SignedJwt</code>. For this we need a <code>JwtSigning</code> instance. In this case we chose to use <code>HS256</code> (HMAC with SHA-256) which requires a secret key. The <code>JwtSigning</code> instance is only created and used once here, but it is normally reused multiple times.</p>
+        <p>Finally, we need to sign the <code>JwtBuilder</code> to create a <a class="api" href="api/jots/SignedJwt.html">SignedJwt</a>. For this we need a <a class="api" href="api/jots/JwtSigning.html">JwtSigning</a> instance. In this case we chose to use <code>HS256</code> (HMAC with SHA-256) which requires a secret key. The <code>JwtSigning</code> instance is only created and used once here, but it is normally reused multiple times.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">SyncIO</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtHmacAlgorithm</span><span>.</span><span class="type-name">HS256</span><span>
@@ -203,13 +203,13 @@
 
 </span><span class="keyword">given</span><span> </span><span class="type-name">Decoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
   </span><span class="type-name">Decoder</span><span>.</span><span class="identifier">forProduct3</span><span>(</span><span class="string-literal">&quot;userId&quot;</span><span>, </span><span class="string-literal">&quot;exp&quot;</span><span>, </span><span class="string-literal">&quot;iat&quot;</span><span>)(</span><span class="type-name">UserJwt</span><span>.</span><span class="identifier">apply</span><span>)</span></code></pre>
-        <p>Similarly, we define a <code>JwtDecoder</code> which decodes <code>UserJwt</code> from <code>VerifiedJwt</code>.</p>
+        <p>Similarly, we define a <a class="api" href="api/jots/JwtDecoder.html">JwtDecoder</a> which decodes <code>UserJwt</code> from <a class="api" href="api/jots/VerifiedJwt.html">VerifiedJwt</a>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtDecoder</span><span>
 
 </span><span class="keyword">given</span><span> </span><span class="type-name">JwtDecoder</span><span>[</span><span class="type-name">UserJwt</span><span>] =
   </span><span class="type-name">JwtDecoder</span><span>.</span><span class="identifier">decodeClaims</span></code></pre>
         <p>Here, <code>JwtDecoder.decodeClaims</code> uses the <code>Decoder</code> above to decode <code>UserJwt</code> from the claims of a <code>VerifiedJwt</code>. The <code>VerifiedJwt</code> is a <code>SignedJwt</code> for which the signature has been verified. Verification typically includes verifying header and claims in addition to the signature.</p>
-        <p>Following, we use the default <code>JwtVerification</code> and <code>decodeAs</code> to parse, verify and decode a signed token. The default verifications include extra checks in addition to verifying the signature. See the page on <a href="features/verification.html">verification</a> for more details on the <a href="features/verification.html#default-verifications">default checks</a>, how they can be changed, and how to enable more checks.</p>
+        <p>Following, we use the default <a class="api" href="api/jots/JwtVerification.html">JwtVerification</a> and <code>decodeAs</code> to parse, verify and decode a signed token. The default verifications include extra checks in addition to verifying the signature. See the page on <a href="features/verification.html">verification</a> for more details on the <a href="features/verification.html#default-verifications">default checks</a>, how they can be changed, and how to enable more checks.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtVerificationBuilder</span><span>
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">userJwtDecoded</span><span> =

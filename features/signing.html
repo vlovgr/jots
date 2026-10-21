@@ -161,7 +161,7 @@ mermaid.initialize({
       <main class="content">
 
         <h1 id="token-signing" class="title">Token Signing</h1>
-        <p>Token signing involves four library types: <code>JwtEncoder</code>, <code>JwtBuilder</code>, <code>JwtSigning</code> and <code>SignedJwt</code>.</p>
+        <p>Token signing involves four library types: <a class="api" href="../api/jots/JwtEncoder.html">JwtEncoder</a>, <a class="api" href="../api/jots/JwtBuilder.html">JwtBuilder</a>, <a class="api" href="../api/jots/JwtSigning.html">JwtSigning</a> and <a class="api" href="../api/jots/SignedJwt.html">SignedJwt</a>.</p>
         <pre class="mermaid">%%{init: {&quot;fontFamily&quot;: &quot;monospace&quot;}}%%
 graph LR
 A --&gt; |&quot;JwtEncoder[A]&quot;| JwtBuilder
@@ -202,7 +202,7 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
   .</span><span class="identifier">encodeClaims</span><span>[</span><span class="type-name">UserJwt</span><span>]
   .</span><span class="identifier">mapHeader</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">add</span><span>(</span><span class="string-literal">&quot;key&quot;</span><span>, </span><span class="string-literal">&quot;value&quot;</span><span>.</span><span class="identifier">asJson</span><span>))</span></code></pre>
         <p>Note signing-related header keys (e.g. <code>alg</code>) are set by <code>JwtSigning</code> during signing, and not manually.</p>
-        <p>If we don&#39;t want to define an <code>Encoder.AsObject</code>, we can use <code>JwtEncoder.encodeClaimsWith</code> instead. Note there are several functions on <code>JwtClaims</code> for including registered claims, like e.g. <code>withAudience</code>, <code>withExpiration</code> and <code>withIssuedAt</code> to mention a few of them.</p>
+        <p>If we don&#39;t want to define an <code>Encoder.AsObject</code>, we can use <code>JwtEncoder.encodeClaimsWith</code> instead. Note there are several functions on <a class="api" href="../api/jots/JwtClaims.html">JwtClaims</a> for including registered claims, like e.g. <code>withAudience</code>, <code>withExpiration</code> and <code>withIssuedAt</code> to mention a few of them.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtClaims</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.*
 
@@ -224,7 +224,7 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
     )
   )
 }</span></code></pre>
-        <p>As seen in the examples above, a <code>JwtBuilder</code> consists of a <code>JwtHeader</code> and <code>JwtClaims</code>. <code>JwtBuilder.default</code> uses <code>JwtHeader.default</code> which includes <code>{&quot;typ&quot;:&quot;JWT&quot;}</code>. There is <code>JwtBuilder.empty</code> and <code>JwtHeader.empty</code> if this is unwanted (plus the <code>withType</code> and <code>remove</code> functions on <code>JwtHeader</code> as options).</p>
+        <p>As seen in the examples above, a <code>JwtBuilder</code> consists of a <a class="api" href="../api/jots/JwtHeader.html">JwtHeader</a> and <code>JwtClaims</code>. <code>JwtBuilder.default</code> uses <code>JwtHeader.default</code> which includes <code>{&quot;typ&quot;:&quot;JWT&quot;}</code>. There is <code>JwtBuilder.empty</code> and <code>JwtHeader.empty</code> if this is unwanted (plus the <code>withType</code> and <code>remove</code> functions on <code>JwtHeader</code> as options).</p>
         
         <h2 id="signing-tokens" class="section"><a class="anchor-link left" href="#signing-tokens"><i class="icofont-laika link">&#xef71;</i></a>Signing Tokens</h2>
         <p>Once we have a custom <code>UserJwt</code> type and <code>JwtEncoder[UserJwt]</code> defined, we also need a <code>JwtSigning</code> instance. We create instances by choosing the effect type (e.g. <code>IO</code>), selecting the algorithm, and by providing a private or secret key. Following is an example on how to create a <code>JwtSigning</code> for <code>ES256</code> (ECDSA with P-256 and SHA-256).</p>
@@ -367,13 +367,13 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
     </span><span class="identifier">signing</span><span> &lt;- </span><span class="identifier">jwtSigning</span><span>
     </span><span class="identifier">signedJwt</span><span> &lt;- </span><span class="identifier">userJwt</span><span>.</span><span class="identifier">asJwt</span><span>.</span><span class="identifier">signWith</span><span>(</span><span class="identifier">signing</span><span>)
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">signedJwt</span></code></pre>
-        <p>The <code>SignedJwt</code> represent a parsed or generated token which has <em>not</em> been verified. Since we&#39;ve generated this token, we can be reasonably confident it also verifies successfully. However, in the general case, a <code>SignedJwt</code> should not be trusted before it has been verified. <code>VerifiedJwt</code> represents a verified token, covered on the <a href="verification.html">verification</a> page.</p>
+        <p>The <code>SignedJwt</code> represent a parsed or generated token which has <em>not</em> been verified. Since we&#39;ve generated this token, we can be reasonably confident it also verifies successfully. However, in the general case, a <code>SignedJwt</code> should not be trusted before it has been verified. <a class="api" href="../api/jots/VerifiedJwt.html">VerifiedJwt</a> represents a verified token, covered on the <a href="verification.html">verification</a> page.</p>
         <p>Finally, let&#39;s generate the <code>String</code> representation of the token using <code>show</code>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signedJwt</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">show</span><span>).</span><span class="identifier">unsafeRunSync</span><span>()
-</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.nPzCtq7s1TgmKSi40xWbvkSDomL_paS3EZcjy894bmMJXFG5bN-tj4BSIJo339RKo2PwJOGqxf7Vts0spx_acg&quot;</span></code></pre>
+</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.xb2PRw4_ij6nk0fXkDNz9dtwl5cC8E9CL5NnO_7RWaOB-8PCsRzbRKFQYc7uRPJuWCFl2Hdoqfn7c9MCh-sRSA&quot;</span></code></pre>
         
         <h3 id="json-web-key" class="section"><a class="anchor-link left" href="#json-web-key"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key</h3>
-        <p>There is a <code>Jwk</code> type representing a <a href="https://www.rfc-editor.org/rfc/rfc7517.html">JSON Web Key (JWK)</a>. A <code>Jwk</code> can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.</p>
+        <p>There is a <a class="api" href="../api/jots/Jwk.html">Jwk</a> type representing a <a href="https://www.rfc-editor.org/rfc/rfc7517.html">JSON Web Key (JWK)</a>. A <code>Jwk</code> can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.</p>
         <ol class="arabic">
           <li>If <code>key_ops</code> is specified, it must contain the <code>sign</code> operation.</li>
           <li>If <code>use</code> is specified for the key, it must be set to <code>sig</code> (signature).</li>

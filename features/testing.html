@@ -142,7 +142,7 @@
       <main class="content">
 
         <h1 id="testing" class="title">Testing</h1>
-        <p>The <code>jots-testing</code> module depends on the core module and provides <a href="https://scalacheck.org">ScalaCheck</a> generators and instances, and String interpolators for secrets. Importantly, the testing module also allows us to create a <code>VerifiedJwt</code> from any <code>SignedJwt</code> for testing purposes. This means the module should generally only be used for testing purposes.</p>
+        <p>The <code>jots-testing</code> module depends on the core module and provides <a href="https://scalacheck.org">ScalaCheck</a> generators and instances, and String interpolators for secrets. Importantly, the testing module also allows us to create a <a class="api" href="../api/jots/VerifiedJwt.html">VerifiedJwt</a> from any <a class="api" href="../api/jots/SignedJwt.html">SignedJwt</a> for testing purposes. This means the module should generally only be used for testing purposes.</p>
         
         <h2 id="getting-started" class="section"><a class="anchor-link left" href="#getting-started"><i class="icofont-laika link">&#xef71;</i></a>Getting Started</h2>
         <p>To get started with <a href="https://scala-sbt.org">sbt</a>, add the following line to your <code>build.sbt</code> file.</p>
@@ -153,7 +153,7 @@
         <p>The ScalaCheck generators and instances can be made available with <code>import jots.testing.*</code>, while the String interpolators and syntax for unsafe verification requires <code>import jots.testing.syntax.*</code>. If you&#39;re looking for usage examples, the testing module is heavily used by the library <a href="https://github.com/vlovgr/jots/tree/main/tests/shared/src/test/scala/jots">tests</a>.</p>
         
         <h3 id="scalacheck-support" class="section"><a class="anchor-link left" href="#scalacheck-support"><i class="icofont-laika link">&#xef71;</i></a>ScalaCheck Support</h3>
-        <p>The testing module provides ScalaCheck <code>Gen</code> generators and <code>Arbitrary</code> instances. Following are some samples from a few generators. Note private and public keys (<code>PrivateKey</code> and <code>PublicKey</code>) are <em>not</em> generated on the fly, but instead choose from a pre-defined list of keys. This is due to the generation being computationally expensive.</p>
+        <p>The testing module provides ScalaCheck <code>Gen</code> generators and <code>Arbitrary</code> instances. Following are some samples from a few generators. Note private and public keys (<a class="api" href="../api/jots/crypto/PrivateKey.html">PrivateKey</a> and <a class="api" href="../api/jots/crypto/PublicKey.html">PublicKey</a>) are <em>not</em> generated on the fly, but instead choose from a pre-defined list of keys. This is due to the generation being computationally expensive.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtBuilder</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">SignedJwt</span><span>
@@ -163,34 +163,34 @@
 
 </span><span class="comment">// Generate an arbitrary token prior to signing
 </span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">JwtBuilder</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res0: Option[JwtBuilder] = Some(JwtBuilder(JwtHeader(alg -&gt; &quot;HS384&quot;,cty -&gt; &quot;⶜魵绗咡躳奋绌吆龝⏋ⷠⷸ霫唃ꉺꍔ챖햙門륥쿀뫻饞螉笹꒎綳쉋㍄䷙ᕗᜬ依&quot;,typ -&gt; &quot;蘳ᖄ挿질탦⡦&quot;),JwtClaims(iss,sub,aud,exp,iat,jti)))
+</span><span class="comment">// res0: Option[JwtBuilder] = Some(JwtBuilder(JwtHeader(cty -&gt; &quot;㍈⽻᜔黲誒ᡍ냈躩﹋⺓Ịр⠦郝恳䉾⽱頂뙆犢裻፬古殕槮㠏霶촒枒脨낆ౙ鈥犿꠸זּ棥韸㏨䆺﬒쵓츌뷳硣ឯ㱴ꚡ斫㎐鑻作劚ꄬ♡༙ℬ쬇猁\u0012枤꿠嵘ꏏ뎴졬苧䣷縶햐蕁䢸뼠紂&quot;,kid -&gt; &quot;눂昼僌㊿⠰ᛔ죪룉泰쫠⢰욍릶䐶闬䍚걨퇘﨓译舎靪ᤅ靦ꐹﺴㅇ―弗Ẹ硻㓸釵卉뭜ẫ㥨㆛ﳿ斨雱䂋凪꟨冦框航琟轢꽪㍉楀뱸쩓⬣界ੀ羅䝞雞쵏촺齝ꨃ&quot;,typ -&gt; &quot;컗⟚㠨醓⪽묃澚జఓ툳訪ꘃ픠㩗탦삌㥞&quot;),JwtClaims(iss,sub,exp,nbf,iat,jti)))
 </span><span>
 </span><span class="comment">// Generate an arbitary token with valid signature
 </span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">SignedJwt</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res1: Option[SignedJwt] = Some(SignedJwt(SignedJwtHeader(alg -&gt; &quot;ES512&quot;,cty -&gt; &quot;䯊烫ꎕ롾蘀ꊂ٪┛尶⾇꿊䮋镔仸䒋￦᭰ⵜ蝖녒႓㒌湦ꄤ挫始鎼맨矜⃁侬灹緷踿磡蕶ⱒ솼支䥀⤽刣羼侐䩠옷飩ԋ럗適䬋ລ邅፺顠卸灧勰礎ಾ⍶쏡稢ⷘ칼&quot;,kid -&gt; &quot;絗ᶹ滒㻮辗㜬뺱茈뚹ᐵǢ墊稫끷都&quot;,typ -&gt; &quot;﷚ꔞ녩㓾穌罡蓒ㄞ욼퍚ጋ濝ꓧ╯듕䚆껲哺냋&quot;),SignedJwtClaims(iss,aud,exp,nbf,iat,jti)))
+</span><span class="comment">// res1: Option[SignedJwt] = Some(SignedJwt(SignedJwtHeader(alg -&gt; &quot;ES512&quot;,cty -&gt; &quot;뎌ﷱ럸쉢櫏컼遅䌃垎ጜ汚퀒豲郪⡞꾛쎍뀂섅ㇷ앣䢨硎㘑ᤋ⹣ǻ鴦憲귶壷ꄗ汛걘㺶묽縬봬캞䪜啚交倊൞峝ூӀ೐ꘇ₈ᦐꔐ饆뉅芝퍇ꭹ诔銧㦲◅糀鹴噄&quot;,kid -&gt; &quot;㗴⭯㦍﮶䉖댘鈁崘擯&quot;,typ -&gt; &quot;JWT&quot;),SignedJwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
 </span><span>
 </span><span class="comment">// Generate an arbitrary token with a verified signature
 </span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">VerifiedJwt</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res2: Option[VerifiedJwt] = Some(VerifiedJwt(SignedJwtHeader(alg -&gt; &quot;ES512&quot;,cty -&gt; &quot;䷢凰癮浫ᆣ勐╫쯇琉㩳袇﫝碜ࠓ䇻♆愥襔鄑墤༭⦬⁠梒⠸痐ꦓ쿐銆橬೾抨Ɋ뇁铝➼傦䉖〭཰祑ಳ曥ꊳQ䵊쎘ኍ훕娜䡌扃ⰽ㿰ᲿΩǅ쵓ᷳ&quot;,kid -&gt; &quot;ᆏ᫾숒쿡ﳦ˖Ⲱ⳰뢙ک㐿ꓴ承怳荰져抻摴밺剚ø돾갎읞⻆ꁛ晒ト峦딗䛦ⷄ쯋콳㫤ٝ酠籪&quot;,typ -&gt; &quot;ąקּዚ芤얩辜峾⤛潃肵猒༝ﻭ歈⸋ꇪ博⛘ᙜ궥⿙ꩈ鋳⫅兾㵤僗㰯錢ӭ䤺쐇磹떢⸁כּೕ款섾培ஈ﵀龫↏幗ደ౹껍প柤뜳༧㋚既쇌ꆏ뛕斅쵁뜘੉෕ᯤࡁ卓媄菗寁&quot;),SignedJwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
+</span><span class="comment">// res2: Option[VerifiedJwt] = Some(VerifiedJwt(SignedJwtHeader(alg -&gt; &quot;Ed448&quot;,cty -&gt; &quot;缾뭐萍菀谯⇸铴낮膖툡膭풶繥十ꛏ풎뵳楁齑᝞࿃㎏䢃⦸᭐㿚筤㙀尥ｇẺ鵱䡺揂뢻㊳ᇷњ䫌賈梗깓᥾碃恈㥘ꍻ猭츅ﱩ᮴ፀ혆ꕇያ&quot;,kid -&gt; &quot;噄揯᫇ꡡ鍤㄰࿩ᵷ횮ꍔ̌蘿懧弳怸鿜͠㳓⩶ᾪ弍믺瀑搬恕஬쿺쑄넣⴪齊䖄ᆧⵌ龮䄍㺲顷㹁횰숮Ʋ躚鉄䦳⽕픖씧&quot;,typ -&gt; &quot;칒ꉢ炦⺥杣컒᝷論뙉⁁뛼﴾鷩캔䶟귷萹폍ꭧ궙ꏇ嗢랋鐎芋䪫忕䎄楧䦟ὅꭆ홠㒟綣Ƭ嗁ᨩ⡪࿐ቚ矒⢆찌翧别渭鈏小䕆쏹撻⡰漖냀媄椿㡴狛娽펉㌩婵Ộ䕊௟㼢∊勵劧λ⢷윇쵱礖韓ﴁ嵵纣⁩荱፿槦䢮垡&quot;),SignedJwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
 </span><span>
 </span><span class="comment">// Generate an arbitary signing instance using ECDSA
 </span><span class="identifier">ecdsaJwtSigningGen</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res3: Option[JwtSigning[[A &gt;: Nothing &lt;: Any] =&gt; IO[A]]] = Some(jots.JwtSigning$$anon$2@6806ff4e)
+</span><span class="comment">// res3: Option[JwtSigning[[A &gt;: Nothing &lt;: Any] =&gt; IO[A]]] = Some(jots.JwtSigning$$anon$2@1097129e)
 </span><span>
 </span><span class="comment">// Generate a matching RSA private and public key
 </span><span class="identifier">rsaKeyPairGen</span><span>.</span><span class="identifier">sample</span><span>
 </span><span class="comment">// res4: Option[Tuple2[PrivateKey, PublicKey]] = Some((PrivateKey(**),PublicKey(-----BEGIN PUBLIC KEY-----
-// MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn51WIz3xwJztQxQE203/
-// KYWHEDpASmT3QIW25h3yU+ZNgA3tm661QCpjiD/OoaEnGmJjVBgvqu5n3cpm2rI0
-// YiijvbrOTskeAJ9jt79iab0oxlfrd9B9u9lubTbpyzmJ3I0+SyFU22efNASf201D
-// exVonPRCNX66n93363bLvMHjRjHj+yCrOATRuJdq1Neeexm7/ZVP1jXa8+Hl52nF
-// prymh31MocK2jXMxYNQvpxBcWz0GviPkQDMu/gEFVvIzMjBHbtQy9od+sToXi8y4
-// Wb2f6hzDTud4SxQa+YAaDCuQ2hiosU1pOwe6uaoqTq3JI8/XT0FNQBDkVuF/d6Pt
-// 2wIDAQAB
+// MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwUC8SFKv+YdGfrkeZiJn
+// n9Oqdk0H37ZhWf5xOe1aAI+LLz9SWr+WAY+MSZyJifQDUMC+gvoYNTXMl8lrW8gY
+// Z6cf6/C9qTR6sKwYl/+LtEuubzkjQn8CTdwKu8IUxWlscdZLLBnHdi7/np9UkBcl
+// q7DI98ModCMz7ojl07ss2ZRHbpDKjhbdIpc959+SQIU6en5PKrVsG9zFj6Wg046x
+// qksl1a1LHkX8V872Bty0VhsTxrOaQtsHNklXOb8DPHcJ0cXe961YbA48y7R0e+9h
+// r5bfTPRO72LFxy6T+a8NrBr4Y376q5tLuSqRuRpU63Lc864P074WmwSD0d/Y/kHI
+// ZwIDAQAB
 // -----END PUBLIC KEY-----)))</span></code></pre>
         
         <h3 id="string-interpolators" class="section"><a class="anchor-link left" href="#string-interpolators"><i class="icofont-laika link">&#xef71;</i></a>String Interpolators</h3>
-        <p>The <code>jots-crypto</code> module provides syntax for compile-time parsing of public keys (<code>PublicKey</code>). The testing module provides additional syntax for private keys (<code>PrivateKey</code>), secret keys (<code>SecretKey</code>), and tokens (<code>SignedJwt</code>). These are generally sensitive and should <em>not</em> be in source code, except when they are non-secret for testing purposes.</p>
+        <p>The <code>jots-crypto</code> module provides syntax for compile-time parsing of public keys (<code>PublicKey</code>). The testing module provides additional syntax for private keys (<code>PrivateKey</code>), secret keys (<a class="api" href="../api/jots/crypto/SecretKey.html">SecretKey</a>), and tokens (<code>SignedJwt</code>). These are generally sensitive and should <em>not</em> be in source code, except when they are non-secret for testing purposes.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">SignedJwt</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">PrivateKey</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">SecretKey</span><span>

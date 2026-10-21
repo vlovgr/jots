@@ -163,7 +163,7 @@ mermaid.initialize({
       <main class="content">
 
         <h1 id="verifying-tokens" class="title">Verifying Tokens</h1>
-        <p>Token verification involves four library types: <code>SignedJwt</code>, <code>JwtVerification</code>, <code>VerifiedJwt</code> and <code>JwtDecoder</code>.</p>
+        <p>Token verification involves four library types: <a class="api" href="../api/jots/SignedJwt.html">SignedJwt</a>, <a class="api" href="../api/jots/JwtVerification.html">JwtVerification</a>, <a class="api" href="../api/jots/VerifiedJwt.html">VerifiedJwt</a> and <a class="api" href="../api/jots/JwtDecoder.html">JwtDecoder</a>.</p>
         <pre class="mermaid">%%{init: {&quot;fontFamily&quot;: &quot;monospace&quot;}}%%
 graph LR
 String --&gt; |&quot;SignedJwt.parse&quot;| SignedJwt[&quot;IO[SignedJwt]&quot;]
@@ -231,7 +231,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
           <i class="icofont-laika info">&#xef4e;</i>
           <p>Note we use <code>SyncIO</code>, and later <code>unsafeRunSync()</code>, to show the final result. In practice, you would most likely use <code>IO</code> without <code>unsafeRunSync()</code>.</p>
         </div>
-        <p>If we know the <code>PublicKey</code> in advance, there is also a <code>publicKey</code> String interpolator available.</p>
+        <p>If we know the <a class="api" href="../api/jots/crypto/PublicKey.html">PublicKey</a> in advance, there is also a <code>publicKey</code> String interpolator available.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="identifier">syntax</span><span>.*
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">publicKey</span><span>: </span><span class="type-name">PublicKey</span><span> =
@@ -298,7 +298,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
         </ul>
         
         <h4 id="customizing-default-verifications" class="section"><a class="anchor-link left" href="#customizing-default-verifications"><i class="icofont-laika link">&#xef71;</i></a>Customizing Default Verifications</h4>
-        <p>Except for the signature verification, the above checks can be adjusted using <code>JwtVerificationBuilder</code>. There is also additional checks which can be enabled, like requiring certain claims to be present, and further tweaks, like accounting for clock skew, which is zero by default. The following example requires <code>exp</code>, <code>iat</code>, and <code>nbf</code> to be present, and allows a 30 second clock skew. It also specifies the accepted audiences and issuers.</p>
+        <p>Except for the signature verification, the above checks can be adjusted using <a class="api" href="../api/jots/JwtVerificationBuilder.html">JwtVerificationBuilder</a>. There is also additional checks which can be enabled, like requiring certain claims to be present, and further tweaks, like accounting for clock skew, which is zero by default. The following example requires <code>exp</code>, <code>iat</code>, and <code>nbf</code> to be present, and allows a 30 second clock skew. It also specifies the accepted audiences and issuers.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.*
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">jwtVerificationCustom</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">JwtVerification</span><span>[</span><span class="type-name">IO</span><span>]] =
@@ -315,7 +315,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
         <p>If the default verifications are not enough, resort to <a href="#custom-verification">custom verifications</a>.</p>
         
         <h3 id="json-web-key-set" class="section"><a class="anchor-link left" href="#json-web-key-set"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key Set</h3>
-        <p>There is a <code>Jwk</code> type representing a <a href="https://www.rfc-editor.org/rfc/rfc7517.html">JSON Web Key (JWK)</a> and a <code>JwkSet</code> type for <a href="https://www.rfc-editor.org/rfc/rfc7517.html#section-5">JWK Set</a>. A <code>JwkSet</code> can be used for verification as long as it contains at least one key that meet all of the following criteria. Keys which do not match the criteria will be filtered out, and if there are no keys available after filtering, an exception is raised.</p>
+        <p>There is a <a class="api" href="../api/jots/Jwk.html">Jwk</a> type representing a <a href="https://www.rfc-editor.org/rfc/rfc7517.html">JSON Web Key (JWK)</a> and a <a class="api" href="../api/jots/JwkSet.html">JwkSet</a> type for <a href="https://www.rfc-editor.org/rfc/rfc7517.html#section-5">JWK Set</a>. A <code>JwkSet</code> can be used for verification as long as it contains at least one key that meet all of the following criteria. Keys which do not match the criteria will be filtered out, and if there are no keys available after filtering, an exception is raised.</p>
         <ol class="arabic">
           <li>The <code>kid</code> (Key ID) parameter must be specified for the key.</li>
           <li>If <code>key_ops</code> is specified, it must contain the <code>verify</code> operation.</li>
@@ -401,7 +401,7 @@ VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
         <p>It is not possible to disable signature verification for the default <code>JwtVerification</code> instances, meaning <code>VerifiedJwt</code> guarantees the token has a valid signature as long as these rules are upheld.</p>
         
         <h3 id="custom-example" class="section"><a class="anchor-link left" href="#custom-example"><i class="icofont-laika link">&#xef71;</i></a>Custom Example</h3>
-        <p>Following is an example of a custom verification that requires the <code>nonce</code> header key to be present. Tokens without a nonce are rejected with a custom <code>JwtException</code>, so that, for example, the <a href="../integrations/http4s.html#auth-middleware">http4s middleware</a> rejects the token and responds with a <code>401 Unauthorized</code> response.</p>
+        <p>Following is an example of a custom verification that requires the <code>nonce</code> header key to be present. Tokens without a nonce are rejected with a custom <a class="api" href="../api/jots/JwtException.html">JwtException</a>, so that, for example, the <a href="../integrations/http4s.html#auth-middleware">http4s middleware</a> rejects the token and responds with a <code>401 Unauthorized</code> response.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtException</span><span>
 
 </span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MissingNonce</span><span>() </span><span class="keyword">extends</span><span> </span><span class="type-name">JwtException</span><span>(</span><span class="string-literal">&quot;token is missing nonce&quot;</span><span>)

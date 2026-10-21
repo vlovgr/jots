@@ -143,7 +143,7 @@
       <main class="content">
 
         <h1 id="http4s" class="title">http4s</h1>
-        <p>The <code>jots-http4s</code> module provides an integration with <a href="https://http4s.org">http4s</a> servers and clients. There is an <code>AuthMiddleware</code> for verifying and decoding tokens in incoming requests. There&#39;s also support for refreshing verification by periodically fetching a <code>JwkSet</code> from an HTTP endpoint with a <code>Client</code>.</p>
+        <p>The <code>jots-http4s</code> module provides an integration with <a href="https://http4s.org">http4s</a> servers and clients. There is an <code>AuthMiddleware</code> for verifying and decoding tokens in incoming requests. There&#39;s also support for refreshing verification by periodically fetching a <a class="api" href="../api/jots/JwkSet.html">JwkSet</a> from an HTTP endpoint with a <code>Client</code>.</p>
         
         <h2 id="getting-started" class="section"><a class="anchor-link left" href="#getting-started"><i class="icofont-laika link">&#xef71;</i></a>Getting Started</h2>
         <p>To get started with <a href="https://scala-sbt.org">sbt</a>, add the following line to your <code>build.sbt</code> file.</p>
@@ -151,7 +151,7 @@
         <p>If you are using Scala.js or Scala Native, replace the <code>%%</code> with <code>%%%</code> above.</p>
         
         <h2 id="request-headers" class="section"><a class="anchor-link left" href="#request-headers"><i class="icofont-laika link">&#xef71;</i></a>Request Headers</h2>
-        <p>There is support for both reading and writing <code>SignedJwt</code> as <a href="https://www.rfc-editor.org/rfc/rfc6750.html#section-2.1"><code>Authorization: Bearer &lt;token&gt;</code></a> headers from and to requests. In the following example, we define a <code>SignedJwt</code> for demonstration purposes using syntax from the <a href="../features/testing.html#string-interpolators">testing module</a>. We then proceed to create a request with the <code>SignedJwt</code> in the headers and then read it back again.</p>
+        <p>There is support for both reading and writing <a class="api" href="../api/jots/SignedJwt.html">SignedJwt</a> as <a href="https://www.rfc-editor.org/rfc/rfc6750.html#section-2.1"><code>Authorization: Bearer &lt;token&gt;</code></a> headers from and to requests. In the following example, we define a <code>SignedJwt</code> for demonstration purposes using syntax from the <a href="../features/testing.html#string-interpolators">testing module</a>. We then proceed to create a request with the <code>SignedJwt</code> in the headers and then read it back again.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">http4s</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">SignedJwt</span><span>
@@ -168,7 +168,7 @@
   </span><span class="identifier">requestWithSignedJwt</span><span>.</span><span class="identifier">headers</span><span>.</span><span class="identifier">get</span><span>[</span><span class="type-name">SignedJwt</span><span>]</span></code></pre>
         
         <h2 id="auth-middleware" class="section"><a class="anchor-link left" href="#auth-middleware"><i class="icofont-laika link">&#xef71;</i></a>Auth Middleware</h2>
-        <p>The <code>JwtAuthMiddleware</code> can be used to create <code>AuthMiddleware</code> for servers to parse, verify and decode tokens from incoming <code>Authorization: Bearer &lt;token&gt;</code> request headers. If the token is missing or invalid, a <code>401 Unauthorized</code> response is sent along with a <code>WWW-Authenticate</code> header detailing the issue.</p>
+        <p>The <a class="api" href="../api/jots/http4s/JwtAuthMiddleware$.html">JwtAuthMiddleware</a> can be used to create <code>AuthMiddleware</code> for servers to parse, verify and decode tokens from incoming <code>Authorization: Bearer &lt;token&gt;</code> request headers. If the token is missing or invalid, a <code>401 Unauthorized</code> response is sent along with a <code>WWW-Authenticate</code> header detailing the issue.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="type-name">Decoder</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="identifier">crypto</span><span>.</span><span class="type-name">SecretKey</span><span>
@@ -203,10 +203,10 @@
           <p>We should take care to <em>not</em> put secrets, like <code>SecretKey</code>, in source code.</p>
         </div>
         <p>Note the middleware protects every incoming request, so public routes should be combined before the authenticated routes. This normally looks something along the lines of: <code>publicRoutes &lt;+&gt; authMiddleware(authedRoutes)</code>. In case it is not done correctly, public routes will always get a <code>401 Unauthorized</code> without a token present.</p>
-        <p>Tokens are rejected when verification raises a <code>JwtException</code>, or when decoding fails with a <code>DecodingFailure</code>. Other errors are raised as normal, so the server&#39;s error handling applies (<code>500 Internal Server Error</code> by default). Custom verifications can raise a <code>JwtException</code> to have the middleware respond with a <code>401 Unauthorized</code>.</p>
+        <p>Tokens are rejected when verification raises a <a class="api" href="../api/jots/JwtException.html">JwtException</a>, or when decoding fails with a <code>DecodingFailure</code>. Other errors are raised as normal, so the server&#39;s error handling applies (<code>500 Internal Server Error</code> by default). Custom verifications can raise a <code>JwtException</code> to have the middleware respond with a <code>401 Unauthorized</code>.</p>
         
         <h2 id="refreshing-verification" class="section"><a class="anchor-link left" href="#refreshing-verification"><i class="icofont-laika link">&#xef71;</i></a>Refreshing Verification</h2>
-        <p>There is <code>RefreshingJwtVerification</code> with support for periodically fetching a <code>JwkSet</code> from an HTTP endpoint and refreshing verification. The following example shows how to create a <code>RefreshingJwtVerification</code> instance, which accepts tokens issued by <code>https://example.auth0.com/</code> for the <code>https://api.example.com</code> audience. Note the example allows all supported asymmetric algorithms and uses the <a href="#default-refresh-settings">default refresh settings</a>.</p>
+        <p>There is <a class="api" href="../api/jots/http4s/RefreshingJwtVerification.html">RefreshingJwtVerification</a> with support for periodically fetching a <code>JwkSet</code> from an HTTP endpoint and refreshing verification. The following example shows how to create a <code>RefreshingJwtVerification</code> instance, which accepts tokens issued by <code>https://example.auth0.com/</code> for the <code>https://api.example.com</code> audience. Note the example allows all supported asymmetric algorithms and uses the <a href="#default-refresh-settings">default refresh settings</a>.</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">Resource</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">jots</span><span>.</span><span class="type-name">JwtAsymmetricAlgorithm</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">http4s</span><span>.</span><span class="identifier">ember</span><span>.</span><span class="identifier">client</span><span>.</span><span class="type-name">EmberClientBuilder</span><span>
@@ -231,7 +231,7 @@
           <i class="icofont-laika info">&#xef4e;</i>
           <p>Identity providers commonly sign tokens for many applications using the same keys. Make sure to set the accepted audiences, and preferably also the accepted issuers. Tokens with an audience (<code>aud</code>) are rejected unless the audience has been accepted.</p>
         </div>
-        <p>The function passed to <code>refreshWith</code> creates the <code>JwtVerification</code> for each retrieved <code>JwkSet</code>, so the allowed algorithms (e.g. <code>JwtRsaAlgorithm.All</code>) and verifications are customized as with any <code>JwtVerificationBuilder</code>.</p>
+        <p>The function passed to <code>refreshWith</code> creates the <a class="api" href="../api/jots/JwtVerification.html">JwtVerification</a> for each retrieved <code>JwkSet</code>, so the allowed algorithms (e.g. <code>JwtRsaAlgorithm.All</code>) and verifications are customized as with any <a class="api" href="../api/jots/JwtVerificationBuilder.html">JwtVerificationBuilder</a>.</p>
         <p><code>RefreshingJwtVerification</code> extends <code>JwtVerification</code>, so it works everywhere <code>JwtVerification</code> is required. We also have the <code>keys</code> function to retrieve the current <code>JwkSet</code>. Note all functions semantically block until an initial key set is available (or an error occurred fetching the initial key set).</p>
         <p>It is possible to directly use <code>RefreshingJwtVerification</code> with <code>JwtAuthMiddleware</code>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">refreshingJwtVerificationRoutes</span><span>: </span><span class="type-name">Resource</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">IO</span><span>]] =
@@ -254,7 +254,7 @@
         <p>Note tokens without a <code>kid</code> in the header are rejected without requesting extra refreshes.</p>
         
         <h3 id="default-refresh-settings" class="section"><a class="anchor-link left" href="#default-refresh-settings"><i class="icofont-laika link">&#xef71;</i></a>Default Refresh Settings</h3>
-        <p>The <code>RefreshingJwtVerificationBuilder</code> can be used to customize the following defaults.</p>
+        <p>The <a class="api" href="../api/jots/http4s/RefreshingJwtVerificationBuilder.html">RefreshingJwtVerificationBuilder</a> can be used to customize the following defaults.</p>
         <ul>
           <li>The key set will be automatically refreshed every 60 minutes (the <code>refreshInterval</code> setting).</li>
           <li>If the refresh attempt failed, we retry after 60 seconds (the <code>refreshIntervalOnError</code> setting).</li>
