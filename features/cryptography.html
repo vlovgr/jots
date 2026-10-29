@@ -206,7 +206,7 @@
         </div>
         <p>The generated signature is represented with <a class="api" href="../api/jots/crypto/Signature.html">Signature</a> and is usually represented in hexadecimal encoding, which is the default for <code>Signature</code>. When the output is used as a signature for tokens, it&#39;s represented using <code>Base64UrlNoPad</code> encoding using <code>JwtSignature.fromSignature</code> in the core module.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signature</span><span>.</span><span class="identifier">unsafeRunSync</span><span>()
-</span><span class="comment">// res1: Signature = Signature(9c83cb15a98a26d50c2f7c7a435da5b86d6bac4ef6ef9fdc3bb52d961ded8869da4e1bc2772f3a9175b3ec98c8a9e4404a9c9a5942187d9fe653ae3383a649d2)</span></code></pre>
+</span><span class="comment">// res1: Signature = Signature(b2ebc3717c34bb268a7d2bc044e206259c723f4ff995c08a930e86b3b259a50a44e0f3649d04dcfbe8c99df7c9195f5c5ba5949ad32bdb2da47983cfa15e3bc2)</span></code></pre>
         
         <h3 id="verification-with-public-key" class="section"><a class="anchor-link left" href="#verification-with-public-key"><i class="icofont-laika link">&#xef71;</i></a>Verification with Public Key</h3>
         <p>The <code>Crypto#verify</code> function implements asymmetric verification using a public key. This means we have to provide an <code>AsymmetricAlgorithm</code> and matching <a class="api" href="../api/jots/crypto/PublicKey.html">PublicKey</a> in addition to a <code>ByteVector</code> message and signature. Note the public key needs to match the algorithm, or an exception will be raised at runtime. Following is an example which matches the <code>ES256</code> algorithm for tokens (ECDSA using P-256 and SHA-256).</p>
