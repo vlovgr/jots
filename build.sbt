@@ -254,10 +254,7 @@ lazy val docs = project
             )
           )
           .site
-          .footer(
-            "Licensed under <a href=\"https://github.com/vlovgr/jots/blob/main/license.txt\">Apache License, Version 2.0</a>.<br>" +
-              "Copyright © 2026 Viktor Rudebeck."
-          )
+          .footer()
           .site
           .pageNavigation(sourceBaseURL = Some("https://github.com/vlovgr/jots/tree/main/docs"))
       }
@@ -359,7 +356,7 @@ lazy val unidocs = project
       withOption(projectOptions, "-project-version", s"v$docVersion") ++ Seq(
         "-comment-syntax:wiki",
         "-doc-canonical-base-url:https://vlovgr.github.io/jots/api/",
-        "-project-footer:Licensed under Apache License, Version 2.0. Copyright © 2026 Viktor Rudebeck.",
+        "-project-footer:Licensed under Apache License, Version 2.0.",
         s"-project-logo:${logo.getAbsolutePath}",
         "-social-links:github::https://github.com/vlovgr/jots"
       )
