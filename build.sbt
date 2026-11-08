@@ -12,7 +12,7 @@ val scalaCheckVersion = "1.20.0"
 val scodecBitsVersion = "1.2.5"
 val slf4jVersion = "2.0.20"
 val vaultVersion = "3.7.0"
-val weaverVersion = "0.13.0"
+val weaverVersion = "0.13.1"
 
 inThisBuild(
   Seq(
