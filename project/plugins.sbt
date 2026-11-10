@@ -1,4 +1,4 @@
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.9")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.10")
 addSbtPlugin("com.armanbilge" % "sbt-scala-native-config-brew-github-actions" % "0.4.0")
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.2.1")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.22.0")
