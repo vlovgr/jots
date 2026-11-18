@@ -164,30 +164,30 @@
 
 </span><span class="comment">// Generate an arbitrary token prior to signing
 </span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">JwtBuilder</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res0: Option[JwtBuilder] = Some(JwtBuilder(JwtHeader(alg -&gt; &quot;ES256&quot;,cty -&gt; &quot;㐲嚾髕飱╪㕩꼂饏咾䅧㥁垉椊޾徖ꇾꎒꂒ힜➎혥祁᧽䴲飃ᳯ⦛↱봅홯ᇊ᯦샫좻춼ﶌ㮾殳㘖鸴阭祿悗⩡ᛢ当꺭济翗맆䱼墺╽鈜&quot;,kid -&gt; &quot;눔擴뀁頦꨹្硧Һ䉓鵝㪚̠䁫湼뻈尗鸸눣徵槞ٚ엽쫰⻔렂⯢냄┫㝅ꟼ࿷ᢗ列穌㷨䍍빕宪뉘뺲뵸褴衃﫶&quot;,typ -&gt; &quot;JWT&quot;),JwtClaims(iss,sub,aud,nbf,iat,jti)))
+</span><span class="comment">// res0: Option[JwtBuilder] = Some(JwtBuilder(JwtHeader(alg -&gt; &quot;ES512&quot;,cty -&gt; &quot;紝ೃ䙨㯎ᐅ뾛췱뀕鈗႗⸠忝饞璨祲ᛛ켃⮈Ṽ⮵᜺蚒均䕅▓㚣ꙶ뱝ᇜ꬘獧㐐焿멡犙脂奈ࠎ䙨룿枇甾龵ན馒儃⃵㧣ऊ盨盼ﵘ쌾軝㤿끁뢴鹧꺘⻐䰋䍩ꉆ잦腒&quot;,kid -&gt; &quot;ր䃐챫ຸ훗瞘䁺鵫ꞵ怜썝렧桡ƿ↝闦ᦟ嫜攤㘳桹ᎅ뢘꼑&amp;鳄പFᎨ傏ꉒ俇䁥䐇⹑곂徜ꮹ挤遵썺錋ಉⲆ䎨塦춑ꎏꮉ၉ង돊鰷빉৘受黁㖺댾档&quot;,typ -&gt; &quot;阞逺ᡖ܉졺ך堏幊蕯鮟\u0018ﱽ恭翄縤솻睲⵩㮻ᕵ禢쁛螩ֆﱎ뷒㲸鿔솷壦ꮎጙ氚င팿툛礞䶱㱰뗊䌾劣ࡸ路⃝숖쏷ﷆ䠈鞁殍癄ᵺ㪦ॄ讯탡첧㘻帹겵䋘씡뢬ꫲ蹮⢎剨╄졆ꃽ﷊㻂嵾숇쯚ńﮕ༰ĳ缒該鹭ퟃ퉋&quot;),JwtClaims(iss,sub,exp,nbf,iat,jti)))
 </span><span>
 </span><span class="comment">// Generate an arbitary token with valid signature
 </span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">SignedJwt</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res1: Option[SignedJwt] = Some(SignedJwt(SignedJwtHeader(alg -&gt; &quot;ES512&quot;,cty -&gt; &quot;朂셴טּ뭂寜ㆎ蠳⯒õ行쿜㞌楤ⰸ蠆䈍輅㿄㰗섈㿻넺䦒첤鱗㢐뉠᭢༏䠄䕣ᐣ舤豒圠⃒迵餅нఒ㠂逛ﯻ犽⼿迣㣬萐ⷒ啗⾴㷧⮝圾隸瘚跐Ⅿ컅㘺유驴獬펓勝ࣗ먲꩝螂蒚飿ήㆲ跋Ȑ缬㨄圵饠&quot;,kid -&gt; &quot;H力ᫍ蘒普䚁ᳮ䨏쉺圹猘了氕䛹냫鐊&quot;,typ -&gt; &quot;漎茯漼闽탣暌廠䨝陘읙ௗ萂鮕ᚰ앫忣䵲ꏗ❂득슪亍䡤皧䆺뛣⡴ᕷ獢䟈贷懻뜓ᤴ뵩暦ȫ穔꺞㆐ڤ&quot;),SignedJwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
+</span><span class="comment">// res1: Option[SignedJwt] = Some(SignedJwt(SignedJwtHeader(alg -&gt; &quot;RS512&quot;,cty -&gt; &quot;ꀴ痰ꗑ㪗㧥겁赡ꏬꙧ醛씀厾勔Ჺ摝뫫虷䪴唾뙮뮣漳钶﯎謤僲┃ᯃ䫮뫾걁맼䜨㌟歧걯퇍灑䷩⒔曑隆촬Ჿ轖헑睔O੨粫Ӕᙫ썠螇㮦넟욆譐㬤︮퓉떑祶╠뒒괦傌章Ỡ靜쿦囋⋑&quot;,kid -&gt; &quot;⊚⼽眉톧髀⏊흑屚㚪䆛땎幢쐼쫥荪䄡쌄騵㝺♘醵৪媇润冊멥囏耪鋡⻈\u001c鹾쟲⴬&quot;,typ -&gt; &quot;JWT&quot;),SignedJwtClaims(sub,aud,exp,nbf,iat,jti)))
 </span><span>
 </span><span class="comment">// Generate an arbitrary token with a verified signature
 </span><span class="identifier">arbitrary</span><span>[</span><span class="type-name">VerifiedJwt</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res2: Option[VerifiedJwt] = Some(VerifiedJwt(SignedJwtHeader(alg -&gt; &quot;HS384&quot;,cty -&gt; &quot;亜뗎㓸闅㮒꘻䵯㘀鐖鐄ᗯ㵾쏈钅䕖靊㴉瓄㎢ਫ虖踔僦፽쳄넘翐᠙ꉦ抣ᢗ폛끐Თ猂Ⓡ鸕땴븠륧晗캍ჭᯞ큍삭썅뵪௩㩐ﮧꀰᄉﻮ稶寧錋䬆䉜⤇힒蛘&quot;,kid -&gt; &quot;綖롸䈻䍺珑罎翳輆癎狊措割ɺ訍와尺᧻嬃✴梇࿋￶攰잕唈꿈脠鏅曩ῡ熢訣脥菗㺟콅獟샳녱뇌円䕁ᔥ࣭젬ᡨ䦙樳窛ɕ챴㳈륙♠蹉ᩄ瓾⾭￘旘&quot;,typ -&gt; &quot;JWT&quot;),SignedJwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
+</span><span class="comment">// res2: Option[VerifiedJwt] = Some(VerifiedJwt(SignedJwtHeader(alg -&gt; &quot;Ed448&quot;,cty -&gt; &quot;텼־ᨼ⿯ဎ௤⪦胕⚽䱶缬亮医勠樼␁⡬뙟྘퀅폛芧鏯횼桕㘤瀛䖱扔ꈽꮝ⊎雤鳙쵀ʂĭ靪℮爲쨪ᐞ臶ۑ玞軂䊗曜앑뻼턒㴾俘᜷㙒鑓鮣ꪘ术瀌뗋䏑∳დᵝ젛㨤轣שּׂ⤂熪瓗쓞교&quot;,typ -&gt; &quot;JWT&quot;),SignedJwtClaims(iss,sub,aud,exp,nbf,iat,jti)))
 </span><span>
 </span><span class="comment">// Generate an arbitary signing instance using ECDSA
 </span><span class="identifier">ecdsaJwtSigningGen</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">sample</span><span>
-</span><span class="comment">// res3: Option[JwtSigning[[A &gt;: Nothing &lt;: Any] =&gt; IO[A]]] = Some(jots.JwtSigning$$anon$2@4fa1b468)
+</span><span class="comment">// res3: Option[JwtSigning[[A &gt;: Nothing &lt;: Any] =&gt; IO[A]]] = Some(jots.JwtSigning$$anon$2@57affb49)
 </span><span>
 </span><span class="comment">// Generate a matching RSA private and public key
 </span><span class="identifier">rsaKeyPairGen</span><span>.</span><span class="identifier">sample</span><span>
 </span><span class="comment">// res4: Option[Tuple2[PrivateKey, PublicKey]] = Some((PrivateKey(**),PublicKey(-----BEGIN PUBLIC KEY-----
-// MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwUC8SFKv+YdGfrkeZiJn
-// n9Oqdk0H37ZhWf5xOe1aAI+LLz9SWr+WAY+MSZyJifQDUMC+gvoYNTXMl8lrW8gY
-// Z6cf6/C9qTR6sKwYl/+LtEuubzkjQn8CTdwKu8IUxWlscdZLLBnHdi7/np9UkBcl
-// q7DI98ModCMz7ojl07ss2ZRHbpDKjhbdIpc959+SQIU6en5PKrVsG9zFj6Wg046x
-// qksl1a1LHkX8V872Bty0VhsTxrOaQtsHNklXOb8DPHcJ0cXe961YbA48y7R0e+9h
-// r5bfTPRO72LFxy6T+a8NrBr4Y376q5tLuSqRuRpU63Lc864P074WmwSD0d/Y/kHI
-// ZwIDAQAB
+// MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn51WIz3xwJztQxQE203/
+// KYWHEDpASmT3QIW25h3yU+ZNgA3tm661QCpjiD/OoaEnGmJjVBgvqu5n3cpm2rI0
+// YiijvbrOTskeAJ9jt79iab0oxlfrd9B9u9lubTbpyzmJ3I0+SyFU22efNASf201D
+// exVonPRCNX66n93363bLvMHjRjHj+yCrOATRuJdq1Neeexm7/ZVP1jXa8+Hl52nF
+// prymh31MocK2jXMxYNQvpxBcWz0GviPkQDMu/gEFVvIzMjBHbtQy9od+sToXi8y4
+// Wb2f6hzDTud4SxQa+YAaDCuQ2hiosU1pOwe6uaoqTq3JI8/XT0FNQBDkVuF/d6Pt
+// 2wIDAQAB
 // -----END PUBLIC KEY-----)))</span></code></pre>
         
         <h3 id="string-interpolators" class="section"><a class="anchor-link left" href="#string-interpolators"><i class="icofont-laika link">&#xef71;</i></a>String Interpolators</h3>
