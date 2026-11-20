@@ -146,7 +146,8 @@ lazy val docs = project
 
         val projectLinks = List(
           IconLink.internal(Root / "api" / "jots.html", HeliumIcon.api),
-          IconLink.external(gitHubUrl, HeliumIcon.github)
+          IconLink.external(gitHubUrl, HeliumIcon.github),
+          IconLink.external("https://discord.gg/6jecKqNzPB", HeliumIcon.chat)
         )
 
         Helium.defaults
@@ -359,7 +360,8 @@ lazy val unidocs = project
         "-doc-canonical-base-url:https://vlovgr.github.io/jots/api/",
         "-project-footer:Licensed under Apache License, Version 2.0.",
         s"-project-logo:${logo.getAbsolutePath}",
-        "-social-links:github::https://github.com/vlovgr/jots"
+        "-social-links:github::https://github.com/vlovgr/jots",
+        "-social-links:discord::https://discord.gg/6jecKqNzPB"
       )
     }
   )
