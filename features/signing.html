@@ -163,11 +163,22 @@ mermaid.initialize({
 
         <h1 id="token-signing" class="title">Token Signing</h1>
         <p>Token signing involves four library types: <a class="api" href="../api/jots/JwtEncoder.html">JwtEncoder</a>, <a class="api" href="../api/jots/JwtBuilder.html">JwtBuilder</a>, <a class="api" href="../api/jots/JwtSigning.html">JwtSigning</a> and <a class="api" href="../api/jots/SignedJwt.html">SignedJwt</a>.</p>
-        <pre class="mermaid">%%{init: {&quot;fontFamily&quot;: &quot;monospace&quot;}}%%
+        <div class="mermaid-responsive">
+          <div class="mermaid-lr">
+            <pre class="mermaid">%%{init: {&quot;fontFamily&quot;: &quot;monospace&quot;}}%%
 graph LR
 A --&gt; |&quot;JwtEncoder[A]&quot;| JwtBuilder
 JwtBuilder --&gt; |&quot;JwtSigning[IO]&quot;| SignedJwt[&quot;IO[SignedJwt]&quot;]
 SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pre>
+          </div>
+          <div class="mermaid-td">
+            <pre class="mermaid">%%{init: {&quot;fontFamily&quot;: &quot;monospace&quot;}}%%
+graph TD
+A --&gt; |&quot;JwtEncoder[A]&quot;| JwtBuilder
+JwtBuilder --&gt; |&quot;JwtSigning[IO]&quot;| SignedJwt[&quot;IO[SignedJwt]&quot;]
+SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pre>
+          </div>
+        </div>
         <ul>
           <li>The type <code>A</code> is our custom type representing the token (usually the claims).</li>
           <li>The <code>JwtEncoder[A]</code> describes how to encode <code>A</code> as a <code>JwtBuilder</code> instance.</li>
@@ -371,7 +382,7 @@ SignedJwt --&gt; |&quot;SignedJwt#show&quot;| String[&quot;IO[String]&quot;]</pr
         <p>The <code>SignedJwt</code> represent a parsed or generated token which has <em>not</em> been verified. Since we&#39;ve generated this token, we can be reasonably confident it also verifies successfully. However, in the general case, a <code>SignedJwt</code> should not be trusted before it has been verified. <a class="api" href="../api/jots/VerifiedJwt.html">VerifiedJwt</a> represents a verified token, covered on the <a href="verification.html">verification</a> page.</p>
         <p>Finally, let&#39;s generate the <code>String</code> representation of the token using <code>show</code>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signedJwt</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">show</span><span>).</span><span class="identifier">unsafeRunSync</span><span>()
-</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.KhATrf4kYLD8kA6FzHBcebfOyTKugGc43DcPyQwpOKs8r7FTGRQ_v4i7tnlg1pYvFhLHRN_AVIcL8DdxYLO8og&quot;</span></code></pre>
+</span><span class="comment">// res3: String = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI4ZDNiYmQxNC1kZmQ5LTQ3ZmEtYWFiNC1kNzZkYWYwMGI0ZjEiLCJleHAiOjMzNDUwNjI0MDAsImlhdCI6MTc2NzIyNTYwMH0.rehBXqrSxhdkBg9FRpSwyc-8_rIcQo9wR-gi50Fbu7mzf5ZuvMWMbYDCxpsFK6YYEjaUl27eU1yeUTDhbeLK5A&quot;</span></code></pre>
         
         <h3 id="json-web-key" class="section"><a class="anchor-link left" href="#json-web-key"><i class="icofont-laika link">&#xef71;</i></a>JSON Web Key</h3>
         <p>There is a <a class="api" href="../api/jots/Jwk.html">Jwk</a> type representing a <a href="https://www.rfc-editor.org/rfc/rfc7517.html">JSON Web Key (JWK)</a>. A <code>Jwk</code> can be used for signing as long as it meets all of the following criteria. For keys which do not match the criteria, an exception is raised.</p>

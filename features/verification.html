@@ -165,11 +165,22 @@ mermaid.initialize({
 
         <h1 id="verifying-tokens" class="title">Verifying Tokens</h1>
         <p>Token verification involves four library types: <a class="api" href="../api/jots/SignedJwt.html">SignedJwt</a>, <a class="api" href="../api/jots/JwtVerification.html">JwtVerification</a>, <a class="api" href="../api/jots/VerifiedJwt.html">VerifiedJwt</a> and <a class="api" href="../api/jots/JwtDecoder.html">JwtDecoder</a>.</p>
-        <pre class="mermaid">%%{init: {&quot;fontFamily&quot;: &quot;monospace&quot;}}%%
+        <div class="mermaid-responsive">
+          <div class="mermaid-lr">
+            <pre class="mermaid">%%{init: {&quot;fontFamily&quot;: &quot;monospace&quot;}}%%
 graph LR
 String --&gt; |&quot;SignedJwt.parse&quot;| SignedJwt[&quot;IO[SignedJwt]&quot;]
 SignedJwt --&gt; |&quot;JwtVerification[IO]&quot;| VerifiedJwt[&quot;IO[VerifiedJwt]&quot;]
 VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
+          </div>
+          <div class="mermaid-td">
+            <pre class="mermaid">%%{init: {&quot;fontFamily&quot;: &quot;monospace&quot;}}%%
+graph TD
+String --&gt; |&quot;SignedJwt.parse&quot;| SignedJwt[&quot;IO[SignedJwt]&quot;]
+SignedJwt --&gt; |&quot;JwtVerification[IO]&quot;| VerifiedJwt[&quot;IO[VerifiedJwt]&quot;]
+VerifiedJwt --&gt; |&quot;JwtDecoder[A]&quot;| A[&quot;IO[A]&quot;]</pre>
+          </div>
+        </div>
         <ul>
           <li>The <code>SignedJwt.parse</code> function parses a signed token (JWT) into its different parts.</li>
           <li>The <code>SignedJwt</code> represents a signed token (JWT) which has <em>not</em> yet been verified.</li>
