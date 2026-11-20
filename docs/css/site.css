@@ -176,6 +176,31 @@ pre.mermaid .edgeLabel rect {
   fill: var(--bg-color) !important;
 }
 
+.mermaid-responsive {
+  container-type: inline-size;
+}
+
+/* Hidden without display: none, since Mermaid measures diagrams while rendering. */
+.mermaid-responsive .mermaid-td {
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+@container (max-width: 600px) {
+  .mermaid-responsive .mermaid-lr {
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  .mermaid-responsive .mermaid-td {
+    height: auto;
+    overflow: visible;
+    visibility: visible;
+  }
+}
+
 main:not(.content) {
   max-width: 650px;
   padding-top: 40px;
