@@ -1,4 +1,4 @@
-# Jots
+# Jots <img src="docs/img/logo.svg" align="right" height="130" alt="" />
 
 [![Typelevel Affiliate Project](https://img.shields.io/badge/typelevel-affiliate%20project-ffb4b5.svg)](https://typelevel.org)
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/vlovgr/jots/ci.yml?branch=main)](https://github.com/vlovgr/jots/actions)
