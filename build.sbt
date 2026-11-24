@@ -124,7 +124,6 @@ lazy val docs = project
         case (file, path) => file -> path.replace('\\', '/')
       },
       laikaConfig ~= (_.withConfigValue(LinkConfig.empty.addApiLinks(ApiLinks("/api/")))),
-      laikaExtensions += ResponsiveMermaid,
       laikaIncludeAPI := true,
       tlSiteApiUrl := None,
       tlSitePreview := tlSitePreview.dependsOn(laikaGenerateAPI).value,

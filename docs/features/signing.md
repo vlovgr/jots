@@ -3,7 +3,6 @@
 Token signing involves four library types: @:api(jots.JwtEncoder), @:api(jots.JwtBuilder), @:api(jots.JwtSigning) and @:api(jots.SignedJwt).
 
 ```mermaid
-%%{init: {"fontFamily": "monospace"}}%%
 graph LR
 A --> |"JwtEncoder[A]"| JwtBuilder
 JwtBuilder --> |"JwtSigning[IO]"| SignedJwt["IO[SignedJwt]"]

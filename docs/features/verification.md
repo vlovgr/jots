@@ -3,7 +3,6 @@
 Token verification involves four library types: @:api(jots.SignedJwt), @:api(jots.JwtVerification), @:api(jots.VerifiedJwt) and @:api(jots.JwtDecoder).
 
 ```mermaid
-%%{init: {"fontFamily": "monospace"}}%%
 graph LR
 String --> |"SignedJwt.parse"| SignedJwt["IO[SignedJwt]"]
 SignedJwt --> |"JwtVerification[IO]"| VerifiedJwt["IO[VerifiedJwt]"]
